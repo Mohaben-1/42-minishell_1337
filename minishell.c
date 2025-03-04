@@ -66,7 +66,7 @@ void	ft_exec_cmd(char *cmd, char **envp)
 	char	*cmd_path;
 	int		i;
 
-	// signal(SIGQUIT, );
+	signal(SIGQUIT, SIG_DFL);
 	cmd_splited = ft_split(cmd, ' ');
 	if (cmd_splited[0] && !access(cmd_splited[0], X_OK))
 		execve(cmd_splited[0], cmd_splited, envp);
