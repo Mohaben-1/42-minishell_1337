@@ -73,7 +73,7 @@ void	ft_exec_cmd(char *cmd, char **envp)
 	path = ft_get_path(envp);
 	paths = ft_split(path, ':');
 	i = -1;
-	while (paths[++i])
+	while (paths[++i] && cmd[0] != '.')
 	{
 		path = ft_strjoin(paths[i], "/");
 		cmd_path = ft_strjoin(path, cmd_splited[0]);
