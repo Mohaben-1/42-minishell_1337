@@ -1,90 +1,5 @@
 #include "minishell.h"
 
-char	*ft_get_path(char **envp)
-{
-	int		i;
-	
-	if (!envp)
-		return (NULL);
-	i = 0;
-	while (envp[i])
-	{
-		if (!ft_strncmp(envp[i], "PATH=", 5))
-			return (envp[i] + 5);
-		i++;
-	}
-	return (NULL);
-}
-
-int	ft_atoi(const char *str)
-{
-	int		sign;
-	long	res;
-
-	sign = 1;
-	res = 0;
-	while (*str == 32 || (*str >= 9 && *str <= 13))
-		str++;
-	if (*str == '+' || *str == '-')
-	{
-		if (*str == '-')
-			sign = -1;
-		str++;
-	}
-	while (*str >= '0' && *str <= '9')
-	{
-		if (res > (9223372036854775807 - (*str - '0')) / 10)
-		{
-			if (sign == 1)
-				return (-1);
-			else if (sign == -1)
-				return (0);
-		}
-		res = res * 10 + (*str++ - '0');
-	}
-	return ((int)(res * sign));
-}
-
-void	p_error_cmd(char **cmd, char **paths, int exit_status)
-{
-	write(2, "minishell: ", 11);
-	if (cmd[0])
-		write(2, cmd[0], ft_strlen(cmd[0]));
-	else
-		write(2, " ", 1);
-	write(2, ": command not found\n", 20);
-	free_split(cmd);
-	free_split(paths);
-	exit(exit_status);
-}
-
-void	ft_exec_cmd(char *cmd, char **envp)
-{
-	char	**cmd_splited;
-	char	**paths;
-	char	*path;
-	char	*cmd_path;
-	int		i;
-
-	signal(SIGQUIT, SIG_DFL);
-	cmd_splited = ft_split(cmd, ' ');
-	if (cmd_splited[0] && !access(cmd_splited[0], X_OK))
-		execve(cmd_splited[0], cmd_splited, envp);
-	path = ft_get_path(envp);
-	paths = ft_split(path, ':');
-	i = -1;
-	while (paths[++i] && cmd[0] != '.')
-	{
-		path = ft_strjoin(paths[i], "/");
-		cmd_path = ft_strjoin(path, cmd_splited[0]);
-		free(path);
-		if (cmd_path && !access(cmd_path, X_OK))
-			execve(cmd_path, cmd_splited, envp);
-		free(cmd_path);
-	}
-	p_error_cmd(cmd_splited, paths, 127);
-}
-
 void	ft_handle_sigint(int sig)
 {
  	(void)sig;
@@ -95,11 +10,6 @@ void	ft_clear_screen()
 {
 	write(1, "\033[H\033[2J", 7);
 	write(1, "\nminishell> ", 12);
-}
-
-int	ft_isdigit(char c)
-{
-	return (c >= '0' && c <= '9');
 }
 
 int main(int ac, char **av, char **envp)
