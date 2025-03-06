@@ -14,10 +14,11 @@ void	ft_clear_screen()
 
 int main(int ac, char **av, char **envp)
 {
-	char	*cmd;
+	char	*input;
 	int		pid;
 	int		last_exit_status;
 	int		status;
+	t_token	token;
 
 	(void)ac;
 	(void)av;
@@ -27,22 +28,36 @@ int main(int ac, char **av, char **envp)
 	rl_catch_signals = 0;
 	while (1)
 	{
-		cmd = readline("minishell> ");
-		if (cmd && *cmd)
-			add_history(cmd);
-		if (!cmd)
+		input = readline("minishell> ");
+		token = ft_tokenizer(input);
+		if (token.token_cmd)
+			printf("cmd\n");
+		else if (token.token_append)
+			printf("append\n");
+		else if (token.token_here_doc)
+			printf("heredoc\n");
+		else if (token.token_pipe)
+			printf("pipe\n");
+		else if (token.token_redir_in)
+			printf("in\n");
+		else if (token.token_redir_out)
+			printf("out\n");
+		
+		if (input && *input)
+			add_history(input);
+		if (!input)
 		{
 			write(1, "exit\n", 5);
 			clear_history();
 			exit(0);
 		}
-		if (!ft_strncmp(cmd, "exit", 4))
+		if (!ft_strncmp(input, "exit", 4))
 		{
-			char	**splited_cmd = ft_split(cmd, ' ');
+			char	**splited_cmd = ft_split(input, ' ');
 			
 			if (splited_cmd[2])
 			{
-				free(cmd);
+				free(input);
 				write(1, "exit\n", 5);
 				write(1, "minishell: exit: too many arguments\n", 36);
 				last_exit_status = 1;
@@ -50,7 +65,7 @@ int main(int ac, char **av, char **envp)
 			}
 			else
 			{
-				free(cmd);
+				free(input);
 				write(1, "exit\n", 5);
 				clear_history();
 				if (!splited_cmd[1])
@@ -64,35 +79,35 @@ int main(int ac, char **av, char **envp)
 				}
 			}
 		}
-		if (!ft_strncmp(cmd, "echo $", 6))
+		if (!ft_strncmp(input, "echo $", 6))
 		{
-			if (*(cmd + 6) == '?')
-            {
-                printf("%d\n", last_exit_status);
-                free(cmd);
-                continue;
-            }
-			if (getenv(cmd + 6))
-				printf("%s\n", getenv(cmd +6));
+			if (*(input + 6) == '?')
+			{
+				printf("%d\n", last_exit_status);
+				free(input);
+				continue;
+			}
+			if (getenv(input + 6))
+				printf("%s\n", getenv(input +6));
 			else
 				write(1, "\n", 1);
 			continue ;
 		}
-		if (cmd[0] == '\f' && cmd[1] == '\0')
+		if (input[0] == '\f' && input[1] == '\0')
 		{
 			ft_clear_screen();
-			free(cmd);
+			free(input);
 			continue;
 		}
-		if (cmd[0] == '\0')
+		if (input[0] == '\0')
 		{
-			free(cmd);
+			free(input);
 			continue;
 		}
 		pid = fork();
 		if (pid == 0)
 		{
-			ft_exec_cmd(cmd, envp);
+			ft_exec_cmd(input, envp);
 		}
 		else if (pid > 0)
 		{
@@ -107,7 +122,7 @@ int main(int ac, char **av, char **envp)
 			write(2, "Fork error\n", 11);
 			last_exit_status = 1;
 		}
-		free(cmd);
+		free(input);
 	}
 	return (0);
 }

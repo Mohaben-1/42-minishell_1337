@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:18:42 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/06 13:19:23 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/06 16:46:10 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 char	*ft_get_path(char **envp)
 {
 	int		i;
-	
+
 	if (!envp)
 		return (NULL);
 	i = 0;

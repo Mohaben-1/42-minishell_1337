@@ -5,7 +5,7 @@ CFLAGS = -Wall -Werror -Wextra
 LIB_RL = -L/goinfre/mohaben-/homebrew/opt/readline/lib -lreadline
 INCLUDE_RL = -I/goinfre/mohaben-/homebrew/opt/readline/include
 
-SRC = minishell.c get_next_line.c str_utils.c utils.c ft_split.c execution.c  errors.c
+SRC = minishell.c get_next_line.c str_utils.c utils.c ft_split.c execution.c  errors.c tokenizer.c
 
 OBJ = $(SRC:.c=.o)
 

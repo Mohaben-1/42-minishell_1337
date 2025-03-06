@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 12:14:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/03 12:27:16 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/06 16:45:56 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ static char	**ft_fill(char **arr, char *s, char c)
 	return (arr);
 }
 
-char	**ft_split(char  *s, char c)
+char	**ft_split(char *s, char c)
 {
 	char	**arr;
 
