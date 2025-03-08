@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/06 16:44:14 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/08 13:33:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,23 +25,30 @@
 #  define BUFFER_SIZE 1
 # endif
 
-typedef struct s_token
+typedef enum e_token_type
 {
-	int	token_cmd;
-	int	token_pipe;
-	int	token_redir_in;
-	int	token_redir_out;
-	int	token_here_doc;
-	int	token_append;
-}	t_token;
+	token_cmd,
+	token_pipe,
+	token_in,
+	token_out,
+	token_hrdc,
+	token_appnd
+}	t_token_type;
 
-typedef struct s_node
+typedef struct s_token_node
 {
-	t_token			token;
+	t_token_type	type;
 	char			*data;
-	struct s_node	*left;
-	struct s_node	*right;
-}	t_node;
+	struct s_token_node	*next;
+}	t_token_node;
+
+typedef struct s_ast
+{
+	t_token_type	token;
+	char			*data;
+	struct s_ast	*left;
+	struct s_ast	*right;
+}	t_ast;
 
 char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
@@ -59,6 +66,8 @@ void	p_error(char *err, int exit_status);
 char	*ft_get_path(char **envp);
 void	ft_exec_cmd(char *cmd, char **envp);
 
-t_token	ft_tokenizer(char *input);
+
+int	ft_strcmp(const char *s1, const char *s2);
+t_token_node	*ft_tokenize(char *input);
 
 #endif

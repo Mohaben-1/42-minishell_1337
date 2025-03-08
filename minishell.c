@@ -12,13 +12,107 @@ void	ft_clear_screen()
 	write(1, "\nminishell> ", 12);
 }
 
+
+void print_token_type(t_token_type type)
+{
+    switch (type)
+    {
+    case token_cmd:
+        printf("Command: ");
+        break;
+    case token_pipe:
+        printf("Pipe: ");
+        break;
+    case token_in:
+        printf("Redirect In: ");
+        break;
+    case token_out:
+        printf("Redirect Out: ");
+        break;
+    case token_hrdc:
+        printf("Here Document: ");
+        break;
+    case token_appnd:
+        printf("Append: ");
+        break;
+    default:
+        printf("Unknown token type: ");
+        break;
+    }
+}
+
+void print_tokens(t_token_node *tokens)
+{
+    t_token_node *current = tokens;
+
+    while (current != NULL)
+    {
+        print_token_type(current->type);
+        printf("%s\n", current->data);
+        current = current->next;
+    }
+}
+
+static void	print_token_error(char token)
+{
+	write(1, "minishell: syntax error near unexpected token `", 47);
+	write(1, &token, 1);
+	write(1, "'\n", 2);
+}
+
+int	ft_is_syntax_error(char *input, int *i)
+{
+	char	current;
+	int 	j;
+
+	while (input[*i] && (input[*i] == ' ' || input[*i] == '\t'))
+		(*i)++;
+	if (input[*i] == '|' && (*i == 0 || input[*i-1] == '|' || (input[*i-1] == ' ' && input[*i-2] == '|')))
+	{
+		print_token_error('|');
+		return (1);
+	}
+	if (input[*i] == '<' || input[*i] == '>')
+	{
+		current = input[*i];
+		if (input[*i + 1] == current)
+			(*i)++;
+		j = *i + 1;
+		while (input[j] && (input[j] == ' ' || input[j] == '\t'))
+			j++;
+		if (!input[j] || input[j] == '|' || input[j] == '<' || input[j] == '>')
+		{
+			print_token_error(input[j] ? input[j] : current);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+static void	ft_hanlde_input_error(char *input, int *last_exit_status)
+{
+	int	i;
+
+	i = 0;
+	if (!input || input[0] == '\0')
+		return ;
+	while (input[i])
+	{
+		if (ft_is_syntax_error(input, &i))
+		{
+			*last_exit_status = 258;
+			return ;
+		}
+		i++;
+	}
+}
+
 int main(int ac, char **av, char **envp)
 {
 	char	*input;
 	int		pid;
 	int		last_exit_status;
 	int		status;
-	t_token	token;
 
 	(void)ac;
 	(void)av;
@@ -29,20 +123,7 @@ int main(int ac, char **av, char **envp)
 	while (1)
 	{
 		input = readline("minishell> ");
-		token = ft_tokenizer(input);
-		if (token.token_cmd)
-			printf("cmd\n");
-		else if (token.token_append)
-			printf("append\n");
-		else if (token.token_here_doc)
-			printf("heredoc\n");
-		else if (token.token_pipe)
-			printf("pipe\n");
-		else if (token.token_redir_in)
-			printf("in\n");
-		else if (token.token_redir_out)
-			printf("out\n");
-		
+		ft_hanlde_input_error(input, &last_exit_status);
 		if (input && *input)
 			add_history(input);
 		if (!input)
@@ -51,11 +132,13 @@ int main(int ac, char **av, char **envp)
 			clear_history();
 			exit(0);
 		}
+		t_token_node *tokens = ft_tokenize(input);
+		print_tokens(tokens);
 		if (!ft_strncmp(input, "exit", 4))
 		{
 			char	**splited_cmd = ft_split(input, ' ');
 			
-			if (splited_cmd[2])
+			if (splited_cmd[1])
 			{
 				free(input);
 				write(1, "exit\n", 5);

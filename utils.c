@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 15:42:46 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/06 13:22:50 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/08 13:21:31 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,19 @@ int	ft_strncmp(char *s1, char *s2, size_t n)
 	}
 	return (0);
 }
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	while (*s1 && *s2)
+	{
+		if (*s1 != *s2)
+			return ((unsigned char)(*s1) - (unsigned char)(*s2));
+		s1++;
+		s2++;
+	}
+	return ((unsigned char)(*s1) - (unsigned char)(*s2));
+}
+
 
 int	ft_atoi(const char *str)
 {
