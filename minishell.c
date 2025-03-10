@@ -133,7 +133,8 @@ int main(int ac, char **av, char **envp)
 			exit(0);
 		}
 		t_token_node *tokens = ft_tokenize(input);
-		print_tokens(tokens);
+		(void)tokens;
+		// print_tokens(tokens);
 		if (!ft_strncmp(input, "exit", 4))
 		{
 			char	**splited_cmd = ft_split(input, ' ');
@@ -174,6 +175,11 @@ int main(int ac, char **av, char **envp)
 				printf("%s\n", getenv(input +6));
 			else
 				write(1, "\n", 1);
+			continue ;
+		}
+		if (!ft_strncmp(input, "cd", 2))
+		{
+			ft_cd(input);
 			continue ;
 		}
 		if (input[0] == '\f' && input[1] == '\0')

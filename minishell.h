@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/08 13:33:21 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/10 13:51:11 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,10 @@ void	p_error_cmd(char **cmd, char **paths, int exit_status);
 void	p_error(char *err, int exit_status);
 char	*ft_get_path(char **envp);
 void	ft_exec_cmd(char *cmd, char **envp);
-
+void	ft_putchar_fd(char c, int fd);
+void	ft_putstr_fd(char *s, int fd);
+void	ft_putnbr_fd(int n, int fd);
+void	ft_cd(char *cmd);
 
 int	ft_strcmp(const char *s1, const char *s2);
 t_token_node	*ft_tokenize(char *input);
