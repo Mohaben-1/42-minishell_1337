@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/01 15:42:46 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/08 13:21:31 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/10 14:46:08 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 int	ft_isdigit(char c)
 {
 	return (c >= '0' && c <= '9');
+}
+
+int	ft_isalpha(int c)
+{
+	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
 }
 
 int	ft_strncmp(char *s1, char *s2, size_t n)

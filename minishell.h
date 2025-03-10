@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/10 13:51:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/10 21:44:06 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,17 @@ typedef struct s_ast
 	struct s_ast	*right;
 }	t_ast;
 
+typedef struct s_env
+{
+	char			*var;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
 int		ft_isdigit(char c);
+int		ft_isalpha(int c);
 int		ft_atoi(const char *str);
 char	*ft_strdup(char *s1);
 char	*ft_substr(char *s, unsigned int start, size_t len);
@@ -69,6 +77,11 @@ void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 void	ft_cd(char *cmd);
+void	ft_export(char *cmd, t_env **env);
+t_env	*ft_init_env(char **envp);
+void	ft_print_env(t_env *env);
+void	ft_env_add_back(t_env **lst, t_env *new);
+t_env	*ft_env_new(char *var, char *value);
 
 int	ft_strcmp(const char *s1, const char *s2);
 t_token_node	*ft_tokenize(char *input);

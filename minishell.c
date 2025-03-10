@@ -113,10 +113,12 @@ int main(int ac, char **av, char **envp)
 	int		pid;
 	int		last_exit_status;
 	int		status;
+	t_env	*env;
 
 	(void)ac;
 	(void)av;
 	last_exit_status = 0;
+	env = ft_init_env(envp);
 	signal(SIGINT, ft_handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
 	rl_catch_signals = 0;
@@ -182,6 +184,16 @@ int main(int ac, char **av, char **envp)
 			ft_cd(input);
 			continue ;
 		}
+		if (!ft_strncmp(input, "env", 3))
+		{
+			ft_print_env(env);
+			continue ;
+		}
+		if (!ft_strncmp(input, "export", 6))
+		{
+			ft_export(input, &env);
+			continue ;
+		}
 		if (input[0] == '\f' && input[1] == '\0')
 		{
 			ft_clear_screen();
@@ -201,8 +213,8 @@ int main(int ac, char **av, char **envp)
 		else if (pid > 0)
 		{
 			waitpid(pid, &status, 0);
-            if (WIFEXITED(status))
-                last_exit_status = WEXITSTATUS(status);
+			if (WIFEXITED(status))
+				last_exit_status = WEXITSTATUS(status);
 			else
                 last_exit_status = 1;
 		}
