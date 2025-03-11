@@ -189,8 +189,17 @@ int main(int ac, char **av, char **envp)
 			ft_export(input, &env);
 			continue ;
 		}
+		if (!ft_strncmp(input, "unset", 5))
+		{
+			// if (ft_strcmp(input, "unset"))
+			// 	ft_putstr_fd("minishell: env: No such file or directory", 2);
+			ft_unset(input, &env);
+			continue ;
+		}
 		if (!ft_strncmp(input, "env", 3))
 		{
+			if (ft_strcmp(input, "env"))
+				ft_putstr_fd("minishell: env: No such file or directory", 2);
 			ft_print_env(env);
 			continue ;
 		}

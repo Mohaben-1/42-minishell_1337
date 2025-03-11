@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 11:07:24 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/11 12:25:05 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	ft_err_exprt(char *cmd, char **cmd_splited)
 	free_split(cmd_splited);
 }
 
-static int	ft_check_var_name(char *var)
+int	ft_check_var_name(char *var)
 {
 	if (!var || !*var)
 		return (0);

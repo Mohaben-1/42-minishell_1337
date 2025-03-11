@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 17:14:58 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 11:07:42 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/11 13:25:27 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,23 @@
 t_env	*ft_env_new(char *var, char *value)
 {
 	t_env	*new;
+	char	quote;
 
 	new = malloc(sizeof(t_env));
 	if (!new)
 		return (NULL);
 	new->var = ft_strdup(var);
 	if (value)
-		new->value = ft_strdup(value);
+	{
+		if (value[0] == '\'' || value[0] == '"')
+		{
+			quote = value[0];
+			value = ft_strtrim(value, &quote);
+		}
+		else
+			value = ft_strdup(value);
+		new->value = value;
+	}
 	else
 		new->value = ft_strdup("");
 	new->next = NULL;
