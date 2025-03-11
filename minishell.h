@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 13:20:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/11 15:14:33 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ char	*ft_substr(char *s, unsigned int start, size_t len);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strchr(char *s, int c);
 int		ft_strncmp(char *s1, char *s2, size_t n);
+int		ft_strcmp(char *s1, char *s2);
 char	*ft_strtrim(char *s1, char *set);
 char	**ft_split(char *s, char c);
 void	free_split(char **s);
@@ -85,7 +86,7 @@ void	ft_env_add_back(t_env **lst, t_env *new);
 t_env	*ft_env_new(char *var, char *value);
 void	ft_unset(char *cmd, t_env **env);
 int		ft_check_var_name(char *var);
-int		ft_strcmp(char *s1, char *s2);
+void	ft_exit(char *input, int *exit_status);
 
 
 t_token_node	*ft_tokenize(char *input);
