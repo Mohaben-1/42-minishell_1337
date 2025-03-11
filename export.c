@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/10 21:43:28 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/11 11:07:24 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,13 @@ static int	ft_check_var_name(char *var)
 
 static	void	ft_print_export(t_env *env)
 {
-
 	if (!env)
 		return ;
 	while (env)
 	{
 		ft_putstr_fd("declare -x ", 1);
 		ft_putstr_fd(env->var, 1);
+		ft_putchar_fd('=', 1);
 		ft_putstr_fd(env->value, 1);
 		ft_putchar_fd('\n', 1);
 		env = env->next;
@@ -56,8 +56,8 @@ static void	ft_update_env(char **var_splited, t_env **env)
 
 	if (!*env)
 	{
-    	*env = ft_env_new(var_splited[0], var_splited[1]);
-    	return ;
+		*env = ft_env_new(var_splited[0], var_splited[1]);
+		return ;
 	}
 	current = *env;
 	while (current)
@@ -73,38 +73,33 @@ static void	ft_update_env(char **var_splited, t_env **env)
 		current = current->next;
 	}
 	ft_env_add_back(env, ft_env_new(var_splited[0], var_splited[1]));
-	ft_print_env(*env);
 }
 
 void	ft_export(char *cmd, t_env **env)
 {
-	char	**cmd_splited;
-	char	**var_splited;
+	char	**cmd_split;
+	char	**var;
 	int		i;
 
-	cmd_splited = ft_split(cmd, ' ');
-	if (!cmd_splited[1])
+	cmd_split = ft_split(cmd, ' ');
+	if (!cmd_split[1])
 		ft_print_export(*env);
 	else
 	{
-		i = 1;
-		while (cmd_splited[i])
+		i = 0;
+		while (cmd_split[++i])
 		{
-			if (ft_strchr(cmd_splited[i], '='))
+			if (ft_strchr(cmd_split[i], '='))
 			{
-				var_splited = ft_split(cmd_splited[i], '=');
-				if (!ft_check_var_name(var_splited[0]))
-					return (free_split(cmd_splited), ft_err_exprt(var_splited[0], var_splited));
-				ft_update_env(var_splited, env);
-				free_split(var_splited);
+				var = ft_split(cmd_split[i], '=');
+				if (!ft_check_var_name(var[0]))
+					return (free_split(cmd_split), ft_err_exprt(var[0], var));
+				ft_update_env(var, env);
+				free_split(var);
 			}
-			else
-			{
-				if (!ft_check_var_name(cmd_splited[i]))
-					return (ft_err_exprt(cmd_splited[i], cmd_splited));
-			}
-			i++;
+			else if (!ft_check_var_name(cmd_split[i]))
+				return (ft_err_exprt(cmd_split[i], cmd_split));
 		}
 	}
-	free_split(cmd_splited);
+	free_split(cmd_split);
 }

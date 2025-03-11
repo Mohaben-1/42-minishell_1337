@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 17:14:58 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/10 21:35:38 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/11 11:07:42 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ void	ft_env_add_back(t_env **lst, t_env *new)
 
 	if (!lst || !new)
 		return ;
-
 	if (!*lst)
 	{
 		*lst = new;
@@ -50,7 +49,7 @@ t_env	*ft_init_env(char **envp)
 {
 	t_env	*head;
 	char	**envp_splited;
-	
+
 	if (!envp || !*envp)
 		return (NULL);
 	head = NULL;
@@ -68,7 +67,7 @@ void	ft_print_env(t_env *env)
 {
 	if (!env)
 		return ;
-	while (env->next)
+	while (env)
 	{
 		ft_putstr_fd(env->var, 1);
 		ft_putchar_fd('=', 1);
