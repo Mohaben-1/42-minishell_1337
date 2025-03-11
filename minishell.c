@@ -184,14 +184,14 @@ int main(int ac, char **av, char **envp)
 			ft_cd(input);
 			continue ;
 		}
-		if (!ft_strncmp(input, "env", 3))
-		{
-			ft_print_env(env);
-			continue ;
-		}
 		if (!ft_strncmp(input, "export", 6))
 		{
 			ft_export(input, &env);
+			continue ;
+		}
+		if (!ft_strncmp(input, "env", 3))
+		{
+			ft_print_env(env);
 			continue ;
 		}
 		if (input[0] == '\f' && input[1] == '\0')

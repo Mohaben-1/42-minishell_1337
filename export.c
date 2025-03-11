@@ -37,11 +37,9 @@ static int	ft_check_var_name(char *var)
 
 static	void	ft_print_export(t_env *env)
 {
-	int	i;
 
 	if (!env)
 		return ;
-	i = 0;
 	while (env)
 	{
 		ft_putstr_fd("declare -x ", 1);
@@ -56,17 +54,26 @@ static void	ft_update_env(char **var_splited, t_env **env)
 {
 	t_env	*current;
 
-	current = *env;
-	while (current->next)
+	if (!*env)
 	{
-		if (current->var == var_splited[0])
+    	*env = ft_env_new(var_splited[0], var_splited[1]);
+    	return ;
+	}
+	current = *env;
+	while (current)
+	{
+		if (!ft_strcmp(current->var, var_splited[0]))
 		{
-			current->value = var_splited[1];
+			free(current->value);
+			current->value = ft_strdup(var_splited[1]);
 			return ;
 		}
+		if (!current->next)
+			break ;
 		current = current->next;
 	}
-	ft_env_add_back(env, ft_env_new(ft_strdup(var_splited[0]), var_splited[1]));
+	ft_env_add_back(env, ft_env_new(var_splited[0], var_splited[1]));
+	ft_print_env(*env);
 }
 
 void	ft_export(char *cmd, t_env **env)
@@ -77,7 +84,7 @@ void	ft_export(char *cmd, t_env **env)
 
 	cmd_splited = ft_split(cmd, ' ');
 	if (!cmd_splited[1])
-		ft_print_export(env);
+		ft_print_export(*env);
 	else
 	{
 		i = 1;

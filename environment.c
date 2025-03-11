@@ -19,8 +19,11 @@ t_env	*ft_env_new(char *var, char *value)
 	new = malloc(sizeof(t_env));
 	if (!new)
 		return (NULL);
-	new->var = var;
-	new->value = value;
+	new->var = ft_strdup(var);
+	if (value)
+		new->value = ft_strdup(value);
+	else
+		new->value = ft_strdup("");
 	new->next = NULL;
 	return (new);
 }
@@ -29,21 +32,18 @@ void	ft_env_add_back(t_env **lst, t_env *new)
 {
 	t_env	*last;
 
-	if (lst && new)
+	if (!lst || !new)
+		return ;
+
+	if (!*lst)
 	{
-		if (!*lst)
-		{
-			*lst = new;
-			return ;
-		}
-		else
-		{
-			last = *lst;
-			while (last->next)
-				last = last->next;
-			last->next = new;
-		}
+		*lst = new;
+		return ;
 	}
+	last = *lst;
+	while (last->next)
+		last = last->next;
+	last->next = new;
 }
 
 t_env	*ft_init_env(char **envp)
@@ -53,14 +53,11 @@ t_env	*ft_init_env(char **envp)
 	
 	if (!envp || !*envp)
 		return (NULL);
-	head = malloc(sizeof(t_env));
-	if (!head)
-		return (NULL);
 	head = NULL;
 	while (*envp)
 	{
 		envp_splited = ft_split(*envp, '=');
-		ft_env_add_back(&head, ft_env_new(ft_strdup(envp_splited[0]), ft_strdup(envp_splited[1])));
+		ft_env_add_back(&head, ft_env_new(envp_splited[0], envp_splited[1]));
 		free_split(envp_splited);
 		envp++;
 	}
