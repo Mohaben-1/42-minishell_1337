@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:01:14 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 14:02:22 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:06:50 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,7 @@ int	ft_strcmp(char *s1, char *s2)
 	return ((unsigned char)(*s1) - (unsigned char)(*s2));
 }
 
-
-int	ft_atoi(const char *str)
+long	ft_atoi(char *str)
 {
 	int		sign;
 	long	res;
@@ -68,15 +67,6 @@ int	ft_atoi(const char *str)
 		str++;
 	}
 	while (*str >= '0' && *str <= '9')
-	{
-		if (res > (9223372036854775807 - (*str - '0')) / 10)
-		{
-			if (sign == 1)
-				return (-1);
-			else if (sign == -1)
-				return (0);
-		}
 		res = res * 10 + (*str++ - '0');
-	}
-	return ((int)(res * sign));
+	return (res * sign);
 }

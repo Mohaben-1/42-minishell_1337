@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 15:14:33 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/12 12:06:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
 int		ft_isdigit(char c);
 int		ft_isalpha(int c);
-int		ft_atoi(const char *str);
+long	ft_atoi(char *str);
 char	*ft_strdup(char *s1);
 char	*ft_substr(char *s, unsigned int start, size_t len);
 char	*ft_strjoin(char *s1, char *s2);
