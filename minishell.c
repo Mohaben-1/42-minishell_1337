@@ -71,13 +71,13 @@ int main(int ac, char **av, char **envp)
 {
 	char	*input;
 	int		pid;
-	int		last_exit_status;
+	int		exit_status;
 	int		status;
 	t_env	*env;
 
 	(void)ac;
 	(void)av;
-	last_exit_status = 0;
+	exit_status = 0;
 	env = ft_init_env(envp);
 	signal(SIGINT, ft_handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
@@ -105,64 +105,38 @@ int main(int ac, char **av, char **envp)
 			continue;
 		}
 		if (!ft_strncmp(input, "exit", 4))
-			ft_exit(input, &last_exit_status);
-		else if (!ft_strncmp(input, "echo $", 6))
-		{
-			if (*(input + 6) == '?')
-			{
-				printf("%d\n", last_exit_status);
-				free(input);
-				continue;
-			}
-			if (getenv(input + 6))
-				printf("%s\n", getenv(input +6));
-			else
-				write(1, "\n", 1);
-			continue ;
-		}
+			ft_exit(input, &exit_status);
+		else if (!ft_strncmp(input, "echo $?", 7))
+			printf("%d\n", exit_status);
 		else if (!ft_strncmp(input, "cd", 2))
-		{
-			ft_cd(input);
-			continue ;
-		}
+			ft_cd(input, env, &exit_status);
 		else if (!ft_strncmp(input, "export", 6))
-		{
 			ft_export(input, &env);
-			continue ;
-		}
 		else if (!ft_strncmp(input, "unset", 5))
-		{
-			// if (ft_strcmp(input, "unset"))
-			// 	ft_putstr_fd("minishell: env: No such file or directory", 2);
 			ft_unset(input, &env);
-			continue ;
-		}
 		else if (!ft_strncmp(input, "env", 3))
-		{
-			if (ft_strcmp(input, "env"))
-				ft_putstr_fd("minishell: env: No such file or directory", 2);
 			ft_print_env(env);
-			continue ;
-		}
+		else if (!ft_strncmp(input, "pwd", 3))
+			ft_pwd(env);
 		else
 		{
 			pid = fork();
 			if (pid == 0)
 			{
-				ft_exec_cmd(input, envp);
+				ft_exec_cmd(input, env);
 			}
 			else if (pid > 0)
 			{
 				waitpid(pid, &status, 0);
 				if (WIFEXITED(status))
-					last_exit_status = WEXITSTATUS(status);
+					exit_status = WEXITSTATUS(status);
 				else
-					last_exit_status = 1;
+					exit_status = 1;
 			}
 			else
 			{
 				write(2, "Fork error\n", 11);
-				last_exit_status = 1;
+				exit_status = 1;
 			}
 		}
 		free(input);

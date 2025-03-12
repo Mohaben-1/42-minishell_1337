@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/12 12:06:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/12 15:23:49 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,11 @@ void	free_split(char **s);
 void	p_error_cmd(char **cmd, char **paths, int exit_status);
 void	p_error(char *err, int exit_status);
 char	*ft_get_path(char **envp);
-void	ft_exec_cmd(char *cmd, char **envp);
+void	ft_exec_cmd(char *cmd, t_env *env);
 void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
-void	ft_cd(char *cmd);
+void	ft_cd(char *cmd, t_env *env, int *exit_status);
 void	ft_export(char *cmd, t_env **env);
 t_env	*ft_init_env(char **envp);
 void	ft_print_env(t_env *env);
@@ -87,8 +87,9 @@ t_env	*ft_env_new(char *var, char *value);
 void	ft_unset(char *cmd, t_env **env);
 int		ft_check_var_name(char *var);
 void	ft_exit(char *input, int *exit_status);
-
-
+char	*ft_get_val_env(t_env *env, char *var);
+void	ft_set_val_env(t_env *env, char *var, char *new_val);
+void	ft_pwd(t_env *env);
 t_token_node	*ft_tokenize(char *input);
 
 #endif
