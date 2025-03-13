@@ -108,6 +108,8 @@ int main(int ac, char **av, char **envp)
 			ft_exit(input, &exit_status);
 		else if (!ft_strncmp(input, "echo $?", 7))
 			printf("%d\n", exit_status);
+		else if (!ft_strncmp(input, "echo", 4))
+			ft_echo(input);
 		else if (!ft_strncmp(input, "cd", 2))
 			ft_cd(input, env, &exit_status);
 		else if (!ft_strncmp(input, "export", 6))

@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:43:48 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/12 14:00:15 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/13 10:50:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void	ft_pwd(t_env *env)
 {

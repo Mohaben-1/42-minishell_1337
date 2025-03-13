@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 13:10:59 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/13 10:51:01 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 static void	ft_err_unset(char *var)
 {

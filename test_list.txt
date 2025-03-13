@@ -1,0 +1,35 @@
+
+export VAR="Hello World"
+export VAR=HelloWorld
+export VAR+=Test
+export VAR+=
+export VAR+
+export VAR
+export VAR_=123
+export _VAR=hello
+export 1VAR=abc
+export VAR+abc
+export VAR+
+
+
+
+
+echo hello world
+echo -n hello
+echo -n -n hello
+echo -nnnnnn hello
+echo
+echo ""
+echo -n > file
+echo > file
+echo djsdjk dsjkdsk > file djddkjfj
+
+
+
+
+cd
+cd /tmp
+cd ..
+cd /
+cd .
+

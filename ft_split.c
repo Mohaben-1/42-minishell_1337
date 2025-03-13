@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 12:14:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/06 16:45:56 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/13 15:12:10 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,15 @@ static int	count_words(char *s, char c)
 	{
 		while (s[i] == c)
 			i++;
-		if (s[i])
-			count++;
+		if (!s[i])
+			break ;
+		count++;
 		if (s[i] == '\'' || s[i] == '"')
 		{
 			quote = s[i++];
 			while (s[i] && s[i] != quote)
 				i++;
-			if (s[i])
+			if (s[i] == quote)
 				i++;
 		}
 		while (s[i] && s[i] != c && s[i] != '\'' && s[i] != '"')
@@ -54,23 +55,17 @@ static void	free_all(char **res, int i)
 void	ft_set_start_end(char *s, char c, int *start, int *end)
 {
 	char	quote_char;
-	int		in_quote;
 
-	in_quote = 0;
 	while (s[*end] == c)
 		(*end)++;
 	if (s[*end] == '\'' || s[*end] == '"')
 	{
 		quote_char = s[*end];
-		in_quote = 1;
 		(*start) = ++(*end);
-		while (s[*end] && (s[*end] != quote_char || in_quote))
-		{
-			if (s[*end] == quote_char)
-				in_quote = 0;
-			else
+		while (s[*end] && s[*end] != quote_char)
 				(*end)++;
-		}
+		if (s[*end])
+			(*end)++;
 	}
 	else
 	{

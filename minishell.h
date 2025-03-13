@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/12 15:23:49 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/13 13:23:00 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
 int		ft_isdigit(char c);
 int		ft_isalpha(int c);
+int		ft_isalnum(int c);
 long	ft_atoi(char *str);
 char	*ft_strdup(char *s1);
 char	*ft_substr(char *s, unsigned int start, size_t len);
@@ -71,6 +72,7 @@ int		ft_strcmp(char *s1, char *s2);
 char	*ft_strtrim(char *s1, char *set);
 char	**ft_split(char *s, char c);
 void	free_split(char **s);
+int		ft_count_split(char **cmd_split);
 void	p_error_cmd(char **cmd, char **paths, int exit_status);
 void	p_error(char *err, int exit_status);
 char	*ft_get_path(char **envp);
@@ -90,6 +92,8 @@ void	ft_exit(char *input, int *exit_status);
 char	*ft_get_val_env(t_env *env, char *var);
 void	ft_set_val_env(t_env *env, char *var, char *new_val);
 void	ft_pwd(t_env *env);
+void	ft_echo(char *input);
+
 t_token_node	*ft_tokenize(char *input);
 
 #endif

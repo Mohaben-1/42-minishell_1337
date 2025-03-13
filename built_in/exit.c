@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:02:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/12 12:12:54 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/13 12:23:24 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 static void	ft_exit_free(char *input, char **splited, int status, int is_exit)
 {
@@ -20,18 +20,6 @@ static void	ft_exit_free(char *input, char **splited, int status, int is_exit)
 		free(input);
 		exit(status);
 	}
-}
-
-int	ft_count_split(char **cmd_split)
-{
-	int	i;
-	int	count;
-
-	count = 0;
-	i = 0;
-	while (cmd_split[i++])
-		count++;
-	return (count);
 }
 
 static void	ft_err_exit(char *input, char **cmd_split)
@@ -59,7 +47,7 @@ void	ft_exit(char *input, int *exit_status)
 		clear_history();
 		if (!cmd[1])
 			ft_exit_free(input, cmd, 0, 1);
-		else if ((cmd[1] && *cmd[1] == '-' && ft_isdigit(*(cmd[1] + 1))) 
+		else if ((cmd[1] && (*cmd[1] == '-' || *cmd[1] == '+') && ft_isdigit(*(cmd[1] + 1)))
 			|| !ft_strcmp(cmd[1], "9223372036854775807"))
 			ft_exit_free(input, cmd, ft_atoi(cmd[1]), 1);
 		else
