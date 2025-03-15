@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:02:06 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 14:02:27 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 11:06:41 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void	free_split(char **s)
 {

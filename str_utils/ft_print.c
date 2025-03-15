@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:40:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/10 13:41:49 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 11:06:34 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void	ft_putchar_fd(char c, int fd)
 {

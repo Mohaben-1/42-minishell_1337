@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:01:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/11 14:01:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 11:00:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 size_t	ft_strlen(char *s)
 {

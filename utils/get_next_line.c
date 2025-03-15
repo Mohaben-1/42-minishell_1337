@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 13:42:51 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/01 15:28:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 11:06:50 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 char	*ft_get_data(int fd, char *saved_chars, char *buffer)
 {

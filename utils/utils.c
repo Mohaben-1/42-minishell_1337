@@ -1,59 +1,62 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   str_utils2.c                                       :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/11 14:01:14 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 13:22:48 by mohaben-         ###   ########.fr       */
+/*   Created: 2025/03/12 13:49:10 by mohaben-          #+#    #+#             */
+/*   Updated: 2025/03/15 11:01:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../minishell.h"
 
-#include "minishell.h"
-
-int	ft_isdigit(char c)
+int	ft_count_split(char **cmd_split)
 {
-	return (c >= '0' && c <= '9');
-}
+	int	i;
+	int	count;
 
-int	ft_isalpha(int c)
-{
-	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));
-}
-
-int	ft_isalnum(int c)
-{
-	return (ft_isalpha(c) || ft_isdigit(c));
-}
-
-int	ft_strncmp(char *s1, char *s2, size_t n)
-{
-	size_t	i;
-
-	if (n == 0)
-		return (0);
+	count = 0;
 	i = 0;
-	while (i < n)
-	{
-		if ((unsigned char)s1[i] != (unsigned char)s2[i] || !s1[i] || !s2[i])
-			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-		i++;
-	}
-	return (0);
+	while (cmd_split[i++])
+		count++;
+	return (count);
 }
 
-int	ft_strcmp(char *s1, char *s2)
+char	*ft_get_val_env(t_env *env, char *var)
 {
-	while (*s1 && *s2)
+	if (!env)
+		return (NULL);
+	while (env)
 	{
-		if (*s1 != *s2)
-			return ((unsigned char)(*s1) - (unsigned char)(*s2));
-		s1++;
-		s2++;
+		if (!ft_strcmp(env->var, var))
+			return (env->value);
+		env = env->next;
 	}
-	return ((unsigned char)(*s1) - (unsigned char)(*s2));
+	return (NULL);
+}
+
+void	ft_set_val_env(t_env *env, char *var, char *new_val)
+{
+	char	*value;
+
+	if (!env)
+		return ;
+	if (new_val)
+		value = ft_strdup(new_val);
+	else
+		value = ft_strdup("");
+	while (env)
+	{
+		if (!ft_strcmp(env->var, var))
+		{
+			free(env->value);
+			env->value = value;
+			return ;
+		}
+		env = env->next;
+	}
 }
 
 long	ft_atoi(char *str)

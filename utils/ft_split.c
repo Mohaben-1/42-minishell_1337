@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 12:14:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 15:12:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 11:06:47 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 static int	count_words(char *s, char c)
 {
