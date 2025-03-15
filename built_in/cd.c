@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:18:11 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 10:50:37 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:25:47 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,15 @@ static void	ft_free_cd(char **cmd_splited, char *old_path, char *new_path)
 	free_split(cmd_splited);
 }
 
-void	ft_cd(char *cmd, t_env *env, int *exit_status)
+void	ft_cd(char *cmd, t_exec *exec)
 {
 	char	*new_path;
 	char	*old_path;
 	char	**cmd_splited;
 	char	*pwd;
 
-	if (!env)
-		return (*exit_status = 1, ft_putstr_fd("minishell: cd: HOME not set\n", 2));
+	if (!exec->env)
+		return (exec->exit_status = 1, ft_putstr_fd("minishell: cd: HOME not set\n", 2));
 	old_path = getcwd(NULL, 0);
 	cmd_splited = ft_split(cmd, ' ');
 	if (!cmd_splited)
@@ -61,19 +61,19 @@ void	ft_cd(char *cmd, t_env *env, int *exit_status)
 	new_path = NULL;
 	if (!cmd_splited[1] || !ft_strcmp(cmd_splited[1], "~"))
 	{
-		new_path = ft_get_val_env(env, "HOME");
+		new_path = ft_get_val_env(exec->env, "HOME");
 		if (!new_path)
 			return (ft_free_cd(cmd_splited, old_path, new_path));
 	}
 	else
-		ft_set_path(env, cmd_splited, &new_path);
+		ft_set_path(exec->env, cmd_splited, &new_path);
 	if (!new_path || chdir(new_path) != 0)
 		return (ft_error_cd(old_path, cmd_splited));
-	ft_set_val_env(env, "OLDPWD", old_path);
+	ft_set_val_env(exec->env, "OLDPWD", old_path);
 	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
-		ft_set_val_env(env, "PWD", pwd);
+		ft_set_val_env(exec->env, "PWD", pwd);
 		free(pwd);
 	}
 	else

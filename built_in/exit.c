@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:02:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:23:24 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 16:41:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,25 @@ static void	ft_err_exit(char *input, char **cmd_split)
 	ft_exit_free(input, cmd_split, 255, 1);
 }
 
-void	ft_exit(char *input, int *exit_status)
+int	ft_is_numeric_argument(char *str)
+{
+	int i;
+
+	if (!str || !*str)
+		return (0);
+	if (*str == '-' || *str == '+')
+		str++;
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	ft_exit(char *input, t_exec *exec)
 {
 	char	**cmd;
 
@@ -38,7 +56,7 @@ void	ft_exit(char *input, int *exit_status)
 	if (ft_count_split(cmd) > 2)
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 1);
-		*exit_status = 1;
+		exec->exit_status = 1;
 		ft_exit_free(input, cmd, 0, 0);
 	}
 	else
@@ -47,8 +65,7 @@ void	ft_exit(char *input, int *exit_status)
 		clear_history();
 		if (!cmd[1])
 			ft_exit_free(input, cmd, 0, 1);
-		else if ((cmd[1] && (*cmd[1] == '-' || *cmd[1] == '+') && ft_isdigit(*(cmd[1] + 1)))
-			|| !ft_strcmp(cmd[1], "9223372036854775807"))
+		else if (ft_is_numeric_argument(cmd[1]) || !ft_strcmp(cmd[1], "9223372036854775807"))
 			ft_exit_free(input, cmd, ft_atoi(cmd[1]), 1);
 		else
 			ft_err_exit(input, cmd);

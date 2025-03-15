@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 13:09:35 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:36:08 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-
 typedef struct s_redirect
 {
     int type;              // token_in, token_out, token_hrdc, token_appnd
@@ -90,6 +89,14 @@ typedef struct s_ast_node
     struct s_ast_node *child;
 } t_ast_node;
 
+typedef struct s_exec
+{
+	t_env		*env;
+	t_ast_node	*ast;
+	char		**envp;
+	int			**pipe_fd;
+	int			exit_status;
+}	t_exec;
 
 char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
@@ -114,19 +121,19 @@ void	ft_exec_cmd(char *cmd, t_env *env);
 void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
-void	ft_cd(char *cmd, t_env *env, int *exit_status);
-void	ft_export(char *cmd, t_env **env);
+void	ft_cd(char *cmd, t_exec *exec);
+void	ft_export(char *cmd, t_exec *exec);
 t_env	*ft_init_env(char **envp);
 void	ft_print_env(t_env *env);
 void	ft_env_add_back(t_env **lst, t_env *new);
 t_env	*ft_env_new(char *var, char *value);
-void	ft_unset(char *cmd, t_env **env);
+void	ft_unset(char *cmd, t_exec *exec);
 int		ft_check_var_name(char *var);
-void	ft_exit(char *input, int *exit_status);
+void	ft_exit(char *input, t_exec *exec);
 char	*ft_get_val_env(t_env *env, char *var);
 void	ft_set_val_env(t_env *env, char *var, char *new_val);
-void	ft_pwd(t_env *env);
-void	ft_echo(char *input);
+void	ft_pwd(t_exec *exec);
+void	ft_echo(char *input, t_exec *exec);
 
 
 t_token_node	*ft_tokenize(char *input);

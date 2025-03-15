@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 10:51:01 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:31:54 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,19 +30,19 @@ int	ft_check_var_exist(t_env *env, char *var)
 	return (0);
 }
 
-void	ft_del_var(t_env **env, char *var)
+void	ft_del_var(t_env *env, char *var)
 {
 	t_env	*current;
 	t_env	*previous;
 
-	current = *env;
+	current = env;
 	previous = NULL;
 	while (current)
 	{
 		if (!ft_strcmp(current->var, var))
 		{
 			if (!previous)
-				*env = current->next;
+				env = current->next;
 			else
 				previous->next = current->next;
 			free(current->var);
@@ -54,12 +54,12 @@ void	ft_del_var(t_env **env, char *var)
 	}
 }
 
-void	ft_unset(char *cmd, t_env **env)
+void	ft_unset(char *cmd, t_exec *exec)
 {
 	char	**cmd_split;
 	int		i;
 
-	if (!env || !*env)
+	if (!exec->env)
 		return ;
 	cmd_split = ft_split(cmd, ' ');
 	if (!cmd_split[1])
@@ -69,8 +69,8 @@ void	ft_unset(char *cmd, t_env **env)
 	{
 		if (!ft_check_var_name(cmd_split[i]))
 			ft_err_unset(cmd_split[i]);
-		else if (ft_check_var_exist(*env, cmd_split[i]))
-			ft_del_var(env, cmd_split[i]);
+		else if (ft_check_var_exist(exec->env, cmd_split[i]))
+			ft_del_var(exec->env, cmd_split[i]);
 		i++;
 	}
 	free_split(cmd_split);

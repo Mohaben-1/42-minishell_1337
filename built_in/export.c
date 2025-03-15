@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 11:06:03 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:56:40 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ static void	ft_update_env(char **var_splited, t_env **env)
 	ft_env_add_back(env, ft_env_new(var_splited[0], var_splited[1]));
 }
 
-void	ft_export(char *cmd, t_env **env)
+void	ft_export(char *cmd, t_exec *exec)
 {
 	char	**cmd_split;
 	char	**var_split;
@@ -130,7 +130,7 @@ void	ft_export(char *cmd, t_env **env)
 
 	cmd_split = ft_split(cmd, ' ');
 	if (!cmd_split[1])
-		ft_print_export(*env);
+		ft_print_export(exec->env);
 	else
 	{
 		i = 0;
@@ -141,7 +141,7 @@ void	ft_export(char *cmd, t_env **env)
 			if (ft_strchr(cmd_split[i], '='))
 			{
 				var_split = ft_split(cmd_split[i], '=');
-				ft_update_env(var_split, env);
+				ft_update_env(var_split, &(exec->env));
 				free_split(var_split);
 			}
 		}

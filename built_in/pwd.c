@@ -6,13 +6,13 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:43:48 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 10:50:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:35:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_pwd(t_env *env)
+void	ft_pwd(t_exec *exec)
 {
 	char	*pwd;
 
@@ -25,7 +25,7 @@ void	ft_pwd(t_env *env)
 	}
 	else
 	{
-		pwd = ft_get_val_env(env, "PWD");
+		pwd = ft_get_val_env(exec->env, "PWD");
 		if (pwd)
 		{
 			ft_putstr_fd(pwd, 1);

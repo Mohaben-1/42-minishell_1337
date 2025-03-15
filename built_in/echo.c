@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/13 12:17:03 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:26:55 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@ static int	ft_is_flag(char *cmd)
 	return (1);
 }
 
-void	ft_echo(char *input)
+void	ft_echo(char *input, t_exec *exec)
 {
 	char	**cmd_split;
 	int		flag;
 	int		i;
 	
 	if (write(1, NULL, 0) == -1)
-		return (ft_putstr_fd("minishell: echo: write error: Bad file descriptor\n", 2));
+		return (exec->exit_status = 1, ft_putstr_fd("minishell: echo: write error: Bad file descriptor\n", 2));
 	cmd_split = ft_split(input, ' ');
 	if (!cmd_split)
 		return ;
