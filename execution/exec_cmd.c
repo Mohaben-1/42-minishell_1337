@@ -6,11 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/16 14:29:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 16:03:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 int	ft_is_builtin(char *cmd)
 {
@@ -24,7 +24,7 @@ int	ft_is_builtin(char *cmd)
 
 void	handle_heredoc(char *delimiter)
 {
-	
+	(void)delimiter;
 }
 
 void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
@@ -41,7 +41,7 @@ void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 		{
 			fd = open(redr->file, O_RDONLY);
 			if (fd == -1)
-				return (ft_error_file(redr->file, 1));
+				return (ft_error_file(redr->file, exec));
 			dup2(fd, STDIN_FILENO);
 			close(fd);
 		}
@@ -49,7 +49,7 @@ void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 		{
 			fd = open(redr->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd == -1)
-				return (ft_error_file(redr->file, 1));
+				return (ft_error_file(redr->file, exec));
 			dup2(fd, STDOUT_FILENO);
 			close(fd);
 		}
@@ -57,7 +57,7 @@ void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 		{
 			fd = open(redr->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd == -1)
-				return (ft_error_file(redr->file, 1));
+				return (ft_error_file(redr->file, exec));
 			dup2(fd, STDOUT_FILENO);
 			close(fd);
 		}
@@ -86,7 +86,7 @@ void	ft_restore_std_fd(t_exec *exec)
 
 void	execute_builtin(t_ast_node *node, t_exec *exec)
 {
-	apply_redirections(node->redirects);
+	ft_apply_redirect(node->redirects, exec);
 	if (!ft_strcmp(node->args[0], "unset"))
 		ft_unset(node->args[0], exec);
 	else if (!ft_strcmp(node->args[0], "exit"))
@@ -100,7 +100,7 @@ void	execute_builtin(t_ast_node *node, t_exec *exec)
 	else if (!ft_strcmp(node->args[0], "echo"))
 		ft_echo(node->args[0], exec);
 	else if (!ft_strcmp(node->args[0], "env"))
-		ft_print_env(*(exec->env));
+		ft_env(*(exec->env));
 	ft_restore_std_fd(exec);
 }
 

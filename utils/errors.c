@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:21:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/16 14:07:05 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 15:59:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@ void	ft_error_cmd(char **cmd, char **paths, int exit_status)
 	exit(exit_status);
 }
 
-void	ft_error_file(char *file, int exit_status)
+void	ft_error_file(char *file, t_exec *exec)
 {
-	write(2, "pipex: ", 7);
-	ft_error(file, exit_status);
+	exec->exit_status = 1;
+	ft_putstr_fd("minishell: ", 2);
+	perror(file);
 }

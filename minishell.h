@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/16 14:17:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 16:00:37 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int		ft_count_split(char **cmd_split);
 
 void	ft_error(char *err, int exit_status);
 void	ft_error_cmd(char **cmd, char **paths, int exit_status);
-void	ft_error_file(char *file, int exit_status);
+void	ft_error_file(char *file, t_exec *exec);
 
 
 char	*ft_get_path(char **envp);
@@ -154,6 +154,10 @@ int 			token_list_len(t_token_node *tokens);
 char 			**collect_args(t_token_node *tokens, int count);
 void 			print_ast(t_ast_node *ast, int indent_level);
 
+
+
+void	execute_ast(t_ast_node *ast, t_exec *exec);
+void	execute_command(t_ast_node *node, t_exec *exec);
 
 
 #endif

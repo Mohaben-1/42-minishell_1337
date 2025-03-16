@@ -87,8 +87,8 @@ int main(int ac, char **av, char **envp)
 	t_env			*env;
 	t_exec			exec;
 	char			*input;
-	int				pid;
-	int				status;
+	// int				pid;
+	// int				status;
 
 	(void)ac;
 	(void)av;
@@ -122,6 +122,7 @@ int main(int ac, char **av, char **envp)
 		tokens = ft_tokenize(input);
 		ast = build_ast(tokens);
 		ft_init_exec(&exec, ast, &env, envp);
+		execute_ast(ast, &exec);
 		// if (tokens)
 		// 	print_tokens(tokens);
         // if (ast)
@@ -129,43 +130,43 @@ int main(int ac, char **av, char **envp)
         //     printf("AST Structure:\n");
         //     print_ast(ast, 0);
 		// }
-		if (!ft_strncmp(input, "exit", 4))
-			ft_exit(input, &exec);
-		else if (!ft_strncmp(input, "echo $?", 7))
-			printf("%d\n", exec.exit_status);
-		else if (!ft_strncmp(input, "echo", 4))
-			ft_echo(input, &exec);
-		else if (!ft_strncmp(input, "cd", 2))
-			ft_cd(input, &exec);
-		else if (!ft_strncmp(input, "export", 6))
-			ft_export(input, &exec);
-		else if (!ft_strncmp(input, "unset", 5))
-			ft_unset(input, &exec);
-		else if (!ft_strncmp(input, "env", 3))
-			ft_env(*(exec.env));
-		else if (!ft_strncmp(input, "pwd", 3))
-			ft_pwd(&exec);
-		else
-		{
-			pid = fork();
-			if (pid == 0)
-			{
-				ft_exec_cmd(input, *(exec.env));
-			}
-			else if (pid > 0)
-			{
-				waitpid(pid, &status, 0);
-				if (WIFEXITED(status))
-					exec.exit_status = WEXITSTATUS(status);
-				else
-					exec.exit_status = 1;
-			}
-			else
-			{
-				write(2, "Fork error\n", 11);
-				exec.exit_status = 1;
-			}
-		}
+		// if (!ft_strncmp(input, "exit", 4))
+		// 	ft_exit(input, &exec);
+		// else if (!ft_strncmp(input, "echo $?", 7))
+		// 	printf("%d\n", exec.exit_status);
+		// else if (!ft_strncmp(input, "echo", 4))
+		// 	ft_echo(input, &exec);
+		// else if (!ft_strncmp(input, "cd", 2))
+		// 	ft_cd(input, &exec);
+		// else if (!ft_strncmp(input, "export", 6))
+		// 	ft_export(input, &exec);
+		// else if (!ft_strncmp(input, "unset", 5))
+		// 	ft_unset(input, &exec);
+		// else if (!ft_strncmp(input, "env", 3))
+		// 	ft_env(*(exec.env));
+		// else if (!ft_strncmp(input, "pwd", 3))
+		// 	ft_pwd(&exec);
+		// else
+		// {
+		// 	pid = fork();
+		// 	if (pid == 0)
+		// 	{
+		// 		ft_exec_cmd(input, *(exec.env));
+		// 	}
+		// 	else if (pid > 0)
+		// 	{
+		// 		waitpid(pid, &status, 0);
+		// 		if (WIFEXITED(status))
+		// 			exec.exit_status = WEXITSTATUS(status);
+		// 		else
+		// 			exec.exit_status = 1;
+		// 	}
+		// 	else
+		// 	{
+		// 		write(2, "Fork error\n", 11);
+		// 		exec.exit_status = 1;
+		// 	}
+		// }
 		free(input);
 	}
 	return (0);
