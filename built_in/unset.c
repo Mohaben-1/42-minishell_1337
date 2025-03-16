@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 14:31:54 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 10:59:05 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ void	ft_unset(char *cmd, t_exec *exec)
 	{
 		if (!ft_check_var_name(cmd_split[i]))
 			ft_err_unset(cmd_split[i]);
-		else if (ft_check_var_exist(exec->env, cmd_split[i]))
-			ft_del_var(exec->env, cmd_split[i]);
+		else if (ft_check_var_exist(*(exec->env), cmd_split[i]))
+			ft_del_var(*(exec->env), cmd_split[i]);
 		i++;
 	}
 	free_split(cmd_split);

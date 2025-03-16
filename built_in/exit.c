@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:02:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 16:41:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 14:28:53 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,10 @@ int	ft_is_numeric_argument(char *str)
 void	ft_exit(char *input, t_exec *exec)
 {
 	char	**cmd;
-
 	cmd = ft_split(input, ' ');
 	if (ft_count_split(cmd) > 2)
 	{
+		ft_putstr_fd("exit", 1);
 		ft_putstr_fd("minishell: exit: too many arguments\n", 1);
 		exec->exit_status = 1;
 		ft_exit_free(input, cmd, 0, 0);

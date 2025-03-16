@@ -71,20 +71,20 @@ void print_tokens(t_token_node *tokens)
     }
 }
 
-void	ft_init_exec(t_exec	*exec, t_ast_node *ast, char **envp)
+void	ft_init_exec(t_exec	*exec, t_ast_node *ast, t_env **env, char **envp)
 {
-	t_env	*env;
-
-	env = ft_init_env(envp);
 	exec->env = env;
 	exec->ast = ast;
-	exec->exit_status = 0;
+	exec->envp = envp;
+	exec->std_fd[0] = -1;
+	exec->std_fd[1] = -1;
 }
 
 int main(int ac, char **av, char **envp)
 {
 	t_token_node	*tokens;
 	t_ast_node		*ast;
+	t_env			*env;
 	t_exec			exec;
 	char			*input;
 	int				pid;
@@ -94,6 +94,8 @@ int main(int ac, char **av, char **envp)
 	(void)av;
 	signal(SIGINT, ft_handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
+	env = ft_init_env(envp);
+	exec.exit_status = 0;
 	rl_catch_signals = 0;
 	while (1)
 	{
@@ -119,7 +121,7 @@ int main(int ac, char **av, char **envp)
 		}
 		tokens = ft_tokenize(input);
 		ast = build_ast(tokens);
-		ft_init_exec(&exec, ast, envp);
+		ft_init_exec(&exec, ast, &env, envp);
 		// if (tokens)
 		// 	print_tokens(tokens);
         // if (ast)
@@ -140,7 +142,7 @@ int main(int ac, char **av, char **envp)
 		else if (!ft_strncmp(input, "unset", 5))
 			ft_unset(input, &exec);
 		else if (!ft_strncmp(input, "env", 3))
-			ft_print_env(exec.env);
+			ft_env(*(exec.env));
 		else if (!ft_strncmp(input, "pwd", 3))
 			ft_pwd(&exec);
 		else
@@ -148,7 +150,7 @@ int main(int ac, char **av, char **envp)
 			pid = fork();
 			if (pid == 0)
 			{
-				ft_exec_cmd(input, exec.env);
+				ft_exec_cmd(input, *(exec.env));
 			}
 			else if (pid > 0)
 			{

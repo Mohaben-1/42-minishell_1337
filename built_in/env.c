@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:42:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 14:50:51 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 13:50:35 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ t_env	*ft_init_env(char **envp)
 	return (head);
 }
 
-void	ft_print_env(t_env *env)
+void	ft_env(t_env *env)
 {
 	if (!env)
 		return ;

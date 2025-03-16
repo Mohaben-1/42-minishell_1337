@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 14:36:08 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 14:17:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,43 +58,38 @@ typedef struct s_env
 
 typedef struct s_redirect
 {
-    int type;              // token_in, token_out, token_hrdc, token_appnd
-    char *file;            // Filename or delimiter
-    struct s_redirect *next;
+	int					type;              // token_in, token_out, token_hrdc, token_appnd
+	char				*file;            // Filename or delimiter
+	struct s_redirect	*next;
 } t_redirect;
 
 
 typedef struct s_ast_node
 {
-    enum {
-        AST_COMMAND,       // Simple command with args
-        AST_PIPE,          // Pipe operator
-        AST_AND_AND,       // && operator
-        AST_OR_OR,         // || operator
-        AST_SUBSHELL       // Commands in parentheses
-    } type;
-    
-    // For command nodes
-    char **args;           // Command and its arguments
-    int arg_count;         // Number of arguments
-    
-    // For redirection
-    t_redirect *redirects; // List of redirections for this command
-    
-    // For binary operations (pipe, &&, ||)
-    struct s_ast_node *left;
-    struct s_ast_node *right;
-    
-    // For subshell commands
-    struct s_ast_node *child;
+	enum {
+		AST_COMMAND,
+		AST_PIPE,
+		AST_AND_AND,
+		AST_OR_OR,
+		AST_SUBSHELL
+	}	type;
+	char **args;           // Command and its arguments
+	int arg_count;         // Number of arguments
+	// For redirection
+	t_redirect *redirects; // List of redirections for this command
+	// For binary operations (pipe, &&, ||)
+	struct s_ast_node *left;
+	struct s_ast_node *right;
+	// For subshell commands
+	struct s_ast_node *child;
 } t_ast_node;
 
 typedef struct s_exec
 {
-	t_env		*env;
+	t_env		**env;
 	t_ast_node	*ast;
 	char		**envp;
-	int			**pipe_fd;
+	int			std_fd[2];
 	int			exit_status;
 }	t_exec;
 
@@ -114,8 +109,13 @@ char	*ft_strtrim(char *s1, char *set);
 char	**ft_split(char *s, char c);
 void	free_split(char **s);
 int		ft_count_split(char **cmd_split);
-void	p_error_cmd(char **cmd, char **paths, int exit_status);
-void	p_error(char *err, int exit_status);
+
+
+void	ft_error(char *err, int exit_status);
+void	ft_error_cmd(char **cmd, char **paths, int exit_status);
+void	ft_error_file(char *file, int exit_status);
+
+
 char	*ft_get_path(char **envp);
 void	ft_exec_cmd(char *cmd, t_env *env);
 void	ft_putchar_fd(char c, int fd);
@@ -124,7 +124,7 @@ void	ft_putnbr_fd(int n, int fd);
 void	ft_cd(char *cmd, t_exec *exec);
 void	ft_export(char *cmd, t_exec *exec);
 t_env	*ft_init_env(char **envp);
-void	ft_print_env(t_env *env);
+void	ft_env(t_env *env);
 void	ft_env_add_back(t_env **lst, t_env *new);
 t_env	*ft_env_new(char *var, char *value);
 void	ft_unset(char *cmd, t_exec *exec);

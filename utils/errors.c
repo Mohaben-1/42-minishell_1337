@@ -6,19 +6,19 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:21:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 11:06:38 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 14:07:05 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	p_error(char *err, int exit_status)
+void	ft_error(char *err, int exit_status)
 {
 	perror(err);
 	exit(exit_status);
 }
 
-void	p_error_cmd(char **cmd, char **paths, int exit_status)
+void	ft_error_cmd(char **cmd, char **paths, int exit_status)
 {
 	write(2, "minishell: ", 11);
 	if (cmd[0])
@@ -29,4 +29,10 @@ void	p_error_cmd(char **cmd, char **paths, int exit_status)
 	free_split(cmd);
 	free_split(paths);
 	exit(exit_status);
+}
+
+void	ft_error_file(char *file, int exit_status)
+{
+	write(2, "pipex: ", 7);
+	ft_error(file, exit_status);
 }

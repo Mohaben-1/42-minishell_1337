@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:18:11 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 14:25:47 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/16 10:58:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,19 +61,19 @@ void	ft_cd(char *cmd, t_exec *exec)
 	new_path = NULL;
 	if (!cmd_splited[1] || !ft_strcmp(cmd_splited[1], "~"))
 	{
-		new_path = ft_get_val_env(exec->env, "HOME");
+		new_path = ft_get_val_env(*(exec->env), "HOME");
 		if (!new_path)
 			return (ft_free_cd(cmd_splited, old_path, new_path));
 	}
 	else
-		ft_set_path(exec->env, cmd_splited, &new_path);
+		ft_set_path(*(exec->env), cmd_splited, &new_path);
 	if (!new_path || chdir(new_path) != 0)
 		return (ft_error_cd(old_path, cmd_splited));
-	ft_set_val_env(exec->env, "OLDPWD", old_path);
+	ft_set_val_env(*(exec->env), "OLDPWD", old_path);
 	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
-		ft_set_val_env(exec->env, "PWD", pwd);
+		ft_set_val_env(*(exec->env), "PWD", pwd);
 		free(pwd);
 	}
 	else
