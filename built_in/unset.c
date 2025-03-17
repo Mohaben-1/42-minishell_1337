@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/16 10:59:05 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/17 14:40:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,24 +54,19 @@ void	ft_del_var(t_env *env, char *var)
 	}
 }
 
-void	ft_unset(char *cmd, t_exec *exec)
+void	ft_unset(char **args, t_exec *exec)
 {
-	char	**cmd_split;
 	int		i;
 
 	if (!exec->env)
 		return ;
-	cmd_split = ft_split(cmd, ' ');
-	if (!cmd_split[1])
-		return (free_split(cmd_split));
 	i = 1;
-	while (cmd_split[i])
+	while (args[i])
 	{
-		if (!ft_check_var_name(cmd_split[i]))
-			ft_err_unset(cmd_split[i]);
-		else if (ft_check_var_exist(*(exec->env), cmd_split[i]))
-			ft_del_var(*(exec->env), cmd_split[i]);
+		if (!ft_check_var_name(args[i]))
+			ft_err_unset(args[i]);
+		else if (ft_check_var_exist(*(exec->env), args[i]))
+			ft_del_var(*(exec->env), args[i]);
 		i++;
 	}
-	free_split(cmd_split);
 }

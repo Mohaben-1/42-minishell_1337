@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/16 16:03:21 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:44:59 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,17 +88,17 @@ void	execute_builtin(t_ast_node *node, t_exec *exec)
 {
 	ft_apply_redirect(node->redirects, exec);
 	if (!ft_strcmp(node->args[0], "unset"))
-		ft_unset(node->args[0], exec);
+		ft_unset(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "exit"))
-		ft_exit(node->args[0], exec);
+		ft_exit(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "pwd"))
 		ft_pwd(exec);
 	else if (!ft_strcmp(node->args[0], "export"))
-		ft_export(node->args[0], exec);
+		ft_export(node, exec);
 	else if (!ft_strcmp(node->args[0], "cd"))
-		ft_cd(node->args[0], exec);
+		ft_cd(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "echo"))
-		ft_echo(node->args[0], exec);
+		ft_echo(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "env"))
 		ft_env(*(exec->env));
 	ft_restore_std_fd(exec);

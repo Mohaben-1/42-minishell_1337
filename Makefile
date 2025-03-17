@@ -16,18 +16,21 @@ OBJ = $(SRC:.c=.o)
 
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) $(LIB_RL) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJ) $(LIB_RL) -o $(NAME)
+	@echo compiled
 
 all: $(NAME)
 
 %.o: %.c minishell.h
-	$(CC) $(CFLAGS) $(INCLUDE_RL) -c $< -o $@
+	@$(CC) $(CFLAGS) $(INCLUDE_RL) -c $< -o $@
 
 clean:
-	rm -f $(OBJ)
+	@rm -f $(OBJ)
+	@echo clean
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
+	@echo fclean
 
 re: fclean all
 

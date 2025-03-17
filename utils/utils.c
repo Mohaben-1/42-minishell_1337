@@ -6,20 +6,20 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:49:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 11:01:14 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:33:08 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	ft_count_split(char **cmd_split)
+int	ft_count_args(char **args)
 {
 	int	i;
 	int	count;
 
 	count = 0;
 	i = 0;
-	while (cmd_split[i++])
+	while (args[i++])
 		count++;
 	return (count);
 }
@@ -77,4 +77,16 @@ long	ft_atoi(char *str)
 	while (*str >= '0' && *str <= '9')
 		res = res * 10 + (*str++ - '0');
 	return (res * sign);
+}
+
+int	ft_get_index(char *s, char c)
+{
+	int	i;
+
+	i = 0;
+	while (s && s[i] && s[i] != c)
+		i++;
+	if (*s && s[i] == c)
+		i++;
+	return (i);
 }

@@ -6,54 +6,51 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 14:26:55 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/17 11:14:32 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	ft_is_flag(char *cmd)
+static int	ft_is_flag(char *arg)
 {
-	if (*cmd != '-')
+	if (*arg != '-')
 		return (0);
-	cmd++;
-	if (*cmd != 'n')
+	arg++;
+	if (*arg != 'n')
 		return (0);
-	while (*cmd && *cmd != ' ')
+	while (*arg && *arg != ' ')
 	{
-		if (*cmd != 'n')
+		if (*arg != 'n')
 			return (0);
-		cmd++;
+		arg++;
 	}
 	return (1);
 }
 
-void	ft_echo(char *input, t_exec *exec)
+void	ft_echo(char **args, t_exec *exec)
 {
-	char	**cmd_split;
+	char	*err_msg;
 	int		flag;
 	int		i;
 	
+	err_msg = "minishell: echo: write error: Bad file descriptor\n";
 	if (write(1, NULL, 0) == -1)
-		return (exec->exit_status = 1, ft_putstr_fd("minishell: echo: write error: Bad file descriptor\n", 2));
-	cmd_split = ft_split(input, ' ');
-	if (!cmd_split)
-		return ;
+		return (exec->exit_status = 1, ft_putstr_fd(err_msg, 2));
 	flag = 1;
 	i = 1;
-	while (cmd_split[i] && ft_is_flag(cmd_split[i]))
+	while (args[i] && ft_is_flag(args[i]))
 	{
 		flag = 0;
 		i++;
 	}
-	while (cmd_split[i])
+	while (args[i])
 	{
-		ft_putstr_fd(cmd_split[i], 1);
-		if (cmd_split[i + 1])
+		ft_putstr_fd(args[i], 1);
+		if (args[i + 1])
 			ft_putchar_fd(' ', 1);
 		i++;
 	}
 	if (flag)
 		ft_putchar_fd('\n', 1);
-	free_split(cmd_split);
 }
