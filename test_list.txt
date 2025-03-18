@@ -1,5 +1,7 @@
 
 export VAR="Hello World"
+export VAR="'Hello World'"
+export VAR='"Hello World"'
 export VAR=HelloWorld
 export VAR+=Test
 export VAR+=
@@ -10,7 +12,9 @@ export _VAR=hello
 export 1VAR=abc
 export VAR+abc
 export VAR+
-
+export "x"=aa
+export "aa"="a fd"
+export export "'x'"="ad
 
 
 

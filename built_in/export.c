@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 16:50:17 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 12:31:32 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,54 +120,87 @@ static void	ft_update_env(char *var, char *value, t_env **env)
 	ft_env_add_back(env, ft_env_new(var, value));
 }
 
-void	printt(char **av)
+static void	remove_next_arg(t_ast_node *ast, int i)
 {
-	int	i = -1;
-	while (av[++i])
+	int	j;
+
+	free(ast->args[i + 1]);
+	j = i + 1;
+	while (ast->args[j])
 	{
-		printf("|%s|\n", av[i]);
+		ast->args[j] = ast->args[j + 1];
+		j++;
+	}
+}
+
+static void	merge_args(t_ast_node *ast, int i)
+{
+	char	*merged;
+
+	merged = ft_strjoin(ast->args[i], ast->args[i + 1]);
+	free(ast->args[i]);
+	ast->args[i] = merged;
+	remove_next_arg(ast, i);
+}
+
+static void	merge_split_assignments(t_ast_node *ast)
+{
+	int	i;
+
+	i = 0;
+	while (ast->args[i] && ast->args[i + 1])
+	{
+		if (!strchr(ast->args[i], '=') && ast->args[i + 1][0] == '=')
+			merge_args(ast, i);
+		else
+			i++;
+	}
+}
+
+static void	merge_incomplete_assignments(t_ast_node *ast)
+{
+	int		i;
+	char	*equals_pos;
+
+	i = 0;
+	while (ast->args[i] && ast->args[i + 1])
+	{
+		equals_pos = strchr(ast->args[i], '=');
+		if (equals_pos && equals_pos == ast->args[i] + strlen(ast->args[i]) - 1)
+			merge_args(ast, i);
+		else
+			i++;
 	}
 }
 
 void	ft_merge_quoted_args(t_ast_node *ast)
 {
-	char	*tmp;
-	int		i;
-	int		j;
+	merge_split_assignments(ast);
+	merge_incomplete_assignments(ast);
+}
 
-	i = 0;
-	while (ast->args[i])
-	{
-		if (ast->arg_quote_types[i] == AST_DQUOTES || ast->arg_quote_types[i] == AST_SQUOTES)
-		{
-			if (ast->args[i + 1])
-			{
-				tmp = ast->args[i];
-				ast->args[i] = ft_strjoin(tmp, ast->args[i + 1]);
-				free(tmp);
-				free(ast->args[i + 1]);
-				j = i + 1;
-				while (ast->args[j])
-				{
-					ast->args[j] = ast->args[j + 1];
-					j++;
-				}
-			}
-		}
-		i++;
-	}
+static void	ft_set_var_val(char *arg, char **var, char **value)
+{
+	int	j;
+
+	j = ft_get_index(arg, '=');
+	*var = ft_substr(arg, 0, j - 1);
+	*value = ft_substr(arg, j, ft_strlen(arg) - j);
+}
+
+static void	ft_free_export(char *var, char *value)
+{
+	free(var);
+	free(value);
 }
 
 void	ft_export(t_ast_node *ast, t_exec *exec)
 {
 	char	*var;
-
 	char	*value;
 	int		i;
-	int		j;
 
 	ft_merge_quoted_args(ast);
-	printt(ast->args);
 	if (!ast->args[1] || !*ast->args[1])
 		ft_print_export(*(exec->env));
 	else
@@ -178,16 +211,13 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 			if (!ft_check_var_name(ast->args[i]))
 			{
 				ft_err_exprt(ast->args[i]);
-				continue;
+				continue ;
 			}
 			if (ft_strchr(ast->args[i], '='))
 			{
-				j = ft_get_index(ast->args[i], '=');
-				var = ft_substr(ast->args[i], 0, j - 1);
-				value = ft_substr(ast->args[i], j, ft_strlen(ast->args[i]) - j);
+				ft_set_var_val(ast->args[i], &var, &value);
 				ft_update_env(var, value, exec->env);
-				free(var);
-				free(value);
+				ft_free_exp(var, value);
 			}
 		}
 	}
