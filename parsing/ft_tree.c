@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/03/17 15:35:54 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:11:45 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ t_ast_node *build_ast(t_token_node *tokens)
 {
     if (!tokens)
         return NULL;
-        
     return parse_logical_ops(tokens);
 }
 

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 12:31:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 13:12:16 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 			{
 				ft_set_var_val(ast->args[i], &var, &value);
 				ft_update_env(var, value, exec->env);
-				ft_free_exp(var, value);
+				ft_free_export(var, value);
 			}
 		}
 	}

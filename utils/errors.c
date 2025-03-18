@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:21:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/16 15:59:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:28:44 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,15 @@ void	ft_error(char *err, int exit_status)
 	exit(exit_status);
 }
 
-void	ft_error_cmd(char **cmd, char **paths, int exit_status)
+void	ft_error_cmd(char *cmd, char **paths, int exit_status)
 {
+	ft_putstr_fd("minishell", 2);
 	write(2, "minishell: ", 11);
-	if (cmd[0])
-		write(2, cmd[0], ft_strlen(cmd[0]));
+	if (cmd)
+		ft_putstr_fd(cmd, 2);
 	else
-		write(2, " ", 1);
-	write(2, ": command not found\n", 20);
-	free_split(cmd);
+		ft_putchar_fd(' ', 1);
+	ft_putstr_fd(": command not found\n", 2);
 	free_split(paths);
 	exit(exit_status);
 }

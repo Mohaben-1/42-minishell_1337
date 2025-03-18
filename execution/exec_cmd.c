@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 15:44:59 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:29:06 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ void	ft_restore_std_fd(t_exec *exec)
 	}
 }
 
-
 void	execute_builtin(t_ast_node *node, t_exec *exec)
 {
 	ft_apply_redirect(node->redirects, exec);
@@ -106,6 +105,28 @@ void	execute_builtin(t_ast_node *node, t_exec *exec)
 
 void	execute_command(t_ast_node *node, t_exec *exec)
 {
+	int	pid;
+	int	status;
+
 	if (ft_is_builtin(node->args[0]))
 		execute_builtin(node, exec);
+	else
+	{
+		pid = fork();
+		if (pid == -1)
+		{
+			ft_putstr_fd("minishell: fork: Resource temporarily unavailable", 2);
+			return ;
+		}
+		if (pid == 0)
+		{
+			ft_exec_cmd(node->right, exec);
+			exit(exec->exit_status);
+		}
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			exec->exit_status = WEXITSTATUS(status);
+		else
+			exec->exit_status = 1;
+	}
 }
