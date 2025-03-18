@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 15:10:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:42:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void	ft_error_file(char *file, t_exec *exec);
 
 
 char	*ft_get_path(char **envp);
-void	ft_exec_cmd(t_ast_node *node, t_exec *exec);
+void	ft_exec_ve(t_ast_node *node, t_exec *exec);
 void	ft_putchar_fd(char c, int fd);
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);

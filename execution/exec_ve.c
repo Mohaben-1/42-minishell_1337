@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 16:30:36 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:47:39 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,15 @@ char	**ft_set_envp(t_env *env)
 // 	ft_error_cmd(cmd_splited, paths, 127);
 // }
 
+void	print_arg(char **args)
+{
+	int	i;
+
+	i = -1;
+	while (args[++i])
+		printf("@%s@\n", args[i]);
+}
+
 void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 {
 	char	**paths;
@@ -143,26 +152,4 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 		free(cmd_path);
 	}
 	ft_error_cmd(node->args[0], paths, 127);
-}
-
-void	ft_exec_cmd(t_ast_node *node, t_exec *exec)
-{
-	if (!node)
-		return ;
-	if (node->type == AST_COMMAND)
-		ft_exec_ve(node, exec);
-	else if (node->type == AST_AND_AND)
-	{
-		ft_exec_ve(node->left, exec);
-		if (exec->exit_status == 0)
-			ft_exec_ve(node->right, exec);
-	}
-	else if (node->type == AST_OR_OR)
-	{
-		ft_exec_ve(node->left, exec);
-		if (exec->exit_status != 0)
-			ft_exec_ve(node->right, exec);
-	}
-	else if (node->type == AST_PIPE)
-		ft_execute_pipe(node, exec);
 }

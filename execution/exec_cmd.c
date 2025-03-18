@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 16:29:06 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:48:47 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void	execute_command(t_ast_node *node, t_exec *exec)
 		}
 		if (pid == 0)
 		{
-			ft_exec_cmd(node->right, exec);
+			ft_exec_ve(node, exec);
 			exit(exec->exit_status);
 		}
 		waitpid(pid, &status, 0);

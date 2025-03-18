@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 15:05:25 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:42:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,3 +33,25 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 // void execute_and_and(t_ast_node *node, t_exec *exec);
 // void execute_or_or(t_ast_node *node, t_exec *exec);
 // void execute_subshell(t_ast_node *node, t_exec *exec);
+
+// void	ft_exec_cmd(t_ast_node *node, t_exec *exec)
+// {
+// 	if (!node)
+// 		return ;
+// 	if (node->type == AST_COMMAND)
+// 		ft_exec_ve(node, exec);
+// 	else if (node->type == AST_AND_AND)
+// 	{
+// 		ft_exec_ve(node->left, exec);
+// 		if (exec->exit_status == 0)
+// 			ft_exec_ve(node->right, exec);
+// 	}
+// 	else if (node->type == AST_OR_OR)
+// 	{
+// 		ft_exec_ve(node->left, exec);
+// 		if (exec->exit_status != 0)
+// 			ft_exec_ve(node->right, exec);
+// 	}
+// 	else if (node->type == AST_PIPE)
+// 		ft_execute_pipe(node, exec);
+// }
