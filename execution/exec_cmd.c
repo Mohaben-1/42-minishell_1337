@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/19 16:48:26 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:50:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	handle_heredoc(char *delimiter)
 		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
 		return ;
     }
-	delimiter = ft_strjoin(delimiter, "\n");
+	// delimiter = ft_strjoin(delimiter, "\n");
 	while (1)
 	{
 		line = readline("> ");
