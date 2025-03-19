@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 16:48:47 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:48:26 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,30 @@ int	ft_is_builtin(char *cmd)
 
 void	handle_heredoc(char *delimiter)
 {
-	(void)delimiter;
+	char	*line;
+	int		pipe_fd[2];
+
+	if (pipe(pipe_fd) == -1)
+    {
+		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
+		return ;
+    }
+	delimiter = ft_strjoin(delimiter, "\n");
+	while (1)
+	{
+		line = readline("> ");
+		if (!line && !ft_strcmp(line, delimiter))
+		{
+			free(line);
+			break ;
+		}
+		ft_putstr_fd(line, pipe_fd[1]);
+		ft_putchar_fd('\n', pipe_fd[1]);
+		free(line);
+	}
+	close(pipe_fd[1]);
+	dup2(pipe_fd[0], 0);
+	close(pipe_fd[0]);
 }
 
 void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
@@ -85,7 +108,7 @@ void	ft_restore_std_fd(t_exec *exec)
 
 void	execute_builtin(t_ast_node *node, t_exec *exec)
 {
-	ft_apply_redirect(node->redirects, exec);
+	// ft_apply_redirect(node->redirects, exec);
 	if (!ft_strcmp(node->args[0], "unset"))
 		ft_unset(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "exit"))
@@ -100,7 +123,7 @@ void	execute_builtin(t_ast_node *node, t_exec *exec)
 		ft_echo(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "env"))
 		ft_env(*(exec->env));
-	ft_restore_std_fd(exec);
+	// ft_restore_std_fd(exec);
 }
 
 void	execute_command(t_ast_node *node, t_exec *exec)

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 13:15:22 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:32:18 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type
 {
 	t_token_node	*new_token;
 
+    if (type == token_cmd && (!data || !data[0]))
+        return ;
 	new_token = malloc(sizeof(t_token_node));
 	if (!new_token)
 		return ;
@@ -139,9 +141,9 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 {
 	int				paren_count;
 	t_token_node	*head;
-	
 	paren_count = 0;
 	head = list;
+
 	while (list)
 	{
 		if (list->type == token_paren_open && !list->next)
@@ -169,7 +171,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			}
 			
 		}
-		else if (list->type == token_paren_open && list->next && is_operator(*(list->next->data)))
+		else if (list->type == token_paren_open && list->next && is_operator(*(list->next->data)) && *list->next->data != '<' && *list->next->data != '>')
 		{
 			// write(2, "parentesis yes\n", 15);
 			write(2, "syntax error near unexpected token `", 37);
@@ -284,14 +286,13 @@ void	ft_consecutive_operators(t_token_node *list, int *error)
 	head = list;
 	while (list->next)
 	{
-		
 		if (*(list->data) == '(' && *(list->next->data) == ')' && !list->next->next && ft_before_this_token(head, list))
 		{
 			write(2, "syntax error near unexpected token `)'\n", 39);
 			*error = 1;
 			return ;
 		}
-		if (*(list->data) == '(' && is_operator(*(list->next->data)))
+		if (*(list->data) == '(' && is_operator(*(list->next->data)) && *list->next->data != '<' && *list->next->data != '>')
 		{
 			write(2, "syntax error near unexpected token `(\n`", 39);
 			*error = 1;

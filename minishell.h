@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 16:42:52 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:42:45 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,4 +169,11 @@ void	execute_ast(t_ast_node *ast, t_exec *exec);
 void	execute_command(t_ast_node *node, t_exec *exec);
 void	ft_execute_pipe(t_ast_node *node, t_exec *exec);
 
+
+void	ft_restore_std_fd(t_exec *exec);
+void	ft_apply_redirect(t_redirect *redirect, t_exec *exec);
+
+
+
+void	print_arg(char **args);
 #endif

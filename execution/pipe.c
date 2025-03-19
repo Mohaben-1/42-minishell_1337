@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 16:49:19 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:34:56 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	ft_exec_left_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 	pid = fork();
 	if (pid == -1)
 	{
-		ft_putstr_fd("minishell: fork: Resource temporarily unavailable", 2);
+		ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
 		return (-1);
 	}
 	if (pid == 0)
@@ -27,7 +27,7 @@ int	ft_exec_left_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 		dup2(pipe_fd[1], 1);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
-		ft_exec_ve(node, exec);
+		execute_ast(node, exec);
 		exit(exec->exit_status);
 	}
 	return (pid);
@@ -40,7 +40,7 @@ int	ft_exec_right_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 	pid = fork();
 	if (pid == -1)
 	{
-		ft_putstr_fd("minishell: fork: Resource temporarily unavailable", 2);
+		ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
 		return (-1);
 	}
 	if (pid == 0)
@@ -48,7 +48,7 @@ int	ft_exec_right_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 		dup2(pipe_fd[0], 0);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
-		ft_exec_ve(node, exec);
+		execute_ast(node, exec);
 		exit(exec->exit_status);
 	}
 	return (pid);
@@ -63,7 +63,7 @@ void	ft_execute_pipe(t_ast_node *node, t_exec *exec)
 
 	if (pipe(pipe_fd) < 0)
 	{
-		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
+		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable\n", 2);
 		return ;
 	}
 	pid1 = ft_exec_left_pipe(node->left, exec, pipe_fd);

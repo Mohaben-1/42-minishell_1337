@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/18 16:47:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:25:51 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,35 +89,6 @@ char	**ft_set_envp(t_env *env)
 	return (envp);
 }
 
-// void	ft_exec_ve(char *cmd, t_env *env)
-// {
-// 	char	**cmd_splited;
-// 	char	**paths;
-// 	char	*path;
-// 	char	*cmd_path;
-// 	char	**envp;
-// 	int		i;
-
-// 	signal(SIGQUIT, SIG_DFL);
-// 	envp = ft_set_envp(env);
-// 	cmd_splited = ft_split(cmd, ' ');
-// 	if (cmd_splited[0] && !access(cmd_splited[0], X_OK))
-// 		execve(cmd_splited[0], cmd_splited, envp);
-// 	path = ft_get_path(envp);
-// 	paths = ft_split(path, ':');
-// 	i = -1;
-// 	while (paths[++i] && cmd[0] != '.')
-// 	{
-// 		path = ft_strjoin(paths[i], "/");
-// 		cmd_path = ft_strjoin(path, cmd_splited[0]);
-// 		free(path);
-// 		if (cmd_path && !access(cmd_path, X_OK))
-// 			execve(cmd_path, cmd_splited, envp);
-// 		free(cmd_path);
-// 	}
-// 	ft_error_cmd(cmd_splited, paths, 127);
-// }
-
 void	print_arg(char **args)
 {
 	int	i;
@@ -131,13 +102,14 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 {
 	char	**paths;
 	char	*path;
-	char	*cmd_path;
+	char	*cmd;
 	char	**envp;
 	int		i;
 
 	signal(SIGQUIT, SIG_DFL);
 	envp = ft_set_envp(*(exec->env));
-	if (node->args[0] && !access(node->args[0], X_OK))
+	cmd = node->args[0];
+	if (cmd && ft_strchr(cmd, '/') && !access(cmd, X_OK))
 		execve(node->args[0], node->args, envp);
 	path = ft_get_path(envp);
 	paths = ft_split(path, ':');
@@ -145,11 +117,11 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 	while (paths[++i] && node->args[0][0] != '.')
 	{
 		path = ft_strjoin(paths[i], "/");
-		cmd_path = ft_strjoin(path, node->args[0]);
+		cmd = ft_strjoin(path, node->args[0]);
 		free(path);
-		if (cmd_path && !access(cmd_path, X_OK))
-			execve(cmd_path, node->args, envp);
-		free(cmd_path);
+		if (cmd && !access(cmd, X_OK))
+			execve(cmd, node->args, envp);
+		free(cmd);
 	}
 	ft_error_cmd(node->args[0], paths, 127);
 }
