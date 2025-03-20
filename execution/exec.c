@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/19 15:49:35 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/20 11:32:39 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,7 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 	}
 	if (pid == 0)
 	{
-		ft_apply_redirect(ast->redirects, exec);
 		execute_ast(ast->child, exec);
-		ft_restore_std_fd(exec);
 		exit(exec->exit_status);
 	}
 	waitpid(pid, &status, 0);

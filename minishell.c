@@ -3,7 +3,11 @@
 void	ft_handle_sigint(int sig)
 {
  	(void)sig;
-	ft_putstr_fd("\n\033[1;32mminishell> \033[0m", 1);
+	ft_putchar_fd('\n', 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+
 }
 
 void	ft_clear_screen()

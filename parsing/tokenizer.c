@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/19 16:32:18 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/20 10:59:26 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@ void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type
 {
 	t_token_node	*new_token;
 
+	// Don't add empty strings for token_cmd type
     if (type == token_cmd && (!data || !data[0]))
-        return ;
+        return;
 	new_token = malloc(sizeof(t_token_node));
 	if (!new_token)
 		return ;
@@ -180,7 +181,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			*error = 1;
 			return ;
 		}
-		else if (list->type == token_paren_open && list->next && ft_before_this_token(head, list) && !is_operator(*ft_before_this_token(head, list)->data))
+		else if (list->type == token_paren_open && list->next && ft_before_this_token(head, list) && !is_operator(*ft_before_this_token(head, list)->data) && !is_parentesis(*ft_before_this_token(head, list)->data))
 		{
 			if (ft_before_this_token(head, ft_before_this_token(head, list)))
 			{

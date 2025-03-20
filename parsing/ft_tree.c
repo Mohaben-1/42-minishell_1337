@@ -6,17 +6,17 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/03/18 13:11:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/20 15:04:02 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
 /* Main function to build AST from tokens */
 t_ast_node *build_ast(t_token_node *tokens)
 {
     if (!tokens)
         return NULL;
+        
     return parse_logical_ops(tokens);
 }
 
@@ -254,7 +254,7 @@ t_ast_node *create_ast_node(int type)
     node->type = type;
     node->args = NULL;
     node->arg_count = 0;
-    node->arg_quote_types = NULL;  // Initialize new field
+    node->arg_quote_types = NULL;
     node->redirects = NULL;
     node->left = NULL;
     node->right = NULL;
@@ -283,6 +283,10 @@ t_redirect *parse_redirections(t_token_node **tokens)
             
             redir->type = tmp->type;
             redir->file = strdup(tmp->next->data);
+            if (tmp->next->type == token_dquote || tmp->next->type == token_squote)
+                redir->quoted = 1;
+            else
+                redir->quoted = 0;
             redir->next = NULL;
             
             // Add to redirection list

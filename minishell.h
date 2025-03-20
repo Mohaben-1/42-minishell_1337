@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/19 15:42:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:27:47 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,9 @@ typedef struct s_env
 
 typedef struct s_redirect
 {
-	int					type;              // token_in, token_out, token_hrdc, token_appnd
-	char				*file;            // Filename or delimiter
+	int					type;
+	char				*file;
+	int					quoted;
 	struct s_redirect	*next;
 } t_redirect;
 
@@ -107,6 +108,7 @@ int		ft_isdigit(char c);
 int		ft_isalpha(int c);
 int		ft_isalnum(int c);
 long	ft_atoi(char *str);
+char	*ft_itoa(int n);
 char	*ft_strdup(char *s1);
 char	*ft_substr(char *s, unsigned int start, size_t len);
 char	*ft_strjoin(char *s1, char *s2);
@@ -118,7 +120,6 @@ char	*ft_strtrim(char *s1, char *set);
 char	**ft_split(char *s, char c);
 void	free_split(char **s);
 int		ft_count_args(char **cmd_split);
-
 
 void	ft_error(char *err, int exit_status);
 void	ft_error_cmd(char *cmd, char **paths, int exit_status);
@@ -174,6 +175,8 @@ void	ft_restore_std_fd(t_exec *exec);
 void	ft_apply_redirect(t_redirect *redirect, t_exec *exec);
 
 
+
+char	*ft_expand(char *arg, t_exec *exec);
 
 void	print_arg(char **args);
 #endif
