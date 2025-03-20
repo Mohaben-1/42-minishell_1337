@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:53:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/20 13:39:34 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:40:02 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ char	*ft_expand(char *arg, t_exec *exec)
 			tmp = malloc(2);
 			tmp[0] = arg[i];
 			tmp[1] = '\0';
-			expand = ft_strjoin_free(expand, ft_strdup(&arg[i]));
+			expand = ft_strjoin_free(expand, tmp);
 			i++;
 		}
 	}
