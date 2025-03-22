@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:01:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 11:00:21 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 13:28:05 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ size_t	ft_strlen(char *s)
 {
 	size_t	i;
 
-	if (s == NULL)
+	if (!s)
 		return (0);
 	i = 0;
 	while (s[i])

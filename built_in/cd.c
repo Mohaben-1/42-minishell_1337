@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:18:11 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 11:10:55 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 12:32:24 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	ft_set_path(t_env *env,char **args, char **new_path)
 	{
 		path = ft_substr(args[1], 1, ft_strlen(args[1]));
 		tmp = path;
-		path = ft_strjoin(ft_get_val_env(env, "HOME"), path);
+		path = ft_strjoin(ft_get_env(env, "HOME"), path);
 		free(tmp);
 		*new_path = path;
 	}
@@ -55,7 +55,7 @@ void	ft_cd(char **args, t_exec *exec)
 	new_path = NULL;
 	if (!args[1] || !ft_strcmp(args[1], "~"))
 	{
-		new_path = ft_get_val_env(*(exec->env), "HOME");
+		new_path = ft_get_env(*(exec->env), "HOME");
 		if (!new_path)
 			return (ft_free_cd(args, old_path, new_path));
 	}
@@ -63,11 +63,11 @@ void	ft_cd(char **args, t_exec *exec)
 		ft_set_path(*(exec->env), args, &new_path);
 	if (!new_path || chdir(new_path) != 0)
 		return (ft_error_cd(old_path, args));
-	ft_set_val_env(*(exec->env), "OLDPWD", old_path);
+	ft_set_env(*(exec->env), "OLDPWD", old_path);
 	pwd = getcwd(NULL, 0);
 	if (pwd)
 	{
-		ft_set_val_env(*(exec->env), "PWD", pwd);
+		ft_set_env(*(exec->env), "PWD", pwd);
 		free(pwd);
 	}
 	else

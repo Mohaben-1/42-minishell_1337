@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/19 15:34:56 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 11:32:06 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	ft_exec_left_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 		dup2(pipe_fd[1], 1);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
+		ft_apply_redirect(node->redirects, exec);
 		execute_ast(node, exec);
 		exit(exec->exit_status);
 	}
@@ -48,6 +49,7 @@ int	ft_exec_right_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 		dup2(pipe_fd[0], 0);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
+		ft_apply_redirect(node->redirects, exec);
 		execute_ast(node, exec);
 		exit(exec->exit_status);
 	}
@@ -64,6 +66,7 @@ void	ft_execute_pipe(t_ast_node *node, t_exec *exec)
 	if (pipe(pipe_fd) < 0)
 	{
 		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable\n", 2);
+		exec->exit_status = 1;
 		return ;
 	}
 	pid1 = ft_exec_left_pipe(node->left, exec, pipe_fd);

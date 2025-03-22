@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/20 16:14:56 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 12:39:55 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,12 @@ void	handle_heredoc(t_redirect *redr, t_exec *exec)
 	char	*expand_line;
 	int		pipe_fd[2];
 
-
 	if (pipe(pipe_fd) == -1)
 	{
 		exec->exit_status = 1;
 		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
 		return ;
 	}
-
 	while (1)
 	{
 		line = readline("> ");
@@ -60,68 +58,6 @@ void	handle_heredoc(t_redirect *redr, t_exec *exec)
 	close(pipe_fd[0]);
 }
 
-// void	sig_heredoc(int sig)
-// {
-// 	(void)sig;
-// 	exit(130);
-// }
-
-// void	handle_heredoc(t_redirect *redr, t_exec *exec)
-// {
-// 	char	*line;
-// 	char	*expand_line;
-// 	int		pipe_fd[2];
-// 	int		last_pipe_fd;
-
-// 	rl_catch_signals = 0;
-// 	signal(SIGINT, sig_heredoc);
-// 	while (redr)
-// 	{
-// 		if (pipe(pipe_fd) == -1)
-// 		{
-// 			exec->exit_status = 1;
-// 			ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
-// 			return ;
-// 		}
-// 		if (fork())
-// 		{
-// 			close(pipe_fd[0]);
-// 			while (1)
-// 			{
-// 				line = readline("> ");
-// 				if (!line)
-// 				{
-// 					close(pipe_fd[1]);
-// 					exit(0);
-// 				}
-// 				if (!ft_strcmp(line, redr->file))
-// 				{
-// 					free(line);
-// 					break ;
-// 				}
-// 				if (!redr->quoted)
-// 					expand_line = ft_expand(line, exec);
-// 				else
-// 					expand_line = ft_strdup(line);
-// 				ft_putstr_fd(expand_line, pipe_fd[1]);
-// 				ft_putchar_fd('\n', pipe_fd[1]);
-// 				free(line);
-// 				free(expand_line);
-// 			}
-// 			close(pipe_fd[1]);
-// 			exit(0);
-// 		}
-// 		wait(NULL);
-// 		close(pipe_fd[1]);
-// 		if (last_pipe_fd)
-// 			close(last_pipe_fd);
-// 		last_pipe_fd = pipe_fd[0];
-// 		redr = redr->next;
-// 	}
-// 	dup2(last_pipe_fd, 0);
-// 	close(last_pipe_fd);
-// }
-
 void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 {
 	t_redirect	*redr;
@@ -131,11 +67,11 @@ void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 	exec->std_fd[1] = dup(STDOUT_FILENO);
 	redr = redirect;
 	while (redr)
-    {
-        if (redr->type == token_hrdc)
-            handle_heredoc(redr, exec);
-        redr = redr->next;
-    }
+	{
+		if (redr->type == token_hrdc)
+			handle_heredoc(redr, exec);
+		redr = redr->next;
+	}
 	redr = redirect;
 	while (redr)
 	{
@@ -191,7 +127,6 @@ void	ft_restore_std_fd(t_exec *exec)
 
 void	execute_builtin(t_ast_node *node, t_exec *exec)
 {
-	// ft_apply_redirect(node->redirects, exec);
 	if (!ft_strcmp(node->args[0], "unset"))
 		ft_unset(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "exit"))
@@ -206,7 +141,6 @@ void	execute_builtin(t_ast_node *node, t_exec *exec)
 		ft_echo(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "env"))
 		ft_env(*(exec->env));
-	// ft_restore_std_fd(exec);
 }
 
 void	execute_command(t_ast_node *ast, t_exec *exec)

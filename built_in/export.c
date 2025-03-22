@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/19 13:33:23 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 12:30:35 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	ft_check_var_name(char *var)
 	return (1);
 }
 
-static	void	ft_print_export(t_env *env)
+static void	ft_print_export(t_env *env)
 {
 	if (!env)
 		return ;

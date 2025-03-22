@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:53:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/20 16:40:02 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 15:02:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,10 @@ void	ft_expand_helper(char **expand, char *arg, t_exec *exec, int *i)
 	while (arg[*i] && (ft_isalnum(arg[*i]) || arg[*i] == '_'))
 		(*i)++;
 	var = ft_substr(arg, start, *i - start);
-	value = ft_get_val_env(*(exec->env), var);
-	if (value)
-		*expand = ft_strjoin_free(*expand, ft_strdup(value));
+	value = ft_get_env(*(exec->env), var);
+	*expand = ft_strjoin_free(*expand, ft_strdup(value));
+	if (var)
+		free(var);
 }
 
 char	*ft_expand(char *arg, t_exec *exec)

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/20 14:27:47 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 14:47:50 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ typedef struct s_ast_node
 typedef struct s_exec
 {
 	t_env		**env;
-	t_ast_node	*ast;
+	// t_ast_node	*ast;
 	char		**envp;
 	int			std_fd[2];
 	int			exit_status;
@@ -140,43 +140,44 @@ t_env	*ft_env_new(char *var, char *value);
 void	ft_unset(char **args, t_exec *exec);
 int		ft_check_var_name(char *var);
 void	ft_exit(char **args, t_exec *exec);
-char	*ft_get_val_env(t_env *env, char *var);
-void	ft_set_val_env(t_env *env, char *var, char *new_val);
+char	*ft_get_env(t_env *env, char *var);
+void	ft_set_env(t_env *env, char *var, char *new_val);
 void	ft_pwd(t_exec *exec);
 void	ft_echo(char **args, t_exec *exec);
 
 
 t_token_node	*ft_tokenize(char *input);
-t_ast_node *build_ast(t_token_node *tokens);
-t_ast_node *parse_logical_ops(t_token_node *tokens);
-t_ast_node *parse_pipes(t_token_node *tokens);
-t_ast_node *parse_command(t_token_node *tokens);
-t_ast_node *parse_subshell(t_token_node *tokens);
-t_token_node *find_op_at_level(t_token_node *tokens, t_token_type type1, t_token_type type2);
-t_token_node *find_token_at_level(t_token_node *tokens, t_token_type type);
-t_token_node *extract_tokens(t_token_node *start, t_token_node *end);
-t_ast_node *create_ast_node(int type);
-t_redirect *parse_redirections(t_token_node **tokens);
-void free_ast(t_ast_node *ast);
-int is_redirection(t_token_type type);
-int count_args(t_token_node *tokens);
-int token_list_len(t_token_node *tokens);
-char **collect_args(t_token_node *tokens, int count, int **quote_types);
-void print_ast(t_ast_node *ast, int indent_level);
+t_ast_node		*build_ast(t_token_node *tokens, t_exec *exec);
+t_ast_node		*parse_logical_ops(t_token_node *tokens, t_exec *exec);
+t_ast_node		*parse_pipes(t_token_node *tokens, t_exec *exec);
+t_ast_node		*parse_command(t_token_node *tokens, t_exec *exec);
+t_ast_node		*parse_subshell(t_token_node *tokens, t_exec *exec);
+t_token_node	*find_op_at_level(t_token_node *tokens, t_token_type type1, t_token_type type2);
+t_token_node	*find_token_at_level(t_token_node *tokens, t_token_type type);
+t_token_node	*extract_tokens(t_token_node *start, t_token_node *end);
+t_ast_node		*create_ast_node(int type);
+t_redirect		*parse_redirections(t_token_node **tokens, t_exec *exec);
+void			free_ast(t_ast_node *ast);
+int				is_redirection(t_token_type type);
+int				count_args(t_token_node *tokens);
+char			**collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *exec);
+void			print_ast(t_ast_node *ast, int indent_level);
 
 
 
-void	execute_ast(t_ast_node *ast, t_exec *exec);
-void	execute_command(t_ast_node *node, t_exec *exec);
-void	ft_execute_pipe(t_ast_node *node, t_exec *exec);
+void			execute_ast(t_ast_node *ast, t_exec *exec);
+void			execute_command(t_ast_node *node, t_exec *exec);
+void			ft_execute_pipe(t_ast_node *node, t_exec *exec);
+void			execute_subshell(t_ast_node *ast, t_exec *exec);
 
 
-void	ft_restore_std_fd(t_exec *exec);
-void	ft_apply_redirect(t_redirect *redirect, t_exec *exec);
+void			ft_restore_std_fd(t_exec *exec);
+void			ft_apply_redirect(t_redirect *redirect, t_exec *exec);
 
 
 
-char	*ft_expand(char *arg, t_exec *exec);
+char			*ft_expand(char *arg, t_exec *exec);
 
 void	print_arg(char **args);
+
 #endif

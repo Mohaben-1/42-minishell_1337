@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:49:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 13:33:08 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 14:36:51 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	ft_count_args(char **args)
 	return (count);
 }
 
-char	*ft_get_val_env(t_env *env, char *var)
+char	*ft_get_env(t_env *env, char *var)
 {
 	if (!env)
 		return (NULL);
@@ -37,7 +37,7 @@ char	*ft_get_val_env(t_env *env, char *var)
 	return (NULL);
 }
 
-void	ft_set_val_env(t_env *env, char *var, char *new_val)
+void	ft_set_env(t_env *env, char *var, char *new_val)
 {
 	char	*value;
 

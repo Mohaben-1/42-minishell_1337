@@ -7,7 +7,6 @@ void	ft_handle_sigint(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-
 }
 
 void	ft_clear_screen()
@@ -75,10 +74,9 @@ void print_tokens(t_token_node *tokens)
     }
 }
 
-void	ft_init_exec(t_exec	*exec, t_ast_node *ast, t_env **env, char **envp)
+void	ft_init_exec(t_exec	*exec, t_env **env, char **envp)
 {
 	exec->env = env;
-	exec->ast = ast;
 	exec->envp = envp;
 	exec->std_fd[0] = -1;
 	exec->std_fd[1] = -1;
@@ -91,8 +89,6 @@ int main(int ac, char **av, char **envp)
 	t_env			*env;
 	t_exec			exec;
 	char			*input;
-	// int				pid;
-	// int				status;
 
 	(void)ac;
 	(void)av;
@@ -109,7 +105,6 @@ int main(int ac, char **av, char **envp)
 		if (!input)
 		{
 			ft_putstr_fd("exit\n", 1);
-			clear_history();
 			exit(0);
 		}
 		if (input[0] == '\f' && input[1] == '\0')
@@ -124,8 +119,8 @@ int main(int ac, char **av, char **envp)
 			continue;
 		}
 		tokens = ft_tokenize(input);
-		ast = build_ast(tokens);
-		ft_init_exec(&exec, ast, &env, envp);
+		ft_init_exec(&exec, &env, envp);
+		ast = build_ast(tokens, &exec);
 		execute_ast(ast, &exec);
 		// if (tokens)
 		// 	print_tokens(tokens);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/20 10:59:26 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/22 10:55:46 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type
 	// Don't add empty strings for token_cmd type
     if (type == token_cmd && (!data || !data[0]))
         return;
+
 	new_token = malloc(sizeof(t_token_node));
 	if (!new_token)
 		return ;
@@ -51,6 +52,13 @@ void	ft_token_node_free(t_token_node **head)
 int is_operator(char c)
 {
     return (c == '|' || c == '<' || c == '>' || c == '&');
+}
+
+int is_node_operator(t_token_node *node)
+{
+	if (node->type != token_squote && node->type != token_dquote)
+    	return (*node->data == '|' || *node->data == '<' || *node->data == '>' || *node->data == '&');
+	return 0;
 }
 
 int is_whitespace(char c)
@@ -172,7 +180,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			}
 			
 		}
-		else if (list->type == token_paren_open && list->next && is_operator(*(list->next->data)) && *list->next->data != '<' && *list->next->data != '>')
+		else if (list->type == token_paren_open && list->next && is_node_operator(list->next) && *list->next->data != '<' && *list->next->data != '>')
 		{
 			// write(2, "parentesis yes\n", 15);
 			write(2, "syntax error near unexpected token `", 37);
@@ -181,7 +189,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			*error = 1;
 			return ;
 		}
-		else if (list->type == token_paren_open && list->next && ft_before_this_token(head, list) && !is_operator(*ft_before_this_token(head, list)->data) && !is_parentesis(*ft_before_this_token(head, list)->data))
+		else if (list->type == token_paren_open && list->next && ft_before_this_token(head, list) && !is_node_operator(ft_before_this_token(head, list)) && !is_parentesis(*ft_before_this_token(head, list)->data))
 		{
 			if (ft_before_this_token(head, ft_before_this_token(head, list)))
 			{
@@ -239,7 +247,7 @@ void	ft_valid_redirections(t_token_node *list, int *error)
 	t_token_node *head = list;
 	while (list)
 		{
-			if ((*(list->data) == '>' ||  *(list->data) == '<') && list->next && (is_parentesis(*(list->next->data)) || *(list->next->data) == '<' || *(list->next->data) == '>'))
+			if ((*(list->data) == '>' ||  *(list->data) == '<') && is_node_operator(list) && list->next && (is_parentesis(*(list->next->data)) || *(list->next->data) == '<' || *(list->next->data) == '>'))
 			{
 				write(2, "syntax error near unexpected token `", 37);
 				write(2, list->next->data, ft_strlen(list->next->data));
@@ -247,7 +255,7 @@ void	ft_valid_redirections(t_token_node *list, int *error)
 				*error = 1;
 				return ;
 			}
-			if ((*(list->data) == '>' ||  *(list->data) == '<') && list->next && list->next->next && (list->next->next->type == token_cmd  ||  list->next->next->type == token_dquote || list->next->next->type == token_squote) && ft_before_this_token(head, list) && ft_before_this_token(head, list)->type == token_paren_close)
+			if ((*(list->data) == '>' ||  *(list->data) == '<') && is_node_operator(list) && list->next && list->next->next && (list->next->next->type == token_cmd  ||  list->next->next->type == token_dquote || list->next->next->type == token_squote) && ft_before_this_token(head, list) && ft_before_this_token(head, list)->type == token_paren_close)
 			{
 				write(2, "syntax error near unexpected token `", 37);
 				write(2, list->next->next->data, ft_strlen(list->next->next->data));
@@ -266,7 +274,7 @@ void	ft_check_last_token(t_token_node *list, int *error)
 		write(2, "syntax error near unexpected token `newline'\n", 45);
 		*error = 1;
 	}
-	else if (is_operator(*(ft_token_last(list)->data)))
+	else if (is_node_operator(ft_token_last(list)))
 	{
 		if (*(ft_token_last(list)->data) == '|' && list != ft_token_last(list))
 			write(2, "syntax error: unexpected end of file\n", 38);
@@ -293,15 +301,22 @@ void	ft_consecutive_operators(t_token_node *list, int *error)
 			*error = 1;
 			return ;
 		}
-		if (*(list->data) == '(' && is_operator(*(list->next->data)) && *list->next->data != '<' && *list->next->data != '>')
+		if (*(list->data) == '(' && is_node_operator(list->next) && *list->next->data != '<' && *list->next->data != '>')
 		{
 			write(2, "syntax error near unexpected token `(\n`", 39);
 			*error = 1;
 			return ;
 		}
-		if ((is_operator(*(list->data)) && is_operator(*(list->next->data)) && *(list->next->data) != '<' && *(list->next->data) != '>') || (*(list->data) == '(' && *(list->next->data) == ')'))
+		if (is_node_operator(list) && is_node_operator(list->next) && (*(list->data) == '<' || *(list->data) == '>') && (*(list->next->data) == '<' || *(list->next->data) == '>'))
 		{
-			
+			write(2, "syntax error near unexpected token `", 37);
+			write(2, list->next->data, ft_strlen(list->next->data));
+			write(2, "'\n", 2);
+			*error = 1;
+			return ;
+		}
+		if ((is_node_operator(list) && is_node_operator(list->next) && *(list->next->data) != '<' && *(list->next->data) != '>') || (*(list->data) == '(' && *(list->next->data) == ')'))
+		{
 			write(2, "syntax error near unexpected token `", 37);
 			write(2, list->next->data, ft_strlen(list->next->data));
 			write(2, "'\n", 2);
@@ -316,7 +331,7 @@ void	ft_token_syntax_error(t_token_node *list, int *error)
 {
 	if (!list)
 		return ;
-	if (is_operator(*(list->data)) && *(list->data) != '>' && *(list->data) != '<')
+	if (is_node_operator(list) && *(list->data) != '>' && *(list->data) != '<')
 	{
 		write(2, "syntax error near unexpected token `", 37);
 		write(2, list->data, ft_strlen(list->data));
