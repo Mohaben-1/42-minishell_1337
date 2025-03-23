@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 12:09:48 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 16:15:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ typedef struct s_token_node
 {
 	t_token_type	type;
 	char			*data;
+	int				spaced;
 	struct s_token_node	*next;
 }	t_token_node;
 
@@ -123,6 +124,7 @@ int		ft_count_args(char **cmd_split);
 void	ft_error(char *err, int exit_status);
 void	ft_error_cmd(char *cmd, char **paths, int exit_status);
 void	ft_error_file(char *file, t_exec *exec);
+void	ft_error_file_expand(char *file, t_exec *exec);
 
 
 char	*ft_get_path(char **envp);
@@ -133,7 +135,7 @@ void	ft_putnbr_fd(int n, int fd);
 void	ft_cd(char **args, t_exec *exec);
 void	ft_export(t_ast_node *ast, t_exec *exec);
 t_env	*ft_init_env(char **envp);
-void	ft_env(t_env *env);
+void	ft_env(t_exec *exec);
 void	ft_env_add_back(t_env **lst, t_env *new);
 t_env	*ft_env_new(char *var, char *value);
 void	ft_unset(char **args, t_exec *exec);
@@ -171,7 +173,7 @@ void			execute_subshell(t_ast_node *ast, t_exec *exec);
 
 
 void			ft_restore_std_fd(t_exec *exec);
-void			ft_apply_redirect(t_redirect *redirect, t_exec *exec);
+int				ft_apply_redirect(t_redirect *redirect, t_exec *exec);
 
 
 

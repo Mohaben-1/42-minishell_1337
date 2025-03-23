@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:42:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 14:42:50 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 14:14:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,16 +86,20 @@ t_env	*ft_init_env(char **envp)
 	return (head);
 }
 
-void	ft_env(t_env *env)
+void	ft_env(t_exec *exec)
 {
-	if (!env)
+	t_env	*current;
+
+	if (!*(exec->env))
 		return ;
-	while (env)
+	current = *(exec->env);
+	while (current)
 	{
-		ft_putstr_fd(env->var, 1);
+		ft_putstr_fd(current->var, 1);
 		ft_putchar_fd('=', 1);
-		ft_putstr_fd(env->value, 1);
+		ft_putstr_fd(current->value, 1);
 		ft_putchar_fd('\n', 1);
-		env = env->next;
+		current = current->next;
 	}
+	exec->exit_status = 0;
 }

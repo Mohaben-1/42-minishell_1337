@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 12:39:55 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 16:30:48 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ void	handle_heredoc(t_redirect *redr, t_exec *exec)
 			expand_line = ft_expand(line, exec);
 		else
 			expand_line = ft_strdup(line);
+		if (expand_line)
+			ft_putstr_fd(expand_line, pipe_fd[1]);
 		ft_putstr_fd(expand_line, pipe_fd[1]);
 		ft_putchar_fd('\n', pipe_fd[1]);
 		free(line);
@@ -58,7 +60,7 @@ void	handle_heredoc(t_redirect *redr, t_exec *exec)
 	close(pipe_fd[0]);
 }
 
-void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
+int	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 {
 	t_redirect	*redr;
 	int			fd;
@@ -79,34 +81,31 @@ void	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 		{
 			fd = open(redr->file, O_RDONLY);
 			if (fd == -1)
-				return (ft_error_file(redr->file, exec));
+				return (ft_error_file(redr->file, exec), 0);
 			dup2(fd, STDIN_FILENO);
 			close(fd);
 		}
 		else if (redr->type == token_out)
 		{
+			if (!redr->file || !*redr->file)
+				return (ft_error_file_expand("$", exec), 0);
 			fd = open(redr->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd == -1)
-				return (ft_error_file(redr->file, exec));
+				return (ft_error_file(redr->file, exec)), 0;
 			dup2(fd, STDOUT_FILENO);
 			close(fd);
 		}
 		else if (redr->type == token_appnd)
 		{
-			 if (!redr->file)
-			{
-				ft_putstr_fd("minishell: syntax error near unexpected token `>>'\n", 2);
-				exec->exit_status = 2;
-				return;
-			}
 			fd = open(redr->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd == -1)
-				return (ft_error_file(redr->file, exec));
+				return (ft_error_file(redr->file, exec), 0);
 			dup2(fd, STDOUT_FILENO);
 			close(fd);
 		}
 		redr = redr->next;
 	}
+	return (1);
 }
 
 void	ft_restore_std_fd(t_exec *exec)
@@ -140,7 +139,7 @@ void	execute_builtin(t_ast_node *node, t_exec *exec)
 	else if (!ft_strcmp(node->args[0], "echo"))
 		ft_echo(node->args, exec);
 	else if (!ft_strcmp(node->args[0], "env"))
-		ft_env(*(exec->env));
+		ft_env(exec);
 }
 
 void	execute_command(t_ast_node *ast, t_exec *exec)

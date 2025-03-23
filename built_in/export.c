@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 12:30:35 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 14:15:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,4 +221,5 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 			}
 		}
 	}
+	exec->exit_status = 0;
 }

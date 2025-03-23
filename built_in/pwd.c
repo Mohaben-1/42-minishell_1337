@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:43:48 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 12:32:08 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 14:15:34 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,5 @@ void	ft_pwd(t_exec *exec)
 		else
 			ft_putstr_fd("minishell: pwd:  No such file or directory", 2);
 	}
+	exec->exit_status = 0;
 }

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 14:40:52 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 14:15:39 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,5 @@ void	ft_unset(char **args, t_exec *exec)
 			ft_del_var(*(exec->env), args[i]);
 		i++;
 	}
+	exec->exit_status = 0;
 }

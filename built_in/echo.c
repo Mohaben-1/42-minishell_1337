@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 11:14:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 14:12:18 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,5 @@ void	ft_echo(char **args, t_exec *exec)
 	}
 	if (flag)
 		ft_putchar_fd('\n', 1);
+	exec->exit_status = 0;
 }

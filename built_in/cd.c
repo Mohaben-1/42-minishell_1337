@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:18:11 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 12:32:24 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 14:11:39 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,6 @@ void	ft_cd(char **args, t_exec *exec)
 	}
 	else
 		ft_putstr_fd("minishell: cd: failed to update PWD\n", 2);
+	exec->exit_status = 0;
 	ft_free_cd(args, old_path, new_path);
 }

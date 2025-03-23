@@ -6,13 +6,13 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 10:55:46 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 16:48:24 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type, char *data)
+void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type, char *data, int spaced)
 {
 	t_token_node	*new_token;
 
@@ -23,6 +23,10 @@ void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type
 	new_token = malloc(sizeof(t_token_node));
 	if (!new_token)
 		return ;
+	if (spaced)
+		new_token->spaced = 1;
+	else
+		new_token->spaced = 0;
 	new_token->type = type;
 	new_token->data = ft_strdup(data);
 	new_token->next = NULL;
@@ -81,7 +85,15 @@ static void ft_handle_quotes(char *input, int *i, t_token_node **head, t_token_n
     int start;
     char *str;
     char quote_type = input[*i];
+	int	is_spaced = 0;
     
+	if (*i > 0)
+	{
+		if (is_whitespace(input[*i-1]))
+			is_spaced = 1;
+		else
+			is_spaced = 0;
+	}
     (*i)++;
     start = *i;
     
@@ -92,17 +104,17 @@ static void ft_handle_quotes(char *input, int *i, t_token_node **head, t_token_n
     {
         str = ft_substr(input, start, *i - start);
 		if (quote_type == '"')
-            ft_add_token(head, current, token_dquote, str);
+            ft_add_token(head, current, token_dquote, str, is_spaced);
 		else
-        	ft_add_token(head, current, token_squote, str);
+        	ft_add_token(head, current, token_squote, str, is_spaced);
         free(str);
     }
     else
 	{
-		write(2, "bash: unexpected EOF while looking for matching `", 50);
+		write(2, "unexpected EOF while looking for matching `", 50);
 		write(2, &quote_type, 1);
 		write(2, "'\n", 2);
-		write(2, "bash: syntax error: unexpected end of file\n", 43);
+		write(2, "syntax error: unexpected end of file\n", 43);
 		*error = 1;
 	}
 }
@@ -113,12 +125,14 @@ static void	ft_handle_str(char *input, int *i, t_token_node **head, t_token_node
 	char	*str;
 
 	start = *i;
+	// Check if this token is preceded by whitespace
+    int is_spaced = (*i > 0 && is_whitespace(input[*i - 1]));
 	while (input[*i] && !is_operator(input[*i]) && !is_whitespace(input[*i]) && !is_quotes(input[*i]) && !is_parentesis(input[*i]))
 		(*i)++;
 	str = ft_substr(input, start, *i - start);
 	if (is_operator(input[*i]) || is_quotes(input[*i]) || is_parentesis(input[*i]))
 		(*i)--;
-	ft_add_token(head, current, token_cmd, str);
+	ft_add_token(head, current, token_cmd, str, is_spaced);
 	free(str);
 }
 
@@ -381,7 +395,7 @@ t_token_node	*ft_tokenize(char *input)
         	}
 			else if (input[i] == '|' && input[i + 1] == '|')
 			{
-				ft_add_token(&head, &current, token_or, "||");
+				ft_add_token(&head, &current, token_or, "||", 0);
 				i++;
 			}
 			else if (input[i] == '&' && (!input[i + 1] || is_whitespace(input[i + 1])))
@@ -392,29 +406,29 @@ t_token_node	*ft_tokenize(char *input)
 			}
 			else if (input[i] == '&' && input[i + 1] == '&')
 			{
-				ft_add_token(&head, &current, token_and_and, "&&");
+				ft_add_token(&head, &current, token_and_and, "&&", 0);
 				i++;
 			}
 			else if (input[i] == '<' && input[i + 1] == '<')
 			{
-				ft_add_token(&head, &current, token_hrdc, "<<");
+				ft_add_token(&head, &current, token_hrdc, "<<", 0);
 				i++;
 			}
 			else if (input[i] == '>' && input[i + 1] == '>')
 			{
-				ft_add_token(&head, &current, token_appnd, ">>");
+				ft_add_token(&head, &current, token_appnd, ">>", 0);
 				i++;
 			}
 			else if (input[i] == '(')
-				ft_add_token(&head, &current, token_paren_open, "(");
+				ft_add_token(&head, &current, token_paren_open, "(", 0);
 			else if (input[i] == ')')
-				ft_add_token(&head, &current, token_paren_close, ")");
+				ft_add_token(&head, &current, token_paren_close, ")", 0);
 			else if (input[i] == '|')
-				ft_add_token(&head, &current, token_pipe, "|");
+				ft_add_token(&head, &current, token_pipe, "|", 0);
 			else if (input[i] == '<')
-				ft_add_token(&head, &current, token_in, "<");
+				ft_add_token(&head, &current, token_in, "<", 0);
 			else if (input[i] == '>')
-				ft_add_token(&head, &current, token_out, ">");
+				ft_add_token(&head, &current, token_out, ">", 0);
 			else if (input[i])
 				ft_handle_str(input, &i, &head, &current);
 			i++;
