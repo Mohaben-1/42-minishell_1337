@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/03/22 14:49:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 12:11:44 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,7 +281,7 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 				return head;
 			
 			redir->type = tmp->type;
-			if (ft_strchr(tmp->next->data, '$') && tmp->type != token_hrdc)
+			if (ft_strchr(tmp->next->data, '$') && tmp->type != token_hrdc && tmp->next->type != token_squote)
 				redir->file = ft_expand(tmp->next->data, exec);
 			else
 				redir->file = strdup(tmp->next->data);

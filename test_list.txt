@@ -13,6 +13,11 @@ export VAR+
 
 
 
+ls > $ss
+minishell: No such file or directory
+Makefile        execution       minishell.c     parsing         test_list.txt
+built_in        minishell       minishell.h     str_utils       utils
+
 
 echo hello world
 echo -n hello

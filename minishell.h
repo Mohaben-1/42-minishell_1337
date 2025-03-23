@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 14:47:50 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/23 12:09:48 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ typedef struct s_ast_node
 typedef struct s_exec
 {
 	t_env		**env;
-	// t_ast_node	*ast;
 	char		**envp;
 	int			std_fd[2];
 	int			exit_status;
