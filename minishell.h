@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 16:15:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/24 12:51:11 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,9 @@ typedef struct s_env
 
 typedef struct s_redirect
 {
-	int					type;
 	char				*file;
+	int					type;
+	int					heredoc_fd;
 	int					quoted;
 	struct s_redirect	*next;
 } t_redirect;
@@ -180,5 +181,9 @@ int				ft_apply_redirect(t_redirect *redirect, t_exec *exec);
 char			*ft_expand(char *arg, t_exec *exec);
 
 void	print_arg(char **args);
+
+
+
+void	ft_handle_all_heredoc(t_ast_node *ast, t_exec *exec);
 
 #endif

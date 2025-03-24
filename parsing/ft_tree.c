@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/03/23 16:48:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/24 15:03:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,6 +229,7 @@ t_token_node *extract_tokens(t_token_node *start, t_token_node *end)
 		
 		new_node->type = tmp->type;
 		new_node->data = ft_strdup(tmp->data);
+		new_node->spaced = tmp->spaced;
 		new_node->next = NULL;
 		
 		if (!result)
@@ -355,48 +356,26 @@ int count_args(t_token_node *tokens)
 /* Collect arguments into a string array */
 char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *exec)
 {
-    (void)count;
-    // First pass: count actual arguments after merging adjacent tokens
-    int actual_count = 0;
-    t_token_node *tmp = tokens;
-    int prev_was_arg = 0;
-    
-    while (tmp)
-    {
-        if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
-        {
-            // Only increment if this is the first token or previous token was spaced
-            if (!prev_was_arg || tmp->spaced)
-                actual_count++;
-                
-            prev_was_arg = 1;
-        }
-        else
-            prev_was_arg = 0;
-            
-        tmp = tmp->next;
-    }
-    
-    // Allocate based on actual count
-    char **args = malloc(sizeof(char *) * (actual_count + 1));
+    // Allocate memory for arguments array
+    char **args = malloc(sizeof(char *) * (count + 1));
     if (!args)
         return NULL;
     
-    *quote_types = malloc(sizeof(int) * actual_count);
+    *quote_types = malloc(sizeof(int) * count);
     if (!(*quote_types))
     {
         free(args);
         return NULL;
     }
     
-    // Second pass: collect and merge arguments
+    // Initialize variables
     int i = 0;
-    tmp = tokens;
-    prev_was_arg = 0;
+    t_token_node *tmp = tokens;
     char *current_arg = NULL;
     int current_quote_type = 0;
-    
-    while (tmp && i < actual_count)
+    int prev_was_arg = 0;
+
+    while (tmp && i < count)
     {
         if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
         {
@@ -404,18 +383,20 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *
             if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
                 expanded_token = ft_expand(tmp->data, exec);
             else
-                expanded_token = strdup(tmp->data);
-                
-            // Start new argument or append to existing
+                expanded_token = ft_strdup(tmp->data);
+            
+            // Check if we should start a new argument or merge with previous
             if (!prev_was_arg || tmp->spaced)
             {
-                // Start a new argument
+                // If we have a previous argument in progress, store it
                 if (current_arg)
                 {
                     args[i] = current_arg;
                     (*quote_types)[i] = current_quote_type;
                     i++;
                 }
+                
+                // Start a new argument
                 current_arg = expanded_token;
                 
                 // Store the quote type of the first part
@@ -428,14 +409,13 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *
             }
             else
             {
-                // Append to current argument
+                // Merge with the current argument (no space between tokens)
                 char *merged = ft_strjoin(current_arg, expanded_token);
                 free(current_arg);
                 free(expanded_token);
                 current_arg = merged;
                 
-                // For merged tokens, prefer the quote type of the first part
-                // but you could implement more complex logic if needed
+                // Keep the quote type of the first part
             }
             
             prev_was_arg = 1;
@@ -443,19 +423,19 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *
         else
         {
             // Non-argument token encountered, store current argument if any
-            if (prev_was_arg && current_arg)
+            if (current_arg)
             {
                 args[i] = current_arg;
                 (*quote_types)[i] = current_quote_type;
                 i++;
                 current_arg = NULL;
             }
+            
             prev_was_arg = 0;
         }
         
         tmp = tmp->next;
     }
-    
     // Store the last argument if any
     if (current_arg)
     {
@@ -464,7 +444,9 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *
         i++;
     }
     
-    args[i] = NULL;  // NULL-terminate the array
+    // NULL-terminate the array
+    args[i] = NULL;
+    
     return args;
 }
 
