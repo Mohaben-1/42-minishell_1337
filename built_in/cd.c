@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:18:11 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 14:11:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/26 13:22:40 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ void	ft_cd(char **args, t_exec *exec)
 	{
 		new_path = ft_get_env(*(exec->env), "HOME");
 		if (!new_path)
-			return (ft_free_cd(args, old_path, new_path));
+			return (exec->exit_status = 1, ft_free_cd(args, old_path, new_path));
 	}
 	else
 		ft_set_path(*(exec->env), args, &new_path);
 	if (!new_path || chdir(new_path) != 0)
-		return (ft_error_cd(old_path, args));
+		return (exec->exit_status = 1, ft_error_cd(old_path, args));
 	ft_set_env(*(exec->env), "OLDPWD", old_path);
 	pwd = getcwd(NULL, 0);
 	if (pwd)

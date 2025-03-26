@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/24 15:22:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:43:25 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,17 +59,18 @@ int	ft_exec_right_pipe(t_ast_node *node, t_exec *exec, int *pipe_fd)
 void	ft_execute_pipe(t_ast_node *node, t_exec *exec)
 {
 	int	pipe_fd[2];
+	int	status;
 	int	pid1;
 	int	pid2;
-	int	status;
 
 	if (pipe(pipe_fd) < 0)
 	{
-		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable\n", 2);
+		ft_putstr_fd("minishell: pipe: Resource unavailable\n", 2);
 		exec->exit_status = 1;
 		return ;
 	}
-	ft_handle_all_heredoc(node, exec);
+	ft_handle_heredoc_pipe(node->left, exec);
+	ft_handle_heredoc_pipe(node->right, exec);
 	pid1 = ft_exec_left_pipe(node->left, exec, pipe_fd);
 	pid2 = ft_exec_right_pipe(node->right, exec, pipe_fd);
 	close(pipe_fd[0]);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/24 12:51:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:41:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,20 +78,12 @@ typedef struct s_ast_node
 		AST_DQUOTES,       // Double quoted string
         AST_SQUOTES        // Single quoted string
     } type;
-    
-    // For command nodes
     char **args;           // Command and its arguments
     int arg_count;         // Number of arguments
-    
-    // For redirection
     t_redirect *redirects; // List of redirections for this command
-    
-    // For binary operations (pipe, &&, ||)
     struct s_ast_node *left;
     struct s_ast_node *right;
     int *arg_quote_types;  // New field to track quote types for each argument
-
-    // For subshell commands
     struct s_ast_node *child;
 } t_ast_node;
 
@@ -185,5 +177,10 @@ void	print_arg(char **args);
 
 
 void	ft_handle_all_heredoc(t_ast_node *ast, t_exec *exec);
+
+
+void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec);
+void	handle_heredoc_node(t_ast_node *ast, t_exec *exec);
+int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
 
 #endif

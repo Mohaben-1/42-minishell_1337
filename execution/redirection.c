@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/24 15:07:19 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:36:50 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,23 +128,28 @@ void	ft_restore_std_fd(t_exec *exec)
 
 
 
+
 int	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 {
 	t_redirect	*redr;
 	int			fd;
 
-	exec->std_fd[0] = dup(STDIN_FILENO);
-	exec->std_fd[1] = dup(STDOUT_FILENO);
+	exec->std_fd[0] = dup(0);
+	exec->std_fd[1] = dup(1);
 	redr = redirect;
 	while (redr)
-	{
+    {
 		if (redr->type == token_hrdc && redr->heredoc_fd != -1)
 		{
-			dup2(redr->heredoc_fd, 0);
+			if (dup2(redr->heredoc_fd, 0) == -1)
+			{
+				ft_putstr_fd("Error redirecting heredoc\n", 2);
+				return (0);
+			}
 			close(redr->heredoc_fd);
 			redr->heredoc_fd = -1;
 		}
-		redr = redr->next; 
+		redr = redr->next;
 	}
 	redr = redirect;
 	while (redr)
@@ -154,7 +159,7 @@ int	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 			fd = open(redr->file, O_RDONLY);
 			if (fd == -1)
 				return (ft_error_file(redr->file, exec), 0);
-			dup2(fd, STDIN_FILENO);
+			dup2(fd, 0);
 			close(fd);
 		}
 		else if (redr->type == token_out)
@@ -164,7 +169,7 @@ int	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 			fd = open(redr->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			if (fd == -1)
 				return (ft_error_file(redr->file, exec)), 0;
-			dup2(fd, STDOUT_FILENO);
+			dup2(fd, 1);
 			close(fd);
 		}
 		else if (redr->type == token_appnd)
@@ -172,7 +177,7 @@ int	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
 			fd = open(redr->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 			if (fd == -1)
 				return (ft_error_file(redr->file, exec), 0);
-			dup2(fd, STDOUT_FILENO);
+			dup2(fd, 1);
 			close(fd);
 		}
 		redr = redr->next;
@@ -217,146 +222,23 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 	return (pipe_fd[0]);
 }
 
-void	ft_handle_all_heredoc(t_ast_node *ast, t_exec *exec)
-{
-	t_redirect *redirect;
-
-	if (!ast)
-		return ;
-	redirect = ast->redirects;
-	while (redirect)
-	{
-		if (redirect->type == token_hrdc)
-			redirect->heredoc_fd = ft_handle_heredoc(redirect, exec);
-		redirect = redirect->next;
-	}
-	if (ast->type == AST_PIPE)
-	{
-		ft_handle_all_heredoc(ast->left, exec);
-		ft_handle_all_heredoc(ast->right, exec);
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// int	handle_heredoc(t_redirect *redr, t_exec *exec)
+// void	ft_handle_all_heredoc(t_ast_node *ast, t_exec *exec)
 // {
-// 	char	*line;
-// 	char	*expand_line;
-// 	int		pipe_fd[2];
-// 	int		pid;
+// 	t_redirect *redirect;
 
-// 	if (pipe(pipe_fd) == -1)
+// 	if (!ast)
+// 		return ;
+// 	redirect = ast->redirects;
+// 	while (redirect)
 // 	{
-// 		exec->exit_status = 1;
-// 		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
-// 		return (-1);
+// 		if (redirect->type == token_hrdc)
+// 			redirect->heredoc_fd = ft_handle_heredoc(redirect, exec);
+// 		redirect = redirect->next;
 // 	}
-// 	pid = fork();
-// 	if (pid == -1)
+// 	if (ast->type == AST_PIPE)
 // 	{
-// 		ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
-// 		close(pipe_fd[0]);
-// 		close(pipe_fd[1]);
-// 		return (-1);
+// 		ft_handle_all_heredoc(ast->left, exec);
+// 		ft_handle_all_heredoc(ast->right, exec);
 // 	}
-// 	if (pid == 0)
-// 	{
-// 		close(pipe_fd[0]);
-// 		while (1)
-// 		{
-// 			line = readline("> ");
-// 			if (!line)
-// 				break ;
-// 			if (line && !ft_strcmp(line, redr->file))
-// 			{
-// 				free(line);
-// 				break ;
-// 			}
-// 			if (!redr->quoted)
-// 				expand_line = ft_expand(line, exec);
-// 			else
-// 				expand_line = ft_strdup(line);
-// 			ft_putstr_fd(expand_line, pipe_fd[1]);
-// 			ft_putchar_fd('\n', pipe_fd[1]);
-// 			free(line);
-// 			free(expand_line);
-// 		}
-// 		close(pipe_fd[1]);
-// 		exit(0);
-// 	}
-// 	close(pipe_fd[1]);
-// 	waitpid(pid, NULL, 0);
-// 	return (pipe_fd[0]);
-// }
-
-
-
-// int	ft_apply_redirect(t_redirect *redirect, t_exec *exec)
-// {
-// 	t_redirect	*redr;
-// 	int			fd;
-
-// 	exec->std_fd[0] = dup(STDIN_FILENO);
-// 	exec->std_fd[1] = dup(STDOUT_FILENO);
-// 	redr = redirect;
-// 	while (redr)
-// 	{
-// 		if (redr->type == token_hrdc)
-// 		{
-// 			fd = handle_heredoc(redr, exec);
-// 			if (fd == -1)
-// 				return (0);
-// 			dup2(fd, 0);
-// 			close(fd);
-// 			return (1);
-// 		}
-// 		redr = redr->next;
-// 	}
-// 	redr = redirect;
-// 	while (redr)
-// 	{
-// 		if (redr->type == token_in)
-// 		{
-// 			fd = open(redr->file, O_RDONLY);
-// 			if (fd == -1)
-// 				return (ft_error_file(redr->file, exec), 0);
-// 			dup2(fd, STDIN_FILENO);
-// 			close(fd);
-// 		}
-// 		else if (redr->type == token_out)
-// 		{
-// 			if (!redr->file || !*redr->file)
-// 				return (ft_error_file_expand("$", exec), 0);
-// 			fd = open(redr->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 			if (fd == -1)
-// 				return (ft_error_file(redr->file, exec)), 0;
-// 			dup2(fd, STDOUT_FILENO);
-// 			close(fd);
-// 		}
-// 		else if (redr->type == token_appnd)
-// 		{
-// 			fd = open(redr->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-// 			if (fd == -1)
-// 				return (ft_error_file(redr->file, exec), 0);
-// 			dup2(fd, STDOUT_FILENO);
-// 			close(fd);
-// 		}
-// 		redr = redr->next;
-// 	}
-// 	return (1);
 // }
 
