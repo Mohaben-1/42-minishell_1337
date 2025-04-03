@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/26 16:46:00 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/03/27 15:08:38 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 		execute_builtin(ast, exec);
 	else
 	{
-		ft_handle_heredoc_pipe(ast, exec);
 		pid = fork();
 		if (pid == -1)
 		{
@@ -60,7 +59,8 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 		}
 		if (pid == 0)
 		{
-			ft_exec_ve(ast, exec);
+			if (ft_apply_redirect(ast->redirects, exec))
+				ft_exec_ve(ast, exec);
 			exit(exec->exit_status);
 		}
 		waitpid(pid, &status, 0);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/26 16:07:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/03 20:36:44 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,28 +19,35 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 
 	if (!ast || !ast->child)
 		return ;
-	pid = fork();
-	if (pid == -1)
+	if (ft_apply_redirect(ast->child->redirects, exec))
 	{
-		ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
-		return ;
+		pid = fork();
+		if (pid == -1)
+		{
+			ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
+			return ;
+		}
+		if (pid == 0)
+		{
+			execute_ast(ast->child, exec);
+			exit(exec->exit_status);
+		}
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			exec->exit_status = WEXITSTATUS(status);
+		else
+			exec->exit_status = 1;
 	}
-	if (pid == 0)
-	{
-		execute_ast(ast->child, exec);
-		exit(exec->exit_status);
-	}
-	waitpid(pid, &status, 0);
-	if (WIFEXITED(status))
-		exec->exit_status = WEXITSTATUS(status);
-	else
-		exec->exit_status = 1;
+	ft_restore_std_fd(exec);
 }
+
+
 
 void	execute_ast(t_ast_node *ast, t_exec *exec)
 {
 	if (!ast)
 		return ;
+		
 	if (ast->type == AST_PIPE)
 		ft_execute_pipe(ast, exec);
 	else

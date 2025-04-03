@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/03/24 15:03:43 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:33:24 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,20 +110,45 @@ t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
 	// If there are tokens after closing parenthesis, handle them
 	if (closing->next)
 	{
-		// Check for pipes or logical operators after the subshell
-		if (closing->next->type == token_pipe)
+		// Check for redirections first
+		if (is_redirection(closing->next->type) && closing->next->next)
 		{
-			t_ast_node *pipe_node = create_ast_node(AST_PIPE);
-			pipe_node->left = node;
-			pipe_node->right = parse_pipes(closing->next->next, exec);
-			return pipe_node;
+			// Create a new command node to hold the redirection
+			// t_ast_node *redir_node = create_ast_node(AST_COMMAND);
+			
+			// Temporarily modify tokens to parse redirections
+			t_token_node *redir_tokens = closing->next;
+			node->child->redirects = parse_redirections(&redir_tokens, exec);
+			
+			// Connect the subshell to the redirect command
+			// redir_node->child = node;
+			// node = redir_node;
+			
+			// Update closing->next to be after the redirection
+			tmp = closing->next->next;
 		}
-		else if (closing->next->type == token_and_and || closing->next->type == token_or)
+		else
 		{
-			t_ast_node *log_node = create_ast_node(closing->next->type == token_and_and ? AST_AND_AND : AST_OR_OR);
-			log_node->left = node;
-			log_node->right = parse_logical_ops(closing->next->next, exec);
-			return log_node;
+			tmp = closing->next;
+		}
+		
+		// Check for further operators after potential redirections
+		if (tmp)
+		{
+			if (tmp->type == token_pipe)
+			{
+				t_ast_node *pipe_node = create_ast_node(AST_PIPE);
+				pipe_node->left = node;
+				pipe_node->right = parse_pipes(tmp->next, exec);
+				return pipe_node;
+			}
+			else if (tmp->type == token_and_and || tmp->type == token_or)
+			{
+				t_ast_node *log_node = create_ast_node(tmp->type == token_and_and ? AST_AND_AND : AST_OR_OR);
+				log_node->left = node;
+				log_node->right = parse_logical_ops(tmp->next, exec);
+				return log_node;
+			}
 		}
 	}
 	
@@ -482,7 +507,7 @@ void free_ast(t_ast_node *ast)
 	free(ast);
 }
 
-/* Print the AST with indentation for visualization */
+// /* Print the AST with indentation for visualization */
 void print_ast(t_ast_node *ast, int indent_level)
 {
 	if (!ast)
@@ -562,3 +587,120 @@ void print_ast(t_ast_node *ast, int indent_level)
 	if (ast->child)
 		print_ast(ast->child, indent_level + 1);
 }
+
+
+
+
+
+
+
+
+
+
+// void print_ast(t_ast_node *node, int depth)
+// {
+//     if (!node)
+//         return;
+    
+//     // Create indentation string
+//     char indent[256] = {0};
+//     for (int i = 0; i < depth; i++)
+//         strcat(indent, "  ");
+    
+//     // Print node type
+//     switch (node->type)
+//     {
+//         case AST_AND_AND:
+//             printf("%s&&\n", indent);
+//             break;
+//         case AST_OR_OR:
+//             printf("%s||\n", indent);
+//             break;
+//         case AST_PIPE:
+//             printf("%s|\n", indent);
+//             break;
+//         case AST_SUBSHELL:
+//             printf("%s(Subshell)\n", indent);
+//             break;
+//         case AST_COMMAND:
+//             printf("%sCommand:\n", indent);
+//             break;
+//         default:
+//             printf("%sUnknown Node Type\n", indent);
+//     }
+    
+//     // Print arguments for command nodes
+//     if (node->type == AST_COMMAND)
+//     {
+//         for (int i = 0; i < node->arg_count; i++)
+//         {
+//             char quote_prefix[4] = "";
+//             if (node->arg_quote_types && node->arg_quote_types[i] == AST_DQUOTES)
+//                 strcpy(quote_prefix, "\"");
+//             else if (node->arg_quote_types && node->arg_quote_types[i] == AST_SQUOTES)
+//                 strcpy(quote_prefix, "'");
+            
+//             printf("%s  Arg %d: %s%s%s\n", indent, i, quote_prefix, 
+//                    node->args[i] ? node->args[i] : "(null)", quote_prefix);
+//         }
+        
+//         // Print redirections
+//         t_redirect *redir = node->redirects;
+//         while (redir)
+//         {
+//             const char *redir_type = "Unknown";
+//             switch (redir->type)
+//             {
+//                 case token_in: redir_type = "<"; break;
+//                 case token_out: redir_type = ">"; break;
+//                 case token_hrdc: redir_type = "<<"; break;
+//                 case token_appnd: redir_type = ">>"; break;
+//             }
+//             printf("%s  Redirect: %s %s%s%s\n", indent, redir_type, 
+//                    redir->quoted ? "\"" : "", 
+//                    redir->file ? redir->file : "(null)", 
+//                    redir->quoted ? "\"" : "");
+//             redir = redir->next;
+//         }
+//     }
+    
+//     // Recursively print child/left/right nodes based on node type
+//     if (node->type == AST_SUBSHELL)
+//     {
+//         printf("%s  Subshell Content:\n", indent);
+//         print_ast(node->child, depth + 2);
+//     }
+//     else if (node->type == AST_COMMAND)
+//     {
+//         // No further recursion for command nodes
+//         return;
+//     }
+//     else 
+//     {
+//         // For logical operators, pipes, etc.
+//         if (node->left)
+//         {
+//             printf("%s  Left:\n", indent);
+//             print_ast(node->left, depth + 2);
+//         }
+        
+//         if (node->right)
+//         {
+//             printf("%s  Right:\n", indent);
+//             print_ast(node->right, depth + 2);
+//         }
+//     }
+// }
+
+// /* Wrapper function to print AST with initial depth of 0 */
+// void print_abstract_syntax_tree(t_ast_node *root)
+// {
+//     if (!root)
+//     {
+//         printf("Empty Abstract Syntax Tree\n");
+//         return;
+//     }
+    
+//     printf("Abstract Syntax Tree:\n");
+//     print_ast(root, 0);
+// }
