@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 19:52:19 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 20:46:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int	ft_exec_right_pipe(t_ast_node *ast, t_exec *exec, int *pipe_fd)
 	return (pid);
 }
 
-void	ft_execute_pipe(t_ast_node *node, t_exec *exec)
+void	ft_execute_pipe(t_ast_node *ast, t_exec *exec)
 {
 	int	pipe_fd[2];
 	int	status;
@@ -101,10 +101,15 @@ void	ft_execute_pipe(t_ast_node *node, t_exec *exec)
 		exec->exit_status = 1;
 		return ;
 	}
-	ft_handle_heredoc_pipe(node, exec);
-	pid1 = ft_exec_left_pipe(node->left, exec, pipe_fd);
-	pid2 = ft_exec_right_pipe(node->right, exec, pipe_fd);
-	// ft_close_heredoc_fds(node);
+	ft_handle_heredoc_pipe(ast, exec);
+	if (ast->redirects && ast->redirects->heredoc_fd != -1 && ast->redirects->type == token_hrdc)
+	{
+		dup2(ast->redirects->heredoc_fd, 0);
+		close(ast->redirects->heredoc_fd);
+		ast->redirects->heredoc_fd = -1;
+	}
+	pid1 = ft_exec_left_pipe(ast->left, exec, pipe_fd);
+	pid2 = ft_exec_right_pipe(ast->right, exec, pipe_fd);
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
 	waitpid(pid1, NULL, 0);
