@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/03 20:38:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 17:37:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,19 +233,6 @@ void	ft_restore_std_fd(t_exec *exec)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 #include <termios.h>
 
 void	reset_terminal_mode(void)
@@ -364,7 +351,6 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 	}
 	close(pipe_fd[1]);
 	waitpid(pid, &status, 0);
-	reset_terminal_mode();
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 	{
 		close(pipe_fd[0]);

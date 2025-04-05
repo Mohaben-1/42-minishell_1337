@@ -11,6 +11,9 @@ export 1VAR=abc
 export VAR+abc
 export VAR+
 
+{"type": "error", "msg": "Something went wrong"}
+{"type": "info", "msg": "All good"}
+{"type": "error", "msg": "Missing parameter"}
 
 
 ls > $ss

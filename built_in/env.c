@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:42:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 14:14:21 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 13:13:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,12 @@ void	ft_env(t_exec *exec)
 	if (!*(exec->env))
 		return ;
 	current = *(exec->env);
+	if (!ft_get_env(current, "PATH"))
+	{
+		ft_putstr_fd("minishell: env: No such file or directory\n", 2);
+		exec->exit_status = 127;
+		return ;
+	}
 	while (current)
 	{
 		ft_putstr_fd(current->var, 1);

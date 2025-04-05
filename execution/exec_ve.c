@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 15:31:26 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 13:32:37 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ void	print_arg(char **args)
 		printf("@%s@\n", args[i]);
 }
 
-
 void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 {
 	char	**paths;
@@ -115,6 +114,13 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 	if (cmd && ft_strchr(cmd, '/') && !access(cmd, X_OK))
 		execve(node->args[0], node->args, envp);
 	path = ft_get_path(envp);
+	if (!path)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(node->args[0], 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		exit(127);
+	}
 	paths = ft_split(path, ':');
 	i = -1;
 	while (paths[++i] && node->args[0][0] != '.')
@@ -126,5 +132,5 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 			execve(cmd, node->args, envp);
 		free(cmd);
 	}
-	ft_error_cmd(node->args[0], paths, 127);
+	ft_error_cmd(*(exec->env), node->args[0], paths, 127);
 }

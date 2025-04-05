@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 12:24:51 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/03 16:59:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 19:46:41 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,27 @@ void	handle_heredoc_node(t_ast_node *ast, t_exec *exec)
 	}
 }
 
+void	ft_close_heredoc_fds(t_ast_node *ast)
+{
+	t_redirect	*redr;
+
+	if (!ast)
+		return ;
+	redr = ast->redirects;
+	while (redr)
+	{
+		if (redr->type == token_hrdc && redr->heredoc_fd != -1)
+			close(redr->heredoc_fd);
+		redr = redr->next;
+	}
+}
+
 void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec)
 {
 	if (!ast)
 		return ;
 	handle_heredoc_node(ast, exec);
 	if (ast->type == AST_PIPE)
-	{
-		ft_handle_heredoc_pipe(ast->left, exec);
-		ft_handle_heredoc_pipe(ast->right, exec);
-	}
-	else if (ast->type == AST_AND_AND || ast->type == AST_OR_OR)
 	{
 		ft_handle_heredoc_pipe(ast->left, exec);
 		ft_handle_heredoc_pipe(ast->right, exec);

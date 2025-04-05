@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/27 14:10:20 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 19:43:46 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
+#include <signal.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -115,7 +116,7 @@ void	free_split(char **s);
 int		ft_count_args(char **cmd_split);
 
 void	ft_error(char *err, int exit_status);
-void	ft_error_cmd(char *cmd, char **paths, int exit_status);
+void	ft_error_cmd(t_env *env, char *cmd, char **paths, int exit_status);
 void	ft_error_file(char *file, t_exec *exec);
 void	ft_error_file_expand(char *file, t_exec *exec);
 
@@ -181,7 +182,11 @@ void	ft_handle_all_heredoc(t_ast_node *ast, t_exec *exec);
 
 void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec);
 void	handle_heredoc_node(t_ast_node *ast, t_exec *exec);
-
+void	ft_close_heredoc_fds(t_ast_node *ast);
 int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
+
+
+
+void	ft_handle_sigint(int sig);
 
 #endif
