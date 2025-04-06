@@ -6,11 +6,31 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 20:46:14 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 13:29:16 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+
+void ft_close_heredoc_fds(t_ast_node *ast) {
+    if (!ast) return;
+
+    t_redirect *redirect = ast->redirects;
+    while (redirect) {
+        if (redirect->type == token_hrdc && redirect->heredoc_fd != -1) {
+            close(redirect->heredoc_fd);
+            redirect->heredoc_fd = -1;
+        }
+        redirect = redirect->next;
+    }
+
+    if (ast->type == AST_PIPE) {
+        ft_close_heredoc_fds(ast->left);
+        ft_close_heredoc_fds(ast->right);
+    }
+}
+
 
 int	ft_exec_left_pipe(t_ast_node *ast, t_exec *exec, int *pipe_fd)
 {
@@ -45,6 +65,7 @@ int	ft_exec_left_pipe(t_ast_node *ast, t_exec *exec, int *pipe_fd)
 		}
 		else if (ast->type == AST_SUBSHELL)
 			execute_subshell(ast, exec);
+		// wait(NULL);
 		exit(exec->exit_status);
 	}
 	return (pid);
@@ -83,6 +104,7 @@ int	ft_exec_right_pipe(t_ast_node *ast, t_exec *exec, int *pipe_fd)
 		}
 		else if (ast->type == AST_SUBSHELL)
 			execute_subshell(ast, exec);
+		// wait(NULL);
 		exit(exec->exit_status);
 	}
 	return (pid);

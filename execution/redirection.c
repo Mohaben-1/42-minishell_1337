@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 17:37:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 12:59:33 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,7 +307,7 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 	char	*line;
 	int		pipe_fd[2];
 	int		pid;
-	int		status;
+	// int		status;
 
 	if (pipe(pipe_fd) == -1)
 	{
@@ -350,11 +350,6 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 		exit(0);
 	}
 	close(pipe_fd[1]);
-	waitpid(pid, &status, 0);
-	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-	{
-		close(pipe_fd[0]);
-		return (-1);
-	}
+	waitpid(pid, NULL, 0);
 	return (pipe_fd[0]);
 }

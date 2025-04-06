@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 19:43:46 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/05 20:49:05 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,12 +177,9 @@ void	print_arg(char **args);
 
 
 
-void	ft_handle_all_heredoc(t_ast_node *ast, t_exec *exec);
-
 
 void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec);
 void	handle_heredoc_node(t_ast_node *ast, t_exec *exec);
-void	ft_close_heredoc_fds(t_ast_node *ast);
 int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
 
 
