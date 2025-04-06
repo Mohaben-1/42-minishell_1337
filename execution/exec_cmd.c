@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 18:53:33 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:24:36 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,10 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 
 	if (!ast || !ast->args)
 		return ;
-	
 	if (ft_is_builtin(ast->args[0]))
 	{
 		if (ft_apply_redirect(ast, exec))
 			execute_builtin(ast, exec);
-		ft_restore_std_fd(exec);
 	}
 	else
 	{
@@ -74,5 +72,4 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 		else
 			exec->exit_status = 1;
 	}
-	ft_restore_std_fd(exec);
 }

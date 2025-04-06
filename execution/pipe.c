@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 19:39:27 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:48:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,8 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec)
 		exec->exit_status = 1;
 		return ;
 	}
+	ft_handle_heredoc_pipe(ast, exec);
 	pid1 = ft_exec_left_pipe(ast->left, exec, pipe_fd);
-	if (ast->left->left)
-		waitpid(pid1, NULL, 0);
 	pid2 = ft_exec_right_pipe(ast->right, exec, pipe_fd);
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
@@ -99,5 +98,4 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec)
 		exec->exit_status = WEXITSTATUS(status);
 	else
 		exec->exit_status = 1;
-	ft_restore_std_fd(exec);
 }

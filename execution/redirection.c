@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 19:27:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:37:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 		if (!redr->quoted)
 			line_expaned = ft_expand(line, exec);
 		else
-			line = ft_strdup(line);
+			line_expaned = ft_strdup(line);
 		ft_putstr_fd(line_expaned, pipe_fd[1]);
 		ft_putchar_fd('\n', pipe_fd[1]);
 		free(line);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 12:24:51 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 19:21:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:28:11 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,3 @@ void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec)
 		ft_handle_heredoc_pipe(ast->right, exec);
 	}
 }
-
