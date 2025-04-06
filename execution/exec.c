@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 12:48:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 18:33:51 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,29 +42,23 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 {
 	if (!ast)
 		return ;
-	if (ast->type == AST_PIPE)
+	if (ast->type == AST_COMMAND)
+		execute_command(ast, exec);
+	else if (ast->type == AST_PIPE)
 		ft_execute_pipe(ast, exec);
-	else
+	else if (ast->type == AST_AND_AND)
 	{
-		if (ft_apply_redirect(ast->redirects, exec))
-		{
-			if (ast->type == AST_COMMAND)
-				execute_command(ast, exec);
-			else if (ast->type == AST_AND_AND)
-			{
-				execute_ast(ast->left, exec);
-				if (exec->exit_status == 0)
-					execute_ast(ast->right, exec);
-			}
-			else if (ast->type == AST_OR_OR)
-			{
-				execute_ast(ast->left, exec);
-				if (exec->exit_status != 0)
-					execute_ast(ast->right, exec);
-			}
-			else if (ast->type == AST_SUBSHELL)
-				execute_subshell(ast, exec);
-		}
-		ft_restore_std_fd(exec);
+		execute_ast(ast->left, exec);
+		if (exec->exit_status == 0)
+			execute_ast(ast->right, exec);
 	}
+	else if (ast->type == AST_OR_OR)
+	{
+		execute_ast(ast->left, exec);
+		if (exec->exit_status != 0)
+			execute_ast(ast->right, exec);
+	}
+	else if (ast->type == AST_SUBSHELL)
+		execute_subshell(ast, exec);
+	ft_restore_std_fd(exec);
 }

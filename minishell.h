@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 20:49:05 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 19:13:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ void			execute_subshell(t_ast_node *ast, t_exec *exec);
 
 
 void			ft_restore_std_fd(t_exec *exec);
-int				ft_apply_redirect(t_redirect *redirect, t_exec *exec);
+int				ft_apply_redirect(t_ast_node *node, t_exec *exec);
 
 
 
@@ -182,6 +182,8 @@ void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec);
 void	handle_heredoc_node(t_ast_node *ast, t_exec *exec);
 int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
 
+
+void ft_preprocess_heredocs(t_ast_node *ast, t_exec *exec);
 
 
 void	ft_handle_sigint(int sig);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 13:29:16 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/06 19:39:27 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,25 +47,7 @@ int	ft_exec_left_pipe(t_ast_node *ast, t_exec *exec, int *pipe_fd)
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], 1);
 		close(pipe_fd[1]);
-		if (ast->type == AST_PIPE)
-			ft_execute_pipe(ast, exec);
-		else if (ast->type == AST_COMMAND)
-			execute_command(ast, exec);
-		else if (ast->type == AST_AND_AND)
-		{
-			execute_ast(ast->left, exec);
-			if (exec->exit_status == 0)
-				execute_ast(ast->right, exec);
-		}
-		else if (ast->type == AST_OR_OR)
-		{
-			execute_ast(ast->left, exec);
-			if (exec->exit_status != 0)
-				execute_ast(ast->right, exec);
-		}
-		else if (ast->type == AST_SUBSHELL)
-			execute_subshell(ast, exec);
-		// wait(NULL);
+		execute_ast(ast, exec);
 		exit(exec->exit_status);
 	}
 	return (pid);
@@ -86,25 +68,7 @@ int	ft_exec_right_pipe(t_ast_node *ast, t_exec *exec, int *pipe_fd)
 		close(pipe_fd[1]);
 		dup2(pipe_fd[0], 0);
 		close(pipe_fd[0]);
-		if (ast->type == AST_PIPE)
-			ft_execute_pipe(ast, exec);
-		else if (ast->type == AST_COMMAND)
-			execute_command(ast, exec);
-		else if (ast->type == AST_AND_AND)
-		{
-			execute_ast(ast->left, exec);
-			if (exec->exit_status == 0)
-				execute_ast(ast->right, exec);
-		}
-		else if (ast->type == AST_OR_OR)
-		{
-			execute_ast(ast->left, exec);
-			if (exec->exit_status != 0)
-				execute_ast(ast->right, exec);
-		}
-		else if (ast->type == AST_SUBSHELL)
-			execute_subshell(ast, exec);
-		// wait(NULL);
+		execute_ast(ast, exec);
 		exit(exec->exit_status);
 	}
 	return (pid);
@@ -123,14 +87,9 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec)
 		exec->exit_status = 1;
 		return ;
 	}
-	ft_handle_heredoc_pipe(ast, exec);
-	if (ast->redirects && ast->redirects->heredoc_fd != -1 && ast->redirects->type == token_hrdc)
-	{
-		dup2(ast->redirects->heredoc_fd, 0);
-		close(ast->redirects->heredoc_fd);
-		ast->redirects->heredoc_fd = -1;
-	}
 	pid1 = ft_exec_left_pipe(ast->left, exec, pipe_fd);
+	if (ast->left->left)
+		waitpid(pid1, NULL, 0);
 	pid2 = ft_exec_right_pipe(ast->right, exec, pipe_fd);
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
