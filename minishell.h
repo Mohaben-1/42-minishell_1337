@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 16:30:43 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/07 18:48:15 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,8 +178,6 @@ void	execute_builtin(t_ast_node *node, t_exec *exec);
 int		ft_is_builtin(char *cmd);
 
 
-void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec);
-void	handle_heredoc_node(t_ast_node *ast, t_exec *exec);
 int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
 
 

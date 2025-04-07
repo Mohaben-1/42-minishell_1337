@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 18:41:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/07 18:44:03 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,20 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 				redr->heredoc_fd = ft_handle_heredoc(redr, exec);
 			if (redr->heredoc_fd == -1)
 				return 0;
-			if (dup2(redr->heredoc_fd, 0) == -1)
-				return 0;
-			close(redr->heredoc_fd);
-			redr->heredoc_fd = -1;
 		}
 		redr = redr->next;
 	}
 	redr = ast->redirects;
 	while (redr)
 	{
-		if (redr->type == token_in)
+		if (redr->type == token_hrdc)
+		{
+			if (dup2(redr->heredoc_fd, 0) == -1)
+				return (0);
+			close(redr->heredoc_fd);
+			redr->heredoc_fd = -1;
+		}
+		else if (redr->type == token_in)
 		{
 			fd = open(redr->file, O_RDONLY);
 			if (fd == -1)
