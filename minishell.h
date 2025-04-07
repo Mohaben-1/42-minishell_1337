@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 16:22:55 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:30:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ typedef struct s_exec
 	int			exit_status;
 }	t_exec;
 
-char	*get_next_line(int fd);
 size_t	ft_strlen(char *s);
 int		ft_isdigit(char c);
 int		ft_isalpha(int c);
