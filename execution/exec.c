@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 20:42:58 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/07 13:19:56 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,17 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 
 void	execute_ast(t_ast_node *ast, t_exec *exec)
 {
+	int	cmd_count;
+
 	if (!ast)
 		return ;
 	if (ast->type == AST_COMMAND)
 		execute_command(ast, exec);
 	else if (ast->type == AST_PIPE)
-		ft_execute_pipe(ast, exec);
+	{
+		cmd_count = count_pipe_cmd(ast);
+		ft_execute_pipe(ast, exec, cmd_count);
+	}
 	else if (ast->type == AST_AND_AND)
 	{
 		execute_ast(ast->left, exec);

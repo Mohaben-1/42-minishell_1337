@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 19:13:14 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:22:55 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,10 @@
 # include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
-#include <signal.h>
+# include <signal.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
-# endif
 
 typedef enum e_token_type
 {
@@ -43,11 +39,22 @@ typedef enum e_token_type
 	token_paren_close,
 }	t_token_type;
 
+typedef enum e_ast_type
+{
+	AST_COMMAND,
+	AST_PIPE,
+	AST_AND_AND,
+	AST_OR_OR,
+	AST_SUBSHELL,
+	AST_DQUOTES,
+	AST_SQUOTES
+}	t_ast_type;
+
 typedef struct s_token_node
 {
-	t_token_type	type;
-	char			*data;
-	int				spaced;
+	t_token_type		type;
+	char				*data;
+	int					spaced;
 	struct s_token_node	*next;
 }	t_token_node;
 
@@ -70,23 +77,15 @@ typedef struct s_redirect
 
 typedef struct s_ast_node
 {
-    enum {
-        AST_COMMAND,       // Simple command with args
-        AST_PIPE,          // Pipe operator
-        AST_AND_AND,       // && operator
-        AST_OR_OR,         // || operator
-        AST_SUBSHELL,	   // Commands in parentheses
-		AST_DQUOTES,       // Double quoted string
-        AST_SQUOTES        // Single quoted string
-    } type;
-    char **args;           // Command and its arguments
-    int arg_count;         // Number of arguments
-    t_redirect *redirects; // List of redirections for this command
-    struct s_ast_node *left;
-    struct s_ast_node *right;
-    int *arg_quote_types;  // New field to track quote types for each argument
-    struct s_ast_node *child;
-} t_ast_node;
+	t_ast_type			type;
+	char				**args;
+	int					arg_count;
+	t_redirect			*redirects;
+	struct s_ast_node	*left;
+	struct s_ast_node	*right;
+	int					*arg_quote_types;
+	struct s_ast_node	*child;
+}	t_ast_node;
 
 typedef struct s_exec
 {
@@ -162,7 +161,7 @@ void			print_ast(t_ast_node *ast, int indent_level);
 
 void			execute_ast(t_ast_node *ast, t_exec *exec);
 void			execute_command(t_ast_node *node, t_exec *exec);
-void			ft_execute_pipe(t_ast_node *node, t_exec *exec);
+void			ft_execute_pipe(t_ast_node *node, t_exec *exec, int cmd_count);
 void			execute_subshell(t_ast_node *ast, t_exec *exec);
 
 
@@ -173,9 +172,11 @@ int				ft_apply_redirect(t_ast_node *node, t_exec *exec);
 
 char			*ft_expand(char *arg, t_exec *exec);
 
-void	print_arg(char **args);
 
 
+
+void	execute_builtin(t_ast_node *node, t_exec *exec);
+int		ft_is_builtin(char *cmd);
 
 
 void	ft_handle_heredoc_pipe(t_ast_node *ast, t_exec *exec);
@@ -183,9 +184,13 @@ void	handle_heredoc_node(t_ast_node *ast, t_exec *exec);
 int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
 
 
-void ft_preprocess_heredocs(t_ast_node *ast, t_exec *exec);
-
 
 void	ft_handle_sigint(int sig);
+
+
+
+
+int	count_pipe_cmd(t_ast_node *ast);
+
 
 #endif

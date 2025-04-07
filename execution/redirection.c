@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 20:37:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:18:03 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,17 @@ void	reset_terminal_mode(void)
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag |= (ICANON | ECHO);
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+}
+
+int	check_hrdc_priority(t_redirect *redirect)
+{
+	while (redirect)
+	{
+		if (redirect->type == token_hrdc)
+			return (1);
+		redirect = redirect->next;
+	}
+	return (0);
 }
 
 int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
@@ -70,7 +81,8 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 			fd = open(redr->file, O_RDONLY);
 			if (fd == -1)
 				return (ft_error_file(redr->file, exec), 0);
-			dup2(fd, 0);
+			if (!check_hrdc_priority(redr))
+				dup2(fd, 0);
 			close(fd);
 		}
 		else if (redr->type == token_out)
@@ -96,59 +108,6 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 	return 1;
 }
 
-// int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
-// {
-// 	char	*expand_line;
-// 	char	*line;
-// 	int		pipe_fd[2];
-// 	int		pid;
-// 	// int		status;
-
-// 	if (pipe(pipe_fd) == -1)
-// 	{
-// 		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
-// 		exec->exit_status = 1;
-// 		return (-1);
-// 	}
-// 	pid = fork();
-// 	if (pid == -1)
-// 	{
-// 		ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
-// 		close(pipe_fd[0]);
-// 		close(pipe_fd[1]);
-// 		exec->exit_status = 1;
-// 		return (-1);
-// 	}
-// 	if (pid == 0)
-// 	{
-// 		close(pipe_fd[0]);
-// 		while (1)
-// 		{
-// 			line = readline("> ");
-// 			if (!line)
-// 				break ;
-// 			if (!ft_strcmp(line, redr->file))
-// 			{
-// 				free(line);
-// 				break ;
-// 			}
-// 			if (!redr->quoted)
-// 				expand_line = ft_expand(line, exec);
-// 			else
-// 				expand_line = ft_strdup(line);
-// 			ft_putstr_fd(expand_line, pipe_fd[1]);
-// 			ft_putchar_fd('\n', pipe_fd[1]);
-// 			free(line);
-// 			free(expand_line);
-// 		}
-// 		close(pipe_fd[1]);
-// 		exit(0);
-// 	}
-// 	close(pipe_fd[1]);
-// 	waitpid(pid, NULL, 0);
-// 	return (pipe_fd[0]);
-// }
-
 int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 {
 	char	*line_expaned;
@@ -157,7 +116,7 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 
 	if (pipe(pipe_fd) == -1)
 	{
-		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable", 2);
+		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable\n", 2);
 		exec->exit_status = 1;
 		return (-1);
 	}
