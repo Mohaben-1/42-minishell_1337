@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/06 19:27:08 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 13:34:04 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -383,98 +383,95 @@ int count_args(t_token_node *tokens)
 /* Collect arguments into a string array */
 char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *exec)
 {
-    // Allocate memory for arguments array
-    char **args = malloc(sizeof(char *) * (count + 1));
-    if (!args)
-        return NULL;
-    
-    *quote_types = malloc(sizeof(int) * count);
-    if (!(*quote_types))
-    {
-        free(args);
-        return NULL;
-    }
-    
-    // Initialize variables
-    int i = 0;
-    t_token_node *tmp = tokens;
-    char *current_arg = NULL;
-    int current_quote_type = 0;
-    int prev_was_arg = 0;
+	// Allocate memory for arguments array
+	char **args = malloc(sizeof(char *) * (count + 1));
+	if (!args)
+		return NULL;
+	
+	*quote_types = malloc(sizeof(int) * count);
+	if (!(*quote_types))
+	{
+		free(args);
+		return NULL;
+	}
+	
+	// Initialize variables
+	int i = 0;
+	t_token_node *tmp = tokens;
+	char *current_arg = NULL;
+	int current_quote_type = 0;
+	int prev_was_arg = 0;
 
-    while (tmp && i < count)
-    {
-        if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
-        {
-            char *expanded_token;
-            if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
-                expanded_token = ft_expand(tmp->data, exec);
-            else
-                expanded_token = ft_strdup(tmp->data);
-            
-            // Check if we should start a new argument or merge with previous
-            if (!prev_was_arg || tmp->spaced)
-            {
-                // If we have a previous argument in progress, store it
-                if (current_arg)
-                {
-                    args[i] = current_arg;
-                    (*quote_types)[i] = current_quote_type;
-                    i++;
-                }
-                
-                // Start a new argument
-                current_arg = expanded_token;
-                
-                // Store the quote type of the first part
-                if (tmp->type == token_dquote)
-                    current_quote_type = AST_DQUOTES;
-                else if (tmp->type == token_squote)
-                    current_quote_type = AST_SQUOTES;
-                else
-                    current_quote_type = 0;
-            }
-            else
-            {
-                // Merge with the current argument (no space between tokens)
-                char *merged = ft_strjoin(current_arg, expanded_token);
-                free(current_arg);
-                free(expanded_token);
-                current_arg = merged;
-                
-                // Keep the quote type of the first part
-            }
-            
-            prev_was_arg = 1;
-        }
-        else
-        {
-            // Non-argument token encountered, store current argument if any
-            if (current_arg)
-            {
-                args[i] = current_arg;
-                (*quote_types)[i] = current_quote_type;
-                i++;
-                current_arg = NULL;
-            }
-            
-            prev_was_arg = 0;
-        }
-        
-        tmp = tmp->next;
-    }
-    // Store the last argument if any
-    if (current_arg)
-    {
-        args[i] = current_arg;
-        (*quote_types)[i] = current_quote_type;
-        i++;
-    }
-    
-    // NULL-terminate the array
-    args[i] = NULL;
-    
-    return args;
+	while (tmp && i < count)
+	{
+		if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
+		{
+			char *expanded_token;
+			if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
+				expanded_token = ft_expand(tmp->data, exec);
+			else
+				expanded_token = ft_strdup(tmp->data);
+			
+			// Check if we should start a new argument or merge with previous
+			if (!prev_was_arg || tmp->spaced)
+			{
+				// If we have a previous argument in progress, store it
+				if (current_arg)
+				{
+					args[i] = current_arg;
+					(*quote_types)[i] = current_quote_type;
+					i++;
+				}
+				
+				// Start a new argument
+				current_arg = expanded_token;
+				
+				// Store the quote type of the first part
+				if (tmp->type == token_dquote)
+					current_quote_type = AST_DQUOTES;
+				else if (tmp->type == token_squote)
+					current_quote_type = AST_SQUOTES;
+				else
+					current_quote_type = 0;
+			}
+			else
+			{
+				char *merged = ft_strjoin(current_arg, expanded_token);
+				free(current_arg);
+				free(expanded_token);
+				current_arg = merged;
+			}
+			
+			prev_was_arg = 1;
+		}
+		else
+		{
+			// Non-argument token encountered, store current argument if any
+			if (current_arg)
+			{
+				args[i] = current_arg;
+				(*quote_types)[i] = current_quote_type;
+				i++;
+				current_arg = NULL;
+			}
+			
+			prev_was_arg = 0;
+		}
+		
+		tmp = tmp->next;
+	}
+	// Store the last argument if any
+	if (current_arg)
+	{
+		args[i] = current_arg;
+		(*quote_types)[i] = current_quote_type;
+		i++;
+	}
+	
+	// NULL-terminate the array
+	args[i] = NULL;
+	
+	return args;
 }
 
 /* Free the AST recursively */
@@ -603,12 +600,12 @@ void print_ast(t_ast_node *ast, int indent_level)
 // {
 //     if (!node)
 //         return;
-    
+	
 //     // Create indentation string
 //     char indent[256] = {0};
 //     for (int i = 0; i < depth; i++)
 //         strcat(indent, "  ");
-    
+	
 //     // Print node type
 //     switch (node->type)
 //     {
@@ -630,7 +627,7 @@ void print_ast(t_ast_node *ast, int indent_level)
 //         default:
 //             printf("%sUnknown Node Type\n", indent);
 //     }
-    
+	
 //     // Print arguments for command nodes
 //     if (node->type == AST_COMMAND)
 //     {
@@ -641,11 +638,11 @@ void print_ast(t_ast_node *ast, int indent_level)
 //                 strcpy(quote_prefix, "\"");
 //             else if (node->arg_quote_types && node->arg_quote_types[i] == AST_SQUOTES)
 //                 strcpy(quote_prefix, "'");
-            
+			
 //             printf("%s  Arg %d: %s%s%s\n", indent, i, quote_prefix, 
 //                    node->args[i] ? node->args[i] : "(null)", quote_prefix);
 //         }
-        
+		
 //         // Print redirections
 //         t_redirect *redir = node->redirects;
 //         while (redir)
@@ -665,7 +662,7 @@ void print_ast(t_ast_node *ast, int indent_level)
 //             redir = redir->next;
 //         }
 //     }
-    
+	
 //     // Recursively print child/left/right nodes based on node type
 //     if (node->type == AST_SUBSHELL)
 //     {
@@ -685,7 +682,7 @@ void print_ast(t_ast_node *ast, int indent_level)
 //             printf("%s  Left:\n", indent);
 //             print_ast(node->left, depth + 2);
 //         }
-        
+		
 //         if (node->right)
 //         {
 //             printf("%s  Right:\n", indent);
@@ -702,7 +699,7 @@ void print_ast(t_ast_node *ast, int indent_level)
 //         printf("Empty Abstract Syntax Tree\n");
 //         return;
 //     }
-    
+	
 //     printf("Abstract Syntax Tree:\n");
 //     print_ast(root, 0);
 // }

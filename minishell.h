@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 18:48:15 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 13:39:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,6 @@ typedef enum e_token_type
 	token_paren_close,
 }	t_token_type;
 
-typedef enum e_ast_type
-{
-	AST_COMMAND,
-	AST_PIPE,
-	AST_AND_AND,
-	AST_OR_OR,
-	AST_SUBSHELL,
-	AST_DQUOTES,
-	AST_SQUOTES
-}	t_ast_type;
-
 typedef struct s_token_node
 {
 	t_token_type		type;
@@ -77,7 +66,16 @@ typedef struct s_redirect
 
 typedef struct s_ast_node
 {
-	t_ast_type			type;
+	enum
+	{
+		AST_COMMAND,
+		AST_PIPE,
+		AST_AND_AND,
+		AST_OR_OR,
+		AST_SUBSHELL,
+		AST_DQUOTES,
+		AST_SQUOTES
+	}	type;
 	char				**args;
 	int					arg_count;
 	t_redirect			*redirects;

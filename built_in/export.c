@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 14:15:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 12:41:44 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,10 +198,12 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 {
 	char	*var;
 	char	*value;
+	int		err_flag;
 	int		i;
-
+	
 	ft_merge_quoted_args(ast);
-	if (!ast->args[1] || !*ast->args[1])
+	err_flag = 0;
+	if (ast->arg_count == 1)
 		ft_print_export(*(exec->env));
 	else
 	{
@@ -211,6 +213,7 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 			if (!ft_check_var_name(ast->args[i]))
 			{
 				ft_err_exprt(ast->args[i]);
+				err_flag = 1;
 				continue ;
 			}
 			if (ft_strchr(ast->args[i], '='))
@@ -221,5 +224,8 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 			}
 		}
 	}
-	exec->exit_status = 0;
+	if (!err_flag)
+		exec->exit_status = 0;
+	else
+		exec->exit_status = 1;
 }

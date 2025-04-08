@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/03 10:54:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 12:41:34 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,57 +382,91 @@ t_token_node	*ft_tokenize(char *input)
 	head = NULL;
 	current = NULL;
 	while (input && input[i])
-	{
-		
-			while (input[i] && is_whitespace(input[i]))
-				i++;
+    {
+        while (input[i] && is_whitespace(input[i]))
+            i++;
 
-        	if (input[i] == '"' || input[i] == '\'')
-        	{
-            	ft_handle_quotes(input, &i, &head, &current, &error);
-				if (error)
-					break;
-        	}
-			else if (input[i] == '|' && input[i + 1] == '|')
-			{
-				ft_add_token(&head, &current, token_or, "||", 0);
-				i++;
-			}
-			else if (input[i] == '&' && (!input[i + 1] || is_whitespace(input[i + 1])))
-			{
-				write(2, "syntax error near unexpected token `&'\n", 39);
-				ft_token_node_free(&head);
-        		return (NULL);
-			}
-			else if (input[i] == '&' && input[i + 1] == '&')
-			{
-				ft_add_token(&head, &current, token_and_and, "&&", 0);
-				i++;
-			}
-			else if (input[i] == '<' && input[i + 1] == '<')
-			{
-				ft_add_token(&head, &current, token_hrdc, "<<", 0);
-				i++;
-			}
-			else if (input[i] == '>' && input[i + 1] == '>')
-			{
-				ft_add_token(&head, &current, token_appnd, ">>", 0);
-				i++;
-			}
-			else if (input[i] == '(')
-				ft_add_token(&head, &current, token_paren_open, "(", 0);
-			else if (input[i] == ')')
-				ft_add_token(&head, &current, token_paren_close, ")", 0);
-			else if (input[i] == '|')
-				ft_add_token(&head, &current, token_pipe, "|", 0);
-			else if (input[i] == '<')
-				ft_add_token(&head, &current, token_in, "<", 0);
-			else if (input[i] == '>')
-				ft_add_token(&head, &current, token_out, ">", 0);
-			else if (input[i])
-				ft_handle_str(input, &i, &head, &current);
-			i++;
-	}
+        if (!input[i])
+            break;
+
+        if (input[i] == '"' || input[i] == '\'')
+        {
+            ft_handle_quotes(input, &i, &head, &current, &error);
+            if (error)
+                break;
+            // Don't increment i again, ft_handle_quotes already advances it
+        }
+        else if (input[i] == '|' && input[i + 1] == '|')
+        {
+            ft_add_token(&head, &current, token_or, "||", 0);
+            i += 2; // Skip both characters explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '&' && (!input[i + 1] || is_whitespace(input[i + 1])))
+        {
+            write(2, "syntax error near unexpected token `&'\n", 39);
+            ft_token_node_free(&head);
+            return (NULL);
+        }
+        else if (input[i] == '&' && input[i + 1] == '&')
+        {
+            ft_add_token(&head, &current, token_and_and, "&&", 0);
+            i += 2; // Skip both characters explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '<' && input[i + 1] == '<')
+        {
+            ft_add_token(&head, &current, token_hrdc, "<<", 0);
+            i += 2; // Skip both characters explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '>' && input[i + 1] == '>')
+        {
+            ft_add_token(&head, &current, token_appnd, ">>", 0);
+            i += 2; // Skip both characters explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '(')
+        {
+            ft_add_token(&head, &current, token_paren_open, "(", 0);
+            i++; // Skip one character explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == ')')
+        {
+            ft_add_token(&head, &current, token_paren_close, ")", 0);
+            i++; // Skip one character explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '|')
+        {
+            ft_add_token(&head, &current, token_pipe, "|", 0);
+            i++; // Skip one character explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '<')
+        {
+            ft_add_token(&head, &current, token_in, "<", 0);
+            i++; // Skip one character explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i] == '>')
+        {
+            ft_add_token(&head, &current, token_out, ">", 0);
+            i++; // Skip one character explicitly
+            continue; // Skip the increment at the end
+        }
+        else if (input[i])
+        {
+            ft_handle_str(input, &i, &head, &current);
+            // Don't increment i again, ft_handle_str already advances it
+            // But we need to continue to skip the increment at the end
+            continue;
+        }
+        
+        // We only reach here if none of the continue statements were hit
+        i++;
+    }
 	ft_token_syntax_error(head, &error);
 	if (error)
     {

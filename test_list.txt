@@ -11,16 +11,12 @@ export 1VAR=abc
 export VAR+abc
 export VAR+
 
-{"type": "error", "msg": "Something went wrong"}
-{"type": "info", "msg": "All good"}
-{"type": "error", "msg": "Missing parameter"}
 
+echo $?HELLO
 
 ls > $ss
-minishell: No such file or directory
-Makefile        execution       minishell.c     parsing         test_list.txt
-built_in        minishell       minishell.h     str_utils       utils
 
+(ls | cat) > out2 > out3 && pwd
 
 echo hello world
 echo -n hello
@@ -44,3 +40,14 @@ cd .
 
 
 
+<< f cat << eof
+cat << A << B
+cat < file.txt << EOF
+sleep 3 | ls | cat << f
+
+
+$EMPTY echo hi
+$PWD
+$DD ls
+$?
+$

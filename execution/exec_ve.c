@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 13:32:37 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:20:46 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,15 +89,6 @@ char	**ft_set_envp(t_env *env)
 	return (envp);
 }
 
-void	print_arg(char **args)
-{
-	int	i;
-
-	i = -1;
-	while (args[++i])
-		printf("@%s@\n", args[i]);
-}
-
 void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 {
 	char	**paths;
@@ -107,7 +98,7 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 	int		i;
 
 	signal(SIGQUIT, SIG_DFL);
-	if (!node->args[0] || !*node->args[0])
+	if (!node->args[0])
 		exit(0);
 	envp = ft_set_envp(*(exec->env));
 	cmd = node->args[0];

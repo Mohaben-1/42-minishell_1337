@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/06 20:24:36 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 12:38:54 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,21 @@ int	ft_is_builtin(char *cmd)
 	return (0);
 }
 
-void	execute_builtin(t_ast_node *node, t_exec *exec)
+void	execute_builtin(t_ast_node *ast, t_exec *exec)
 {
-	if (!ft_strcmp(node->args[0], "unset"))
-		ft_unset(node->args, exec);
-	else if (!ft_strcmp(node->args[0], "exit"))
-		ft_exit(node->args, exec);
-	else if (!ft_strcmp(node->args[0], "pwd"))
+	if (!ft_strcmp(ast->args[0], "unset"))
+		ft_unset(ast->args, exec);
+	else if (!ft_strcmp(ast->args[0], "exit"))
+		ft_exit(ast->args, exec);
+	else if (!ft_strcmp(ast->args[0], "pwd"))
 		ft_pwd(exec);
-	else if (!ft_strcmp(node->args[0], "export"))
-		ft_export(node, exec);
-	else if (!ft_strcmp(node->args[0], "cd"))
-		ft_cd(node->args, exec);
-	else if (!ft_strcmp(node->args[0], "echo"))
-		ft_echo(node->args, exec);
-	else if (!ft_strcmp(node->args[0], "env"))
+	else if (!ft_strcmp(ast->args[0], "export"))
+		ft_export(ast, exec);
+	else if (!ft_strcmp(ast->args[0], "cd"))
+		ft_cd(ast->args, exec);
+	else if (!ft_strcmp(ast->args[0], "echo"))
+		ft_echo(ast->args, exec);
+	else if (!ft_strcmp(ast->args[0], "env"))
 		ft_env(exec);
 }
 

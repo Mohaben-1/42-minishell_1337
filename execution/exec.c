@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 13:19:56 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:22:42 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 
 	if (!ast || !ast->child)
 		return ;
+	ft_apply_redirect(ast->child, exec);
 	pid = fork();
 	if (pid == -1)
 	{
@@ -37,6 +38,41 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 		exec->exit_status = 1;
 }
 
+void	ft_execute_or_and(t_ast_node *ast, t_exec *exec)
+{
+	if (ast->type == AST_AND_AND)
+	{
+		execute_ast(ast->left, exec);
+		if (exec->exit_status == 0)
+			execute_ast(ast->right, exec);
+	}
+	else if (ast->type == AST_AND_AND)
+	{
+		execute_ast(ast->left, exec);
+		if (exec->exit_status == 0)
+			execute_ast(ast->right, exec);
+	}
+}
+
+// void	hanlde_ast_args(t_ast_node *ast)
+// {
+// 	char	**new_args;
+// 	int		i;
+// 	int		j;
+
+// 	new_args = malloc(ast->arg_count * sizeof(char *));
+// 	if (!new_args)
+// 		return ;
+// 	i = 0;
+// 	j = 0;
+// 	while (ast->args[i])
+// 	{
+// 		if (!ast->args[i])
+// 		i++;
+// 		j++;
+// 	}
+// }
+
 void	execute_ast(t_ast_node *ast, t_exec *exec)
 {
 	int	cmd_count;
@@ -50,18 +86,8 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 		cmd_count = count_pipe_cmd(ast);
 		ft_execute_pipe(ast, exec, cmd_count);
 	}
-	else if (ast->type == AST_AND_AND)
-	{
-		execute_ast(ast->left, exec);
-		if (exec->exit_status == 0)
-			execute_ast(ast->right, exec);
-	}
-	else if (ast->type == AST_OR_OR)
-	{
-		execute_ast(ast->left, exec);
-		if (exec->exit_status != 0)
-			execute_ast(ast->right, exec);
-	}
+	else if (ast->type == AST_AND_AND || ast->type == AST_OR_OR)
+		ft_execute_or_and(ast, exec);
 	else if (ast->type == AST_SUBSHELL)
 		execute_subshell(ast, exec);
 	ft_restore_std_fd(exec);
