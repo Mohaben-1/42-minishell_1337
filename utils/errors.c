@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:21:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 12:49:18 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:36:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	ft_error_cmd(t_env *env, char *cmd, char **paths, int exit_status)
 		ft_putstr_fd("minishell: ", 2);
 		perror(cmd);
 	}
-	free_split(paths);
+	free_double_ptr(paths);
 	exit(exit_status);
 }
 

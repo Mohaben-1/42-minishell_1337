@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 15:22:42 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:57:37 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,24 +54,59 @@ void	ft_execute_or_and(t_ast_node *ast, t_exec *exec)
 	}
 }
 
-// void	hanlde_ast_args(t_ast_node *ast)
-// {
-// 	char	**new_args;
-// 	int		i;
-// 	int		j;
+void	filter_ast_args(t_ast_node *ast)
+{
+	char	**new_args;
+	int		*new_quote_types;
+	int		i;
+	int		j;
 
-// 	new_args = malloc(ast->arg_count * sizeof(char *));
-// 	if (!new_args)
-// 		return ;
-// 	i = 0;
-// 	j = 0;
-// 	while (ast->args[i])
-// 	{
-// 		if (!ast->args[i])
-// 		i++;
-// 		j++;
-// 	}
-// }
+	if (!ast || !ast->args || !ast->arg_quote_types)
+		return ;
+	i = 0;
+	j = 0;
+	while (i < ast->arg_count)
+	{
+		if ((ast->args[i] && ast->args[i][0]) || ast->arg_quote_types[i])
+			j++;
+		i++;
+	}
+	if (j == 0)
+	{
+		new_args = malloc(2 * sizeof(char *));
+		new_quote_types = malloc(sizeof(int));
+		if (!new_args || !new_quote_types)
+			return ;
+		new_args[0] = ft_strdup("");
+		new_quote_types[0] = 0;
+		j = 1;
+    }
+	else
+	{
+		new_args = malloc((j + 1) * sizeof(char *));
+		new_quote_types = malloc(j * sizeof(int));
+		if (!new_args || !new_quote_types)
+			return ;
+		i = 0;
+		j = 0;
+		while (i < ast->arg_count)
+		{
+			if ((ast->args[i] && ast->args[i][0]) || ast->arg_quote_types[i])
+			{
+				new_args[j] = ft_strdup(ast->args[i]);
+				new_quote_types[j] = ast->arg_quote_types[i];
+				j++;
+			}
+			i++;
+		}
+	}
+	new_args[j] = NULL;
+	free_double_ptr(ast->args);
+	free(ast->arg_quote_types);
+	ast->args = new_args;
+	ast->arg_quote_types = new_quote_types;
+	ast->arg_count = j;
+}
 
 void	execute_ast(t_ast_node *ast, t_exec *exec)
 {
@@ -79,6 +114,7 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 
 	if (!ast)
 		return ;
+	filter_ast_args(ast);
 	if (ast->type == AST_COMMAND)
 		execute_command(ast, exec);
 	else if (ast->type == AST_PIPE)

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 13:39:43 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:36:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ typedef struct s_ast_node
 		AST_AND_AND,
 		AST_OR_OR,
 		AST_SUBSHELL,
-		AST_DQUOTES,
-		AST_SQUOTES
+		AST_DQUOTES,// delete this
+		AST_SQUOTES // delete this
 	}	type;
 	char				**args;
 	int					arg_count;
@@ -108,7 +108,7 @@ int		ft_strncmp(char *s1, char *s2, size_t n);
 int		ft_strcmp(char *s1, char *s2);
 char	*ft_strtrim(char *s1, char *set);
 char	**ft_split(char *s, char c);
-void	free_split(char **s);
+void	free_double_ptr(char **s);
 int		ft_count_args(char **cmd_split);
 
 void	ft_error(char *err, int exit_status);

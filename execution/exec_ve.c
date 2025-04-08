@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 15:20:46 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 16:06:22 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ char	**ft_set_envp(t_env *env)
 	return (envp);
 }
 
-void	ft_exec_ve(t_ast_node *node, t_exec *exec)
+void	ft_exec_ve(t_ast_node *ast, t_exec *exec)
 {
 	char	**paths;
 	char	*path;
@@ -98,30 +98,30 @@ void	ft_exec_ve(t_ast_node *node, t_exec *exec)
 	int		i;
 
 	signal(SIGQUIT, SIG_DFL);
-	if (!node->args[0])
+	if ((!ast->args[0] || !ast->args[0][0]) && !ast->arg_quote_types[0])
 		exit(0);
 	envp = ft_set_envp(*(exec->env));
-	cmd = node->args[0];
+	cmd = ast->args[0];
 	if (cmd && ft_strchr(cmd, '/') && !access(cmd, X_OK))
-		execve(node->args[0], node->args, envp);
+		execve(ast->args[0], ast->args, envp);
 	path = ft_get_path(envp);
 	if (!path)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(node->args[0], 2);
+		ft_putstr_fd(ast->args[0], 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		exit(127);
 	}
 	paths = ft_split(path, ':');
 	i = -1;
-	while (paths[++i] && node->args[0][0] != '.')
+	while (paths[++i] && ast->args[0][0] != '.')
 	{
 		path = ft_strjoin(paths[i], "/");
-		cmd = ft_strjoin(path, node->args[0]);
+		cmd = ft_strjoin(path, ast->args[0]);
 		free(path);
 		if (cmd && !access(cmd, X_OK))
-			execve(cmd, node->args, envp);
+			execve(cmd, ast->args, envp);
 		free(cmd);
 	}
-	ft_error_cmd(*(exec->env), node->args[0], paths, 127);
+	ft_error_cmd(*(exec->env), ast->args[0], paths, 127);
 }

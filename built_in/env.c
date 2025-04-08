@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:42:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/05 13:13:43 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 15:36:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ t_env	*ft_init_env(char **envp)
 	{
 		envp_splited = ft_split(*envp, '=');
 		ft_env_add_back(&head, ft_env_new(envp_splited[0], envp_splited[1]));
-		free_split(envp_splited);
+		free_double_ptr(envp_splited);
 		envp++;
 	}
 	return (head);
