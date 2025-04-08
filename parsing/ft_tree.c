@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/08 15:31:25 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 20:52:23 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,12 +309,16 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 			redir->type = tmp->type;
 			if (redir->type == token_hrdc)
 				redir->heredoc_fd = -1;
-			if (ft_strchr(tmp->next->data, '$') && tmp->type != token_hrdc && tmp->next->type != token_squote)
-				redir->file = ft_expand(tmp->next->data, exec);
-			else
-				redir->file = strdup(tmp->next->data);
-			if (tmp->next->type == token_dquote || tmp->next->type == token_squote)
-				redir->quoted = 1;
+
+			(void)exec;
+			// if (ft_strchr(tmp->next->data, '$') && tmp->type != token_hrdc && tmp->next->type != token_squote)
+			// 	redir->file = ft_expand(tmp->next->data, exec);
+			// else
+			redir->file = strdup(tmp->next->data);
+			if (tmp->next->type == token_dquote)
+				redir->quoted = token_dquote;
+			else if (tmp->next->type == token_squote)
+				redir->quoted = token_squote;
 			else
 				redir->quoted = 0;
 			redir->next = NULL;
@@ -407,9 +411,11 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *
 		if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
 		{
 			char *expanded_token;
-			if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
-				expanded_token = ft_expand(tmp->data, exec);
-			else
+
+			(void)exec;
+			// if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
+			// 	expanded_token = ft_expand(tmp->data, exec);
+			// else
 				expanded_token = ft_strdup(tmp->data);
 			
 			// Check if we should start a new argument or merge with previous

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 18:44:03 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 21:05:37 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,6 @@ void	ft_restore_std_fd(t_exec *exec)
 	}
 }
 
-#include <termios.h>
-
-void	reset_terminal_mode(void)
-{
-	struct termios	term;
-
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag |= (ICANON | ECHO);
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-}
 
 int	check_hrdc_priority(t_redirect *redirect)
 {

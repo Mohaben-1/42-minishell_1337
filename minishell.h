@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 15:36:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 21:21:10 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ typedef struct s_ast_node
 		AST_AND_AND,
 		AST_OR_OR,
 		AST_SUBSHELL,
-		AST_DQUOTES,// delete this
-		AST_SQUOTES // delete this
+		AST_DQUOTES,
+		AST_SQUOTES
 	}	type;
 	char				**args;
 	int					arg_count;

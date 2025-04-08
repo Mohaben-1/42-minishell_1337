@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 18:13:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 20:36:54 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,37 @@ void	ft_execute_or_and(t_ast_node *ast, t_exec *exec)
 	}
 }
 
-void	filter_ast_args(t_ast_node *ast)
+void	expand_ast_args(t_ast_node *ast, t_exec *exec)
+{
+	t_redirect	*redirect;
+	char		*tmp;
+	int			i;
+
+	i = 0;
+	while (i < ast->arg_count)
+	{
+		if (ft_strchr(ast->args[i], '$') && ast->arg_quote_types[i] != AST_SQUOTES)
+		{
+			tmp = ast->args[i];
+			ast->args[i] = ft_expand(tmp, exec);
+			free(tmp);
+		}
+		i++;
+	}
+	redirect = ast->redirects;
+	while (redirect)
+	{
+		if (ft_strchr(redirect->file, '$') && redirect->type != token_hrdc && redirect->quoted != token_squote)
+		{
+			tmp = redirect->file;
+			redirect->file = ft_expand(tmp, exec);
+			free(tmp);
+		}
+		redirect = redirect->next;
+	}
+}
+
+void	filter_ast_args(t_ast_node *ast, t_exec *exec)
 {
 	char	**new_args;
 	int		*new_quote_types;
@@ -63,6 +93,7 @@ void	filter_ast_args(t_ast_node *ast)
 
 	if (!ast || !ast->args || !ast->arg_quote_types)
 		return ;
+	expand_ast_args(ast, exec);
 	i = 0;
 	j = 0;
 	while (i < ast->arg_count)
@@ -114,7 +145,7 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 
 	if (!ast)
 		return ;
-	filter_ast_args(ast);
+	filter_ast_args(ast, exec);
 	if (ast->type == AST_COMMAND)
 		execute_command(ast, exec);
 	else if (ast->type == AST_PIPE)
