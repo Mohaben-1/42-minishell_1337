@@ -9,13 +9,6 @@ void	ft_handle_sigint(int sig)
 	rl_redisplay();
 }
 
-void	ft_clear_screen()
-{
-	ft_putstr_fd("\033[H\033[2J", 1);
-	ft_putstr_fd("\n\033[1;32mminishell> \033[0m", 1);
-}
-
-
 void print_token_type(t_token_type type)
 {
     switch (type)

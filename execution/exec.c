@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 15:57:37 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/08 18:13:32 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ void	ft_execute_or_and(t_ast_node *ast, t_exec *exec)
 		if (exec->exit_status == 0)
 			execute_ast(ast->right, exec);
 	}
-	else if (ast->type == AST_AND_AND)
+	else if (ast->type == AST_OR_OR)
 	{
 		execute_ast(ast->left, exec);
-		if (exec->exit_status == 0)
+		if (exec->exit_status != 0)
 			execute_ast(ast->right, exec);
 	}
 }
