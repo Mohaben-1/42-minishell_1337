@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 20:36:54 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/09 20:28:38 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,13 +139,77 @@ void	filter_ast_args(t_ast_node *ast, t_exec *exec)
 	ast->arg_count = j;
 }
 
+void	prepare_ast_args(t_ast_node *ast, t_exec *exec)
+{
+	int		*new_arg_is_spaced;
+	char	**new_args;
+	char	*tmp;
+	int		i;
+	int		j;
+
+	filter_ast_args(ast, exec);
+	if (!ast || !ast->args)
+		return ;
+	i = 1;
+	j = 1;
+	// while (i < ast->arg_count)
+	// {
+	// 	printf("space: %d\n", ast->arg_is_spaced[i]);
+	// 	i++;
+	// }
+	i = 0;
+	while (i < ast->arg_count)
+	{
+		if (ast->arg_is_spaced[i])
+			j++;
+		i++;
+	}
+	new_args = malloc((j + 1) * sizeof(char *));
+	new_arg_is_spaced = malloc(j * sizeof(int));
+	if (!new_args || !new_arg_is_spaced)
+		return ;
+	new_args[0] = ft_strdup(ast->args[0]);
+	new_arg_is_spaced[0] = ast->arg_is_spaced[0];
+	i = 1;
+	j = 1;
+	if (i < ast->arg_count)
+	{
+		new_args[j] = ft_strdup(ast->args[i]);
+		new_arg_is_spaced[i] = ast->arg_is_spaced[i];
+		i++;
+		while (i < ast->arg_count)
+		{
+			if (ast->arg_is_spaced[i])
+			{
+				j++;
+				new_args[j] = ft_strdup(ast->args[i]);
+				new_arg_is_spaced[i] = ast->arg_is_spaced[i];
+			}
+			else
+			{
+				tmp = new_args[j];
+				new_args[j] = ft_strjoin(tmp, ast->args[i]);
+				free(tmp);
+			}
+			i++;
+		}
+		j++;
+	}
+	new_args[j] = NULL;
+	free_double_ptr(ast->args);
+	free(ast->arg_is_spaced);
+	ast->args = new_args;
+	ast->arg_is_spaced = new_arg_is_spaced;
+	ast->arg_count = j;
+}
+
 void	execute_ast(t_ast_node *ast, t_exec *exec)
 {
 	int	cmd_count;
 
 	if (!ast)
 		return ;
-	filter_ast_args(ast, exec);
+	prepare_ast_args(ast, exec);
 	if (ast->type == AST_COMMAND)
 		execute_command(ast, exec);
 	else if (ast->type == AST_PIPE)

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 21:21:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:44:39 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct s_ast_node
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
 	int					*arg_quote_types;
+	int					*arg_is_spaced;
 	struct s_ast_node	*child;
 }	t_ast_node;
 
@@ -137,7 +138,7 @@ void	ft_pwd(t_exec *exec);
 void	ft_echo(char **args, t_exec *exec);
 
 
-t_token_node	*ft_tokenize(char *input);
+t_token_node	*ft_tokenize(char *input, t_exec *exec);
 t_ast_node		*build_ast(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_logical_ops(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_pipes(t_token_node *tokens, t_exec *exec);
@@ -151,7 +152,7 @@ t_redirect		*parse_redirections(t_token_node **tokens, t_exec *exec);
 void			free_ast(t_ast_node *ast);
 int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
-char			**collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *exec);
+char			**collect_args(t_token_node *tokens, int count, int **quote_types, int **arg_is_spaced, t_exec *exec);
 void			print_ast(t_ast_node *ast, int indent_level);
 
 

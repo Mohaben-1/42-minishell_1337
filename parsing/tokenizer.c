@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/09 17:51:02 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:36:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,10 +110,10 @@ static void ft_handle_quotes(char *input, int *i, t_token_node **head, t_token_n
 	}
 	else
 	{
-		ft_putstr_fd("unexpected EOF while looking for matching `", 2);
+		ft_putstr_fd("minishell: unexpected EOF while looking for matching `", 2);
 		ft_putchar_fd(quote_type, 2);
 		ft_putstr_fd("'\n", 2);
-		ft_putstr_fd("syntax error: unexpected end of file\n", 2);
+		ft_putstr_fd("minishell: syntax error: unexpected end of file\n", 2);
 		*error = 1;
 	}
 }
@@ -173,21 +173,21 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			if (ft_before_this_token(head, list) && ft_before_this_token(head, list)->type == token_cmd && ft_before_this_token(head, ft_before_this_token(head, list)) && ft_before_this_token(head, ft_before_this_token(head, list))->type != token_cmd)
 			{
 				// write(2, "parentesis yes\n", 15);
-				ft_putstr_fd("syntax error near unexpected token `newline'\n", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 				*error = 1;
 				return ;
 			}
 			else if (ft_before_this_token(head, list) && ft_before_this_token(head, list)->type == token_cmd)
 			{
 				// write(2, "parentesis yes\n", 15);
-				ft_putstr_fd("syntax error near unexpected token `('\n", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `('\n", 2);
 				*error = 1;
 				return ;
 			}
 			else
 			{
 				// write(2, "parentesis yes\n", 15);
-				ft_putstr_fd("syntax error: unexpected end of file\n", 2);
+				ft_putstr_fd("minishell: syntax error: unexpected end of file\n", 2);
 				*error = 1;
 				return ;
 			}
@@ -196,7 +196,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 		else if (list->type == token_paren_open && list->next && is_node_operator(list->next) && *list->next->data != '<' && *list->next->data != '>')
 		{
 			// write(2, "parentesis yes\n", 15);
-			ft_putstr_fd("syntax error near unexpected token `", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 			ft_putstr_fd(list->next->data, 2);
 			ft_putstr_fd("'\n", 2);
 			*error = 1;
@@ -207,14 +207,14 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			if (ft_before_this_token(head, ft_before_this_token(head, list)))
 			{
 				// write(2, "parentesis yes\n", 15);
-				ft_putstr_fd("syntax error near unexpected token `('\n", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `('\n", 2);
 				*error = 1;
 				return ;
 			}
 			else
 			{
 				// write(2, "parentesis yes\n", 15);
-				ft_putstr_fd("syntax error near unexpected token `", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 				ft_putstr_fd(list->next->data, 2);
 				ft_putstr_fd("'\n", 2);
 				*error = 1;
@@ -226,7 +226,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 		else if (list->type == token_paren_close && list->next && (list->next->type == token_cmd || list->next->type == token_dquote || list->next->type == token_squote))
 		{
 			// write(2, "parentesis yes\n", 15);
-			ft_putstr_fd("syntax error near unexpected token `", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 			ft_putstr_fd(list->next->data, 2);
 			ft_putstr_fd("'\n", 2);
 			*error = 1;
@@ -238,7 +238,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 			if (paren_count < 0)
 			{
 				// write(2, "parentesis yes\n", 15);
-				ft_putstr_fd("syntax error near unexpected token `", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 				ft_putstr_fd(list->data, 2);
 				ft_putstr_fd("'\n", 2);
 				*error = 1;
@@ -250,7 +250,7 @@ void	ft_valid_parentesis(t_token_node *list, int *error)
 	if (paren_count > 0)
 	{
 		// write(2, "parentesis yes\n", 15);
-		ft_putstr_fd("syntax error: unexpected end of file\n", 2);
+		ft_putstr_fd("minishell: syntax error: unexpected end of file\n", 2);
 		*error = 1;
 	}
 }
@@ -262,7 +262,7 @@ void	ft_valid_redirections(t_token_node *list, int *error)
 		{
 			if ((*(list->data) == '>' ||  *(list->data) == '<') && is_node_operator(list) && list->next && (is_parentesis(*(list->next->data)) || *(list->next->data) == '<' || *(list->next->data) == '>'))
 			{
-				ft_putstr_fd("syntax error near unexpected token `", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 				ft_putstr_fd(list->next->data, 2);
 				ft_putstr_fd("'\n", 2);
 				*error = 1;
@@ -270,7 +270,7 @@ void	ft_valid_redirections(t_token_node *list, int *error)
 			}
 			if ((*(list->data) == '>' ||  *(list->data) == '<') && is_node_operator(list) && list->next && list->next->next && (list->next->next->type == token_cmd  ||  list->next->next->type == token_dquote || list->next->next->type == token_squote) && ft_before_this_token(head, list) && ft_before_this_token(head, list)->type == token_paren_close)
 			{
-				ft_putstr_fd("syntax error near unexpected token `", 2);
+				ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 				ft_putstr_fd(list->next->next->data, 2);
 				ft_putstr_fd("'\n", 2);
 				*error = 1;
@@ -284,18 +284,18 @@ void	ft_check_last_token(t_token_node *list, int *error)
 {
 	if (*ft_token_last(list)->data == '(')
 	{
-		ft_putstr_fd("syntax error near unexpected token `newline'\n", 2);
+		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 		*error = 1;
 	}
 	else if (is_node_operator(ft_token_last(list)))
 	{
 		if (*(ft_token_last(list)->data) == '|' && list != ft_token_last(list))
-			ft_putstr_fd("syntax error: unexpected end of file\n", 2);
+			ft_putstr_fd("minishell: syntax error: unexpected end of file\n", 2);
 		else if (*(ft_token_last(list)->data) == '<' || *(ft_token_last(list)->data) == '>')
-			ft_putstr_fd("syntax error near unexpected token `newline'\n", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 		else
 		{
-			ft_putstr_fd("syntax error near unexpected token `", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 			ft_putstr_fd(ft_token_last(list)->data, 2);
 			ft_putstr_fd("'\n", 2);
 		}
@@ -310,19 +310,19 @@ void	ft_consecutive_operators(t_token_node *list, int *error)
 	{
 		if (*(list->data) == '(' && *(list->next->data) == ')' && !list->next->next && ft_before_this_token(head, list))
 		{
-			ft_putstr_fd("syntax error near unexpected token `)'\n", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `)'\n", 2);
 			*error = 1;
 			return ;
 		}
 		if (*(list->data) == '(' && is_node_operator(list->next) && *list->next->data != '<' && *list->next->data != '>')
 		{
-			ft_putstr_fd("syntax error near unexpected token `(\n`", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `(\n`", 2);
 			*error = 1;
 			return ;
 		}
 		if (is_node_operator(list) && is_node_operator(list->next) && (*(list->data) == '<' || *(list->data) == '>') && (*(list->next->data) == '<' || *(list->next->data) == '>'))
 		{
-			ft_putstr_fd("syntax error near unexpected token `", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 			ft_putstr_fd(list->next->data, 2);
 			ft_putstr_fd("'\n", 2);
 			*error = 1;
@@ -330,7 +330,7 @@ void	ft_consecutive_operators(t_token_node *list, int *error)
 		}
 		if ((is_node_operator(list) && is_node_operator(list->next) && *(list->next->data) != '<' && *(list->next->data) != '>') || (*(list->data) == '(' && *(list->next->data) == ')'))
 		{
-			ft_putstr_fd("syntax error near unexpected token `", 2);
+			ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 			ft_putstr_fd(list->next->data, 2);
 			ft_putstr_fd("'\n", 2);
 			*error = 1;
@@ -346,7 +346,7 @@ void	ft_token_syntax_error(t_token_node *list, int *error)
 		return ;
 	if (is_node_operator(list) && *(list->data) != '>' && *(list->data) != '<')
 	{
-		ft_putstr_fd("syntax error near unexpected token `", 2);
+		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 		ft_putstr_fd(list->data, 2);
 		ft_putstr_fd("'\n", 2);
 		*error = 1;
@@ -369,7 +369,7 @@ void	ft_token_syntax_error(t_token_node *list, int *error)
 		return ;
 }
 
-t_token_node	*ft_tokenize(char *input)
+t_token_node	*ft_tokenize(char *input, t_exec *exec)
 {
 	t_token_node	*head;
 	t_token_node	*current;
@@ -469,6 +469,7 @@ t_token_node	*ft_tokenize(char *input)
 	if (error)
 	{
 		ft_token_node_free(&head);
+		exec->exit_status = 258;
 		return (NULL);
 	}
 	return (head);
