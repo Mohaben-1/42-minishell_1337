@@ -10,6 +10,8 @@ export _VAR=hello
 export 1VAR=abc
 export VAR+abc
 export VAR+
+export = 
+
 
 
 echo $?HELLO
@@ -51,3 +53,6 @@ $PWD
 $DD ls
 $?
 $
+
+
+ grep hi "<infile" <         ./test_files/infile 

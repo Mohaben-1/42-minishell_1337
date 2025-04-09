@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 20:52:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/09 17:51:02 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type
 
 	// Don't add empty strings for token_cmd type
 	if (type == token_cmd && (!data || !data[0]))
-		return;
-
+		return ;
 	new_token = malloc(sizeof(t_token_node));
 	if (!new_token)
 		return ;
@@ -86,7 +85,7 @@ static void ft_handle_quotes(char *input, int *i, t_token_node **head, t_token_n
 	char *str;
 	char quote_type = input[*i];
 	int	is_spaced = 0;
-	
+
 	if (*i > 0)
 	{
 		if (is_whitespace(input[*i-1]))
@@ -385,10 +384,8 @@ t_token_node	*ft_tokenize(char *input)
 	{
 		while (input[i] && is_whitespace(input[i]))
 			i++;
-
 		if (!input[i])
 			break;
-
 		if (input[i] == '"' || input[i] == '\'')
 		{
 			ft_handle_quotes(input, &i, &head, &current, &error);
@@ -461,7 +458,8 @@ t_token_node	*ft_tokenize(char *input)
 			ft_handle_str(input, &i, &head, &current);
 			// Don't increment i again, ft_handle_str already advances it
 			// But we need to continue to skip the increment at the end
-			continue;
+			i++;
+			continue ;
 		}
 		
 		// We only reach here if none of the continue statements were hit

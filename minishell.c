@@ -100,7 +100,7 @@ int main(int ac, char **av, char **envp)
 			ft_putstr_fd("exit\n", 1);
 			exit(0);
 		}
-		if (input[0] == '\0')
+		if (!input[0])
 		{
 			free(input);
 			continue;

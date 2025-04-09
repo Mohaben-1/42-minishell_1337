@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 16:06:22 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/09 13:57:38 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,5 +123,5 @@ void	ft_exec_ve(t_ast_node *ast, t_exec *exec)
 			execve(cmd, ast->args, envp);
 		free(cmd);
 	}
-	ft_error_cmd(*(exec->env), ast->args[0], paths, 127);
+	ft_error_cmd(*(exec->env), ast->args[0], paths, 126);
 }
