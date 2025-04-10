@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:02:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 13:03:37 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:27:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,25 +38,49 @@ int	ft_is_numeric_argument(char *str)
 	return (1);
 }
 
-void	ft_exit(char **args, t_exec *exec)
+static int	check_numeric_overflow(char *str)
 {
-	if (ft_count_args(args) > 2)
+	long long	nb;
+	int			sign;
+	int			i;
+
+	nb = 0;
+	sign = 1;
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+	{
+		if (str[i] == '-')
+			sign = -1;
+		i++;
+	}
+	while (str[i] && str[i] >= '0' && str[i] <= '9')
+	{
+		if ((sign == 1 && (nb > LONG_MAX / 10 || 
+			(nb == LONG_MAX / 10 && str[i] - '0' > LONG_MAX % 10))) ||
+			(sign == -1 && (nb > -(LONG_MIN / 10) || 
+			(nb == -(LONG_MIN / 10) && str[i] - '0' > -(LONG_MIN % 10)))))
+			return (0);
+		nb = nb * 10 + (str[i] - '0');
+		i++;
+	}
+	return (1);
+}
+
+void	ft_exit(t_ast_node *ast, t_exec *exec)
+{
+	if (ast->arg_count > 2)
 	{
 		ft_putstr_fd("exit\n", 2);
-		if (!ft_is_numeric_argument(args[1]))
-			ft_err_exit(args);
+		if (!ft_is_numeric_argument(ast->args[1]))
+			ft_err_exit(ast->args);
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		exec->exit_status = 1;
+		return ;
 	}
-	else
-	{
-		ft_putstr_fd("exit\n", 1);
-		clear_history();
-		if (!args[1])
-			exit(0);
-		else if (ft_is_numeric_argument(args[1]) || !ft_strcmp(args[1], "9223372036854775807"))
-			exit(ft_atoi(args[1]));
-		else
-			ft_err_exit(args);
-	}
+	ft_putstr_fd("exit\n", 1);
+	if (!ast->args[1])
+		exit(0);
+	if (!ft_is_numeric_argument(ast->args[1]) || !check_numeric_overflow(ast->args[1]))
+		ft_err_exit(ast->args);
+	exit((unsigned char)ft_atoi(ast->args[1]));
 }

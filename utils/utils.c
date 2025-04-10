@@ -6,23 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:49:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/22 14:36:51 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:05:50 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	ft_count_args(char **args)
-{
-	int	i;
-	int	count;
-
-	count = 0;
-	i = 0;
-	while (args[i++])
-		count++;
-	return (count);
-}
 
 char	*ft_get_env(t_env *env, char *var)
 {

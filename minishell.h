@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/09 18:44:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:10:39 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <signal.h>
+# include <limits.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -110,7 +111,6 @@ int		ft_strcmp(char *s1, char *s2);
 char	*ft_strtrim(char *s1, char *set);
 char	**ft_split(char *s, char c);
 void	free_double_ptr(char **s);
-int		ft_count_args(char **cmd_split);
 
 void	ft_error(char *err, int exit_status);
 void	ft_error_cmd(t_env *env, char *cmd, char **paths, int exit_status);
@@ -131,7 +131,7 @@ void	ft_env_add_back(t_env **lst, t_env *new);
 t_env	*ft_env_new(char *var, char *value);
 void	ft_unset(char **args, t_exec *exec);
 int		ft_check_var_name(char *var);
-void	ft_exit(char **args, t_exec *exec);
+void	ft_exit(t_ast_node *ast, t_exec *exec);
 char	*ft_get_env(t_env *env, char *var);
 void	ft_set_env(t_env *env, char *var, char *new_val);
 void	ft_pwd(t_exec *exec);

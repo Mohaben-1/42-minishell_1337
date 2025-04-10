@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 12:41:44 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:11:50 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,13 +194,14 @@ static void	ft_free_export(char *var, char *value)
 	free(value);
 }
 
+
 void	ft_export(t_ast_node *ast, t_exec *exec)
 {
 	char	*var;
 	char	*value;
 	int		err_flag;
 	int		i;
-	
+
 	ft_merge_quoted_args(ast);
 	err_flag = 0;
 	if (ast->arg_count == 1)
@@ -208,6 +209,11 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 	else
 	{
 		i = 0;
+		if (ft_strcmp(ast->args[0], "export"))
+		{
+			ft_err_exprt(ft_strtrim(ast->args[0], "export"));
+			err_flag = 1;
+		}
 		while (ast->args[++i])
 		{
 			if (!ft_check_var_name(ast->args[i]))

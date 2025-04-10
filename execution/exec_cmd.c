@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/09 13:44:06 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:14:28 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	execute_builtin(t_ast_node *ast, t_exec *exec)
 	if (!ft_strcmp(ast->args[0], "unset"))
 		ft_unset(ast->args, exec);
 	else if (!ft_strcmp(ast->args[0], "exit"))
-		ft_exit(ast->args, exec);
+		ft_exit(ast, exec);
 	else if (!ft_strcmp(ast->args[0], "pwd"))
 		ft_pwd(exec);
 	else if (!ft_strcmp(ast->args[0], "export"))
@@ -45,13 +45,11 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 	int			pid;
 	int			status;
 
-	if (!ast || !ast->args)
+	if (!ast)
 		return ;
-	if (ft_is_builtin(ast->args[0]))
-	{
-		if (ft_apply_redirect(ast, exec))
+	ft_apply_redirect(ast, exec);
+	if (ast->args && ft_is_builtin(ast->args[0]))
 			execute_builtin(ast, exec);
-	}
 	else
 	{
 		pid = fork();
@@ -62,8 +60,7 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 		}
 		if (pid == 0)
 		{
-			if (ft_apply_redirect(ast, exec))
-				ft_exec_ve(ast, exec);
+			ft_exec_ve(ast, exec);
 			exit(exec->exit_status);
 		}
 		waitpid(pid, &status, 0);

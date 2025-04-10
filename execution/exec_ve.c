@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/09 18:30:33 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 13:56:07 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,22 +88,42 @@ char	**ft_set_envp(t_env *env)
 	envp[i] = NULL;
 	return (envp);
 }
-
-void	ft_exec_ve(t_ast_node *ast, t_exec *exec)
+#include <sys/stat.h>
+void ft_exec_ve(t_ast_node *ast, t_exec *exec)
 {
-	char	**paths;
-	char	*path;
-	char	*cmd;
-	char	**envp;
-	int		i;
+	struct stat st;
+	char **paths;
+	char *path;
+	char *cmd;
+	char **envp;
+	int i;
 
 	signal(SIGQUIT, SIG_DFL);
 	if ((!ast->args[0] || !ast->args[0][0]) && !ast->arg_quote_types[0])
 		exit(0);
 	envp = ft_set_envp(*(exec->env));
 	cmd = ast->args[0];
-	if (cmd && ft_strchr(cmd, '/') && !access(cmd, X_OK))
-		execve(ast->args[0], ast->args, envp);
+	if (cmd && ft_strchr(cmd, '/'))
+	{
+		if (stat(cmd, &st) == 0)
+		{
+			if (S_ISDIR(st.st_mode))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd, 2);
+				ft_putstr_fd(": is a directory\n", 2);
+				exit(126);
+			}
+			else if (access(cmd, X_OK) != 0)
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd, 2);
+				ft_putstr_fd(": Permission denied\n", 2);
+				exit(126);
+			}
+			execve(cmd, ast->args, envp);
+		}
+	}
 	path = ft_get_path(envp);
 	if (!path)
 	{
@@ -119,8 +139,16 @@ void	ft_exec_ve(t_ast_node *ast, t_exec *exec)
 		path = ft_strjoin(paths[i], "/");
 		cmd = ft_strjoin(path, ast->args[0]);
 		free(path);
-		if (cmd && !access(cmd, X_OK))
-			execve(cmd, ast->args, envp);
+		if (stat(cmd, &st) == 0)
+		{
+			if (S_ISDIR(st.st_mode))
+			{
+				free(cmd);
+				continue;
+			}
+			else if (access(cmd, X_OK) == 0)
+				execve(cmd, ast->args, envp);
+		}
 		free(cmd);
 	}
 	ft_error_cmd(*(exec->env), ast->args[0], paths, 127);

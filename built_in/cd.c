@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 13:18:11 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/26 13:22:40 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:44:32 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	ft_cd(char **args, t_exec *exec)
 	char	*old_path;
 	char	*pwd;
 
-	if (!exec->env)
+	if (!ft_get_env(*(exec->env), "HOME"))
 		return (exec->exit_status = 1, ft_putstr_fd("minishell: cd: HOME not set\n", 2));
 	old_path = getcwd(NULL, 0);
 	new_path = NULL;

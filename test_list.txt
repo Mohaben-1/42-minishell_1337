@@ -55,4 +55,14 @@ $?
 $
 
 
- grep hi "<infile" <         ./test_files/infile 
+ grep hi "<infile" <         ./test_files/infile
+
+ 
+
+
+
+ unset HOME
+ cd
+
+ export = 
+ export = x=a
