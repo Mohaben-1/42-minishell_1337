@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 13:38:04 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 20:26:01 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,7 +380,7 @@ t_token_node	*ft_tokenize(char *input, t_exec *exec)
 	error = 0;
 	head = NULL;
 	current = NULL;
-	while (input && input[i])
+	while (input && input[i] && i < (int)ft_strlen(input))
 	{
 		while (input[i] && is_whitespace(input[i]))
 			i++;

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 15:10:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 22:40:38 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ char	*ft_itoa(int n);
 char	*ft_strdup(char *s1);
 char	*ft_substr(char *s, unsigned int start, size_t len);
 char	*ft_strjoin(char *s1, char *s2);
+char	*ft_strjoin_free(char *s1, char *s2);
 int		ft_get_index(char *s, char c);
 char	*ft_strchr(char *s, int c);
 int		ft_strncmp(char *s1, char *s2, size_t n);
@@ -154,6 +155,7 @@ int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
 char			**collect_args(t_token_node *tokens, int count, int **quote_types, int **arg_is_spaced, t_exec *exec);
 void			print_ast(t_ast_node *ast, int indent_level);
+
 
 
 

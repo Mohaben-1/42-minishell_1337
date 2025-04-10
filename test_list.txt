@@ -9,7 +9,6 @@ export VAR_=123
 export _VAR=hello
 export 1VAR=abc
 export VAR+abc
-export VAR+
 export = 
 
 
@@ -66,3 +65,17 @@ $
 
  export = 
  export = x=a
+
+(export VAR2=abc && (echo $VAR2 | cat))
+
+(export VAR=test && (echo $VAR)) 
+
+export X=abc Y=file.txt
+(echo $X && echo $Y > $Y) || echo failed
+
+
+export CMD=ls
+($CMD && echo done) || echo fail
+
+export FILE=test.txt
+echo content > "$FILE" && cat "$FILE" | grep content && echo ok

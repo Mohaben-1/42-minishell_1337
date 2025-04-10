@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/09 18:43:33 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 22:40:17 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,6 +290,75 @@ t_ast_node *create_ast_node(int type)
 }
 
 /* Parse redirections from token list */
+// t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
+// {
+// 	t_redirect *head = NULL;
+// 	t_redirect *current = NULL;
+// 	t_token_node *tmp = *tokens;
+// 	t_token_node *prev = NULL;
+// 	t_token_node *new_head = *tokens;
+	
+// 	while (tmp)
+// 	{
+// 		if (is_redirection(tmp->type) && tmp->next)
+// 		{
+// 			// Create new redirection node
+// 			t_redirect *redir = malloc(sizeof(t_redirect));
+// 			if (!redir)
+// 				return head;
+			
+// 			redir->type = tmp->type;
+// 			if (redir->type == token_hrdc)
+// 				redir->heredoc_fd = -1;
+
+// 			(void)exec;
+// 			redir->file = strdup(tmp->next->data);
+// 			if (tmp->next->type == token_dquote)
+// 				redir->quoted = token_dquote;
+// 			else if (tmp->next->type == token_squote)
+// 				redir->quoted = token_squote;
+// 			else
+// 				redir->quoted = 0;
+// 			redir->next = NULL;
+			
+// 			// Add to redirection list
+// 			if (!head)
+// 				head = redir;
+// 			else
+// 				current->next = redir;
+			
+// 			current = redir;
+			
+// 			// Remove these tokens from command tokens
+// 			t_token_node *to_remove = tmp;
+// 			t_token_node *file_to_remove = tmp->next;
+			
+// 			// Update links
+// 			if (prev)
+// 				prev->next = file_to_remove->next;
+// 			else
+// 				new_head = file_to_remove->next;
+			
+// 			// Move to next token after redirection file
+// 			tmp = file_to_remove->next;
+			
+// 			// Free removed tokens (in real code, you'd want to handle this differently)
+// 			// For now, just unlink them
+// 			to_remove->next = NULL;
+// 			file_to_remove->next = NULL;
+// 		}
+// 		else
+// 		{
+// 			prev = tmp;
+// 			tmp = tmp->next;
+// 		}
+// 	}
+	
+// 	*tokens = new_head;
+// 	return head;
+// }
+
+
 t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 {
 	t_redirect *head = NULL;
@@ -297,12 +366,12 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 	t_token_node *tmp = *tokens;
 	t_token_node *prev = NULL;
 	t_token_node *new_head = *tokens;
+	(void)exec;
 	
 	while (tmp)
 	{
 		if (is_redirection(tmp->type) && tmp->next)
 		{
-			// Create new redirection node
 			t_redirect *redir = malloc(sizeof(t_redirect));
 			if (!redir)
 				return head;
@@ -311,17 +380,41 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 			if (redir->type == token_hrdc)
 				redir->heredoc_fd = -1;
 
-			(void)exec;
-			// if (ft_strchr(tmp->next->data, '$') && tmp->type != token_hrdc && tmp->next->type != token_squote)
-			// 	redir->file = ft_expand(tmp->next->data, exec);
-			// else
-			redir->file = strdup(tmp->next->data);
-			if (tmp->next->type == token_dquote)
+			// Get initial file name token
+			t_token_node *file_token = tmp->next;
+			
+			// Set quoted status
+			if (file_token->type == token_dquote)
 				redir->quoted = token_dquote;
-			else if (tmp->next->type == token_squote)
+			else if (file_token->type == token_squote)
 				redir->quoted = token_squote;
 			else
 				redir->quoted = 0;
+				
+			// Initialize with the first file token's data
+			redir->file = strdup(file_token->data);
+			
+			// Check for additional tokens to join
+			t_token_node *next_token = file_token->next;
+			t_token_node *last_joined = file_token;
+			
+			// Join non-spaced tokens that are quoted or part of the same word
+			while (next_token && 
+				   !next_token->spaced && 
+				   (next_token->type == token_cmd || 
+					next_token->type == token_dquote || 
+					next_token->type == token_squote))
+			{
+				// Join this token with the file name
+				char *joined = ft_strjoin(redir->file, next_token->data);
+				free(redir->file);
+				redir->file = joined;
+				
+				// Remember this token was joined
+				last_joined = next_token;
+				next_token = next_token->next;
+			}
+			
 			redir->next = NULL;
 			
 			// Add to redirection list
@@ -334,21 +427,19 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 			
 			// Remove these tokens from command tokens
 			t_token_node *to_remove = tmp;
-			t_token_node *file_to_remove = tmp->next;
 			
-			// Update links
+			// Update links - skip all joined tokens
 			if (prev)
-				prev->next = file_to_remove->next;
+				prev->next = last_joined->next;
 			else
-				new_head = file_to_remove->next;
+				new_head = last_joined->next;
 			
-			// Move to next token after redirection file
-			tmp = file_to_remove->next;
+			// Move to next token after all joined tokens
+			tmp = last_joined->next;
 			
-			// Free removed tokens (in real code, you'd want to handle this differently)
-			// For now, just unlink them
+			// Unlink removed tokens
 			to_remove->next = NULL;
-			file_to_remove->next = NULL;
+			// No need to free tokens here as they are part of the original list
 		}
 		else
 		{
@@ -387,66 +478,63 @@ int count_args(t_token_node *tokens)
 
 char **collect_args(t_token_node *tokens, int count, int **quote_types, int **is_spaced, t_exec *exec)
 {
-    // Allocate memory for arguments array
-    char **args = malloc(sizeof(char *) * (count + 1));
-    if (!args)
-        return NULL;
-    
-    *quote_types = malloc(sizeof(int) * count);
-    if (!(*quote_types))
-    {
-        free(args);
-        return NULL;
-    }
-    
-    *is_spaced = malloc(sizeof(int) * count);
-    if (!(*is_spaced))
-    {
-        free(*quote_types);
-        free(args);
-        return NULL;
-    }
-    
-    // Initialize variables
-    int i = 0;
-    t_token_node *tmp = tokens;
+	// Allocate memory for arguments array
+	char **args = malloc(sizeof(char *) * (count + 1));
+	if (!args)
+		return NULL;
+	
+	*quote_types = malloc(sizeof(int) * count);
+	if (!(*quote_types))
+	{
+		free(args);
+		return NULL;
+	}
+	
+	*is_spaced = malloc(sizeof(int) * count);
+	if (!(*is_spaced))
+	{
+		free(*quote_types);
+		free(args);
+		return NULL;
+	}
+	
+	// Initialize variables
+	int i = 0;
+	t_token_node *tmp = tokens;
 
-    while (tmp && i < count)
-    {
-        if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
-        {
-            char *expanded_token;
+	while (tmp && i < count)
+	{
+		if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
+		{
+			char *expanded_token;
 
-            (void)exec;
-            // if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
-            //     expanded_token = ft_expand(tmp->data, exec);
-            // else
-                expanded_token = ft_strdup(tmp->data);
-            
-            // Always create a new argument for each token
-            args[i] = expanded_token;
-            
-            // Set the quote type
-            if (tmp->type == token_dquote)
-                (*quote_types)[i] = AST_DQUOTES;
-            else if (tmp->type == token_squote)
-                (*quote_types)[i] = AST_SQUOTES;
-            else
-                (*quote_types)[i] = 0;
-            
-            // Set the spaced flag
-            (*is_spaced)[i] = tmp->spaced;
-            
-            i++;
-        }
-        
-        tmp = tmp->next;
-    }
-    
-    // NULL-terminate the array
-    args[i] = NULL;
-    
-    return args;
+			(void)exec;
+				expanded_token = ft_strdup(tmp->data);
+			
+			// Always create a new argument for each token
+			args[i] = expanded_token;
+			
+			// Set the quote type
+			if (tmp->type == token_dquote)
+				(*quote_types)[i] = AST_DQUOTES;
+			else if (tmp->type == token_squote)
+				(*quote_types)[i] = AST_SQUOTES;
+			else
+				(*quote_types)[i] = 0;
+			
+			// Set the spaced flag
+			(*is_spaced)[i] = tmp->spaced;
+			
+			i++;
+		}
+		
+		tmp = tmp->next;
+	}
+	
+	// NULL-terminate the array
+	args[i] = NULL;
+	
+	return args;
 }
 
 /* Collect arguments into a string array */

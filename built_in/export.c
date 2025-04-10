@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 16:11:50 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 19:47:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,65 +120,6 @@ static void	ft_update_env(char *var, char *value, t_env **env)
 	ft_env_add_back(env, ft_env_new(var, value));
 }
 
-static void	remove_next_arg(t_ast_node *ast, int i)
-{
-	int	j;
-
-	free(ast->args[i + 1]);
-	j = i + 1;
-	while (ast->args[j])
-	{
-		ast->args[j] = ast->args[j + 1];
-		j++;
-	}
-}
-
-static void	merge_args(t_ast_node *ast, int i)
-{
-	char	*merged;
-
-	merged = ft_strjoin(ast->args[i], ast->args[i + 1]);
-	free(ast->args[i]);
-	ast->args[i] = merged;
-	remove_next_arg(ast, i);
-}
-
-static void	merge_split_assignments(t_ast_node *ast)
-{
-	int	i;
-
-	i = 0;
-	while (ast->args[i] && ast->args[i + 1])
-	{
-		if (!strchr(ast->args[i], '=') && ast->args[i + 1][0] == '=')
-			merge_args(ast, i);
-		else
-			i++;
-	}
-}
-
-static void	merge_incomplete_assignments(t_ast_node *ast)
-{
-	int		i;
-	char	*equals_pos;
-
-	i = 0;
-	while (ast->args[i] && ast->args[i + 1])
-	{
-		equals_pos = strchr(ast->args[i], '=');
-		if (equals_pos && equals_pos == ast->args[i] + strlen(ast->args[i]) - 1)
-			merge_args(ast, i);
-		else
-			i++;
-	}
-}
-
-void	ft_merge_quoted_args(t_ast_node *ast)
-{
-	merge_split_assignments(ast);
-	merge_incomplete_assignments(ast);
-}
-
 static void	ft_set_var_val(char *arg, char **var, char **value)
 {
 	int	j;
@@ -202,7 +143,6 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 	int		err_flag;
 	int		i;
 
-	ft_merge_quoted_args(ast);
 	err_flag = 0;
 	if (ast->arg_count == 1)
 		ft_print_export(*(exec->env));

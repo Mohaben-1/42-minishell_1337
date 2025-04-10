@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/09 21:15:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/10 22:40:51 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,13 +150,7 @@ void	prepare_ast_args(t_ast_node *ast, t_exec *exec)
 	filter_ast_args(ast, exec);
 	if (!ast || !ast->args)
 		return ;
-	i = 1;
 	j = 1;
-	// while (i < ast->arg_count)
-	// {
-	// 	printf("space: %d\n", ast->arg_is_spaced[i]);
-	// 	i++;
-	// }
 	i = 0;
 	while (i < ast->arg_count)
 	{
@@ -210,11 +204,19 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 	if (!ast)
 		return ;
 	prepare_ast_args(ast, exec);
+	t_redirect *r = ast->redirects;
+	while (r)
+	{
+		printf("%s\n", r->file);
+		r = r->next;
+	}
 	if (ast->type == AST_COMMAND)
 		execute_command(ast, exec);
 	else if (ast->type == AST_PIPE)
 	{
 		cmd_count = count_pipe_cmd(ast);
+		prepare_ast_args(ast->left, exec);
+		prepare_ast_args(ast->right, exec);
 		ft_execute_pipe(ast, exec, cmd_count);
 	}
 	else if (ast->type == AST_AND_AND || ast->type == AST_OR_OR)
