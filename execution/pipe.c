@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/07 16:18:07 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/11 22:45:53 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,15 @@ void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
 
 void	exec_pipe_cmd(t_ast_node *ast, t_exec *exec)
 {
-	if (!ast || !ast->args)
+	if (!ast)
+		exit(1);
+	if (ast->type == AST_SUBSHELL && ast->child)
+	{
+		if (ft_apply_redirect(ast, exec))
+			execute_ast(ast->child, exec);
+		exit(exec->exit_status);
+	}
+	if (!ast->args)
 		exit(1);
 	if (ft_is_builtin(ast->args[0]))
 	{
