@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 22:40:38 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:39:23 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef struct s_redirect
 	int					type;
 	int					heredoc_fd;
 	int					quoted;
+	int					is_spaced;
 	struct s_redirect	*next;
 } t_redirect;
 

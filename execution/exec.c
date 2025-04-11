@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/11 16:33:58 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/11 20:44:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,11 @@ void	ft_execute_or_and(t_ast_node *ast, t_exec *exec)
 
 void	expand_ast_args(t_ast_node *ast, t_exec *exec)
 {
-	t_redirect	*redirect;
-	char		*tmp;
-	int			i;
+	t_redirect *redirect;
+	t_redirect *processed_head = NULL;
+	t_redirect *processed_tail = NULL;
+	char *tmp;
+	int i;
 
 	i = 0;
 	while (i < ast->arg_count)
@@ -74,14 +76,64 @@ void	expand_ast_args(t_ast_node *ast, t_exec *exec)
 	redirect = ast->redirects;
 	while (redirect)
 	{
+		t_redirect *new_redir = malloc(sizeof(t_redirect));
+		if (!new_redir)
+			return ;
+		new_redir->type = redirect->type;
+		new_redir->heredoc_fd = redirect->heredoc_fd;
+		new_redir->quoted = redirect->quoted;
+		new_redir->is_spaced = redirect->is_spaced;
 		if (ft_strchr(redirect->file, '$') && redirect->type != token_hrdc && redirect->quoted != token_squote)
+			new_redir->file = ft_expand(redirect->file, exec);
+		else
+			new_redir->file = ft_strdup(redirect->file);
+		t_redirect *current = redirect->next;
+		while (current && current->type == redirect->type && current->is_spaced == 0)
 		{
-			tmp = redirect->file;
-			redirect->file = ft_expand(tmp, exec);
+			char *expanded;
+			if (ft_strchr(current->file, '$') && redirect->type != token_hrdc && 
+				current->quoted != token_squote)
+			{
+				expanded = ft_expand(current->file, exec);
+			}
+			else
+			{
+				expanded = ft_strdup(current->file);
+			}
+			tmp = new_redir->file;
+			new_redir->file = ft_strjoin(tmp, expanded);
 			free(tmp);
+			free(expanded);
+			current = current->next;
 		}
-		redirect = redirect->next;
+		new_redir->next = NULL;
+		if (!processed_head)
+		{
+			processed_head = new_redir;
+			processed_tail = new_redir;
+		}
+		else
+		{
+			processed_tail->next = new_redir;
+			processed_tail = new_redir;
+		}
+		if (current && current->type != redirect->type)
+			redirect = current;
+		else if (current)
+			redirect = current;
+		else
+			redirect = NULL;
 	}
+	t_redirect *temp;
+	redirect = ast->redirects;
+	while (redirect)
+	{
+		temp = redirect;
+		redirect = redirect->next;
+		free(temp->file);
+		free(temp);
+	}
+	ast->redirects = processed_head;
 }
 
 void	filter_ast_args(t_ast_node *ast, t_exec *exec)
@@ -111,7 +163,7 @@ void	filter_ast_args(t_ast_node *ast, t_exec *exec)
 		new_args[0] = ft_strdup("");
 		new_quote_types[0] = 0;
 		j = 1;
-    }
+	}
 	else
 	{
 		new_args = malloc((j + 1) * sizeof(char *));

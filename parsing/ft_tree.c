@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/10 22:40:17 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/11 19:02:13 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,95 +361,119 @@ t_ast_node *create_ast_node(int type)
 
 t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 {
-	t_redirect *head = NULL;
-	t_redirect *current = NULL;
-	t_token_node *tmp = *tokens;
-	t_token_node *prev = NULL;
-	t_token_node *new_head = *tokens;
-	(void)exec;
-	
-	while (tmp)
-	{
-		if (is_redirection(tmp->type) && tmp->next)
-		{
-			t_redirect *redir = malloc(sizeof(t_redirect));
-			if (!redir)
-				return head;
-			
-			redir->type = tmp->type;
-			if (redir->type == token_hrdc)
-				redir->heredoc_fd = -1;
+    t_redirect *head = NULL;
+    t_redirect *current = NULL;
+    t_token_node *tmp = *tokens;
+    t_token_node *prev = NULL;
+    t_token_node *new_head = *tokens;
+    (void)exec;
+    
+    while (tmp)
+    {
+        if (is_redirection(tmp->type) && tmp->next)
+        {
+            // Create a new redirection node
+            t_redirect *redir = malloc(sizeof(t_redirect));
+            if (!redir)
+                return head;
+            
+            redir->type = tmp->type;
+            if (redir->type == token_hrdc)
+                redir->heredoc_fd = -1;
 
-			// Get initial file name token
-			t_token_node *file_token = tmp->next;
-			
-			// Set quoted status
-			if (file_token->type == token_dquote)
-				redir->quoted = token_dquote;
-			else if (file_token->type == token_squote)
-				redir->quoted = token_squote;
-			else
-				redir->quoted = 0;
-				
-			// Initialize with the first file token's data
-			redir->file = strdup(file_token->data);
-			
-			// Check for additional tokens to join
-			t_token_node *next_token = file_token->next;
-			t_token_node *last_joined = file_token;
-			
-			// Join non-spaced tokens that are quoted or part of the same word
-			while (next_token && 
-				   !next_token->spaced && 
-				   (next_token->type == token_cmd || 
-					next_token->type == token_dquote || 
-					next_token->type == token_squote))
-			{
-				// Join this token with the file name
-				char *joined = ft_strjoin(redir->file, next_token->data);
-				free(redir->file);
-				redir->file = joined;
-				
-				// Remember this token was joined
-				last_joined = next_token;
-				next_token = next_token->next;
-			}
-			
-			redir->next = NULL;
-			
-			// Add to redirection list
-			if (!head)
-				head = redir;
-			else
-				current->next = redir;
-			
-			current = redir;
-			
-			// Remove these tokens from command tokens
-			t_token_node *to_remove = tmp;
-			
-			// Update links - skip all joined tokens
-			if (prev)
-				prev->next = last_joined->next;
-			else
-				new_head = last_joined->next;
-			
-			// Move to next token after all joined tokens
-			tmp = last_joined->next;
-			
-			// Unlink removed tokens
-			to_remove->next = NULL;
-			// No need to free tokens here as they are part of the original list
-		}
-		else
-		{
-			prev = tmp;
-			tmp = tmp->next;
-		}
-	}
-	
-	*tokens = new_head;
-	return head;
+            // Get initial file name token
+            t_token_node *file_token = tmp->next;
+            
+            // Set quoted status
+            if (file_token->type == token_dquote)
+                redir->quoted = token_dquote;
+            else if (file_token->type == token_squote)
+                redir->quoted = token_squote;
+            else
+                redir->quoted = 0;
+                
+            // Initialize with the first file token's data
+            redir->file = strdup(file_token->data);
+            
+            // For normal redirections like "> t1 > t2", each file should have is_spaced=1
+            // because there's a space between redirection operator and file
+            redir->is_spaced = (file_token->spaced) ? 1 : 0;
+            
+            redir->next = NULL;
+            
+            // Add to redirection list
+            if (!head)
+                head = redir;
+            else
+                current->next = redir;
+            
+            current = redir;
+            
+            // Track the tokens we've processed
+            t_token_node *last_joined = file_token;
+            t_token_node *next_token = file_token->next;
+            
+            // Process additional non-spaced tokens
+            while (next_token && 
+                   !next_token->spaced && 
+                   (next_token->type == token_cmd || 
+                    next_token->type == token_dquote || 
+                    next_token->type == token_squote))
+            {
+                // Create a new redirection node for this token
+                t_redirect *additional = malloc(sizeof(t_redirect));
+                if (!additional)
+                    return head;
+                
+                additional->type = tmp->type;  // Same redirection type
+                additional->heredoc_fd = -1;   // Initialize for consistency
+                
+                // Set quoted status for this token
+                if (next_token->type == token_dquote)
+                    additional->quoted = token_dquote;
+                else if (next_token->type == token_squote)
+                    additional->quoted = token_squote;
+                else
+                    additional->quoted = 0;
+                
+                additional->file = strdup(next_token->data);
+                additional->is_spaced = 0;  // No space between joined parts
+                additional->next = NULL;
+                
+                // Add to our redirection list
+                current->next = additional;
+                current = additional;
+                
+                // Remember this token was processed
+                last_joined = next_token;
+                next_token = next_token->next;
+            }
+            
+            // Remove these tokens from command tokens
+            t_token_node *to_remove = tmp;
+            
+            // Update links - skip all joined tokens
+            if (prev)
+                prev->next = last_joined->next;
+            else
+                new_head = last_joined->next;
+            
+            // Move to next token after all joined tokens
+            tmp = last_joined->next;
+            
+            // Unlink removed tokens
+            to_remove->next = NULL;
+            // No need to free tokens here as they are part of the original list
+        }
+        else
+        {
+            prev = tmp;
+            tmp = tmp->next;
+        }
+    }
+    
+    *tokens = new_head;
+    return head;
 }
 
 /* Check if token type is a redirection */
