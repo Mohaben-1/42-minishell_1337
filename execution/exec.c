@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 22:40:51 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:33:58 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,12 +204,6 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 	if (!ast)
 		return ;
 	prepare_ast_args(ast, exec);
-	t_redirect *r = ast->redirects;
-	while (r)
-	{
-		printf("%s\n", r->file);
-		r = r->next;
-	}
 	if (ast->type == AST_COMMAND)
 		execute_command(ast, exec);
 	else if (ast->type == AST_PIPE)
