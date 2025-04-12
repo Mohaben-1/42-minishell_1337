@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:54:03 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 15:21:40 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 16:15:32 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,23 @@ static int	is_wild_card(char *s)
 	return (0);
 }
 
-static int	match(char *pattern, char *str)
+static int	match(char *file_name, char *d_name)
 {
-	if (*pattern == '\0' && *str == '\0')
+	if (*file_name == '\0' && *d_name == '\0')
 		return (1);
-	if (*pattern == '*')
+	if (*file_name == '*')
 	{
-		if (match(pattern + 1, str))
+		if (match(file_name + 1, d_name))
 			return (1);
-		if (*str && match(pattern, str + 1))
+		if (*d_name && match(file_name, d_name + 1))
 			return (1);
 	}
-	else if (*pattern == *str)
-		return (match(pattern + 1, str + 1));
+	else if (*file_name == *d_name)
+		return (match(file_name + 1, d_name + 1));
 	return (0);
 }
 
-static int	count_matches(char *pattern)
+static int	count_matches(char *file_name)
 {
 	DIR				*d;
 	struct dirent	*dir;
@@ -54,16 +54,16 @@ static int	count_matches(char *pattern)
 		dir = readdir(d);
 		if (!dir)
 			return (closedir(d), count);
-		if (dir->d_name[0] == '.' && pattern[0] != '.')
+		if (dir->d_name[0] == '.' && file_name[0] != '.')
 			continue ;
-		if (match(pattern, dir->d_name))
+		if (match(file_name, dir->d_name))
 			count++;
 	}
 	closedir(d);
 	return (count);
 }
 
-static char 	**wildcard_expand(char *pattern)
+static char	**wildcard_expand(char *file_name)
 {
 	DIR				*d;
 	struct dirent	*dir;
@@ -71,7 +71,7 @@ static char 	**wildcard_expand(char *pattern)
 	int				count;
 	int				i;
 
-	count = count_matches(pattern);
+	count = count_matches(file_name);
 	if (count == 0)
 		return (NULL);
 	result = malloc(sizeof(char *) * (count + 1));
@@ -83,14 +83,13 @@ static char 	**wildcard_expand(char *pattern)
 	i = 0;
 	while ((dir = readdir(d)) && i < count)
 	{
-		if (dir->d_name[0] == '.' && pattern[0] != '.')
+		if (dir->d_name[0] == '.' && file_name[0] != '.')
 			continue ;
-		if (match(pattern, dir->d_name))
+		if (match(file_name, dir->d_name))
 			result[i++] = strdup(dir->d_name);
 	}
 	result[i] = NULL;
-	closedir(d);
-	return (result);
+	return (closedir(d), result);
 }
 
 static int	arg_count(char **args)
@@ -127,6 +126,15 @@ static char **merge_args(char **old, int i, char **exp)
 	return (new_args);
 }
 
+void	rdr_wild_err(char **expanded, char *file, t_exec *exec)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(file, 2);
+	ft_putstr_fd(": ambiguous redirect\n", 2);
+	exec->exit_status = 1;
+	free_double_ptr(expanded);
+}
+
 int	ft_expand_redr_wild(t_ast_node *ast, t_exec *exec)
 {
 	char		**expanded;
@@ -141,11 +149,7 @@ int	ft_expand_redr_wild(t_ast_node *ast, t_exec *exec)
 			expanded = wildcard_expand(redr->file);
 			if (expanded[1])
 			{
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(redr->file, 2);
-				ft_putstr_fd(": ambiguous redirect\n", 2);
-				exec->exit_status = 1;
-				free_double_ptr(expanded);
+				rdr_wild_err(expanded, redr->file, exec);
 				return (0);
 			}
 			else
