@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/12 11:58:20 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 15:43:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
 			
 			// Temporarily modify tokens to parse redirections
 			t_token_node *redir_tokens = closing->next;
-			node->child->redirects = parse_redirections(&redir_tokens, exec);
+			node->redirects = parse_redirections(&redir_tokens, exec);
 			
 			// Connect the subshell to the redirect command
 			// redir_node->child = node;

@@ -109,7 +109,6 @@ int main(int ac, char **av, char **envp)
 		ft_init_exec(&exec, &env, envp);
 		ast = build_ast(tokens, &exec);
 		execute_ast(ast, &exec);
-		// print_ast(ast, 0);
 		free(input);
 	}
 	return (0);

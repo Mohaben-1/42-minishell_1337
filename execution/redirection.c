@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 11:48:18 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 16:06:40 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 	redr = ast->redirects;
 	while (redr)
 	{
-		printf("%s\n", redr->file);
 		if (redr->type != token_hrdc && !redr->file)
 		{
 			ft_putstr_fd("minishell: $: ambiguous redirec\n", 2);
@@ -106,6 +105,7 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 	}
 	return 1;
 }
+
 
 int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 {

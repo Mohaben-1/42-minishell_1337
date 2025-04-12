@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/11 22:45:53 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 15:22:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ void	exec_pipe_cmd(t_ast_node *ast, t_exec *exec)
 {
 	if (!ast)
 		exit(1);
+	ft_expand_wildcard(ast);
 	if (ast->type == AST_SUBSHELL && ast->child)
 	{
 		if (ft_apply_redirect(ast, exec))

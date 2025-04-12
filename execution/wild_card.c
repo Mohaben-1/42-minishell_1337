@@ -6,12 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:54:03 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 12:55:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 15:21:40 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <dirent.h>
 
 static int	is_wild_card(char *s)
 {
@@ -50,8 +49,11 @@ static int	count_matches(char *pattern)
 	if (!d)
 		return (0);
 	count = 0;
-	while ((dir = readdir(d)))
+	while (1)
 	{
+		dir = readdir(d);
+		if (!dir)
+			return (closedir(d), count);
 		if (dir->d_name[0] == '.' && pattern[0] != '.')
 			continue ;
 		if (match(pattern, dir->d_name))
@@ -61,7 +63,7 @@ static int	count_matches(char *pattern)
 	return (count);
 }
 
-static char	**wildcard_expand(char *pattern)
+static char 	**wildcard_expand(char *pattern)
 {
 	DIR				*d;
 	struct dirent	*dir;
@@ -70,19 +72,21 @@ static char	**wildcard_expand(char *pattern)
 	int				i;
 
 	count = count_matches(pattern);
+	if (count == 0)
+		return (NULL);
 	result = malloc(sizeof(char *) * (count + 1));
 	if (!result)
 		return (NULL);
 	d = opendir(".");
 	if (!d)
-		return (NULL);
+		return (closedir(d), free(result), NULL);
 	i = 0;
 	while ((dir = readdir(d)) && i < count)
 	{
 		if (dir->d_name[0] == '.' && pattern[0] != '.')
 			continue ;
 		if (match(pattern, dir->d_name))
-			result[i++] = ft_strdup(dir->d_name);
+			result[i++] = strdup(dir->d_name);
 	}
 	result[i] = NULL;
 	closedir(d);
@@ -91,25 +95,22 @@ static char	**wildcard_expand(char *pattern)
 
 static int	arg_count(char **args)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	while (args && args[i])
 		i++;
 	return (i);
 }
 
-static char	**merge_args(char **old, int i, char **exp)
+static char **merge_args(char **old, int i, char **exp)
 {
-	int		old_len;
-	int		exp_len;
 	char	**new_args;
 	int		idx;
 	int		j;
 	int		k;
 
-	old_len = arg_count(old);
-	exp_len = arg_count(exp);
-	new_args = malloc(sizeof(char *) * (old_len + exp_len));
+	new_args = malloc(sizeof(char *) * (arg_count(old) + arg_count(exp) + 1));
 	if (!new_args)
 		return (NULL);
 	j = 0;
@@ -119,14 +120,47 @@ static char	**merge_args(char **old, int i, char **exp)
 		new_args[idx++] = ft_strdup(old[j++]);
 	while (exp && exp[k])
 		new_args[idx++] = ft_strdup(exp[k++]);
-	j++; // skip wildcard
+	j++;
 	while (old[j])
 		new_args[idx++] = ft_strdup(old[j++]);
 	new_args[idx] = NULL;
 	return (new_args);
 }
 
-void	expand_ast_wildcards(t_ast_node *ast)
+int	ft_expand_redr_wild(t_ast_node *ast, t_exec *exec)
+{
+	char		**expanded;
+	t_redirect	*redr;
+	char		*tmp;
+
+	redr = ast->redirects;
+	while (redr)
+	{
+		if (redr->file && redr->type != token_hrdc && is_wild_card(redr->file))
+		{
+			expanded = wildcard_expand(redr->file);
+			if (expanded[1])
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(redr->file, 2);
+				ft_putstr_fd(": ambiguous redirect\n", 2);
+				exec->exit_status = 1;
+				free_double_ptr(expanded);
+				return (0);
+			}
+			else
+			{
+				tmp = redr->file;
+				redr->file = expanded[0];
+				free(tmp);
+			}
+		}
+		redr = redr->next;
+	}
+	return (1);
+}
+
+void	ft_expand_wildcard(t_ast_node *ast)
 {
 	char	**expanded;
 	char	**new_args;

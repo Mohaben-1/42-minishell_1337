@@ -79,3 +79,8 @@ export CMD=ls
 
 export FILE=test.txt
 echo content > "$FILE" && cat "$FILE" | grep content && echo ok
+
+
+ls *an*le*
+cat < *.g
+cat << Make*

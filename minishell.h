@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 12:20:42 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 15:21:34 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <signal.h>
 # include <limits.h>
+# include <dirent.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -192,6 +193,7 @@ void	ft_handle_sigint(int sig);
 int	count_pipe_cmd(t_ast_node *ast);
 
 
-void	expand_ast_wildcards(t_ast_node *ast);
+void	ft_expand_wildcard(t_ast_node *ast);
+int		ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
 
 #endif
