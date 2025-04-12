@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 18:27:28 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 22:33:56 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <signal.h>
 # include <limits.h>
 # include <dirent.h>
+# include <termios.h>
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
