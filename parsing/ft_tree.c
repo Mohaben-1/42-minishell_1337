@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/11 19:02:13 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 11:58:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,75 +290,6 @@ t_ast_node *create_ast_node(int type)
 }
 
 /* Parse redirections from token list */
-// t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
-// {
-// 	t_redirect *head = NULL;
-// 	t_redirect *current = NULL;
-// 	t_token_node *tmp = *tokens;
-// 	t_token_node *prev = NULL;
-// 	t_token_node *new_head = *tokens;
-	
-// 	while (tmp)
-// 	{
-// 		if (is_redirection(tmp->type) && tmp->next)
-// 		{
-// 			// Create new redirection node
-// 			t_redirect *redir = malloc(sizeof(t_redirect));
-// 			if (!redir)
-// 				return head;
-			
-// 			redir->type = tmp->type;
-// 			if (redir->type == token_hrdc)
-// 				redir->heredoc_fd = -1;
-
-// 			(void)exec;
-// 			redir->file = strdup(tmp->next->data);
-// 			if (tmp->next->type == token_dquote)
-// 				redir->quoted = token_dquote;
-// 			else if (tmp->next->type == token_squote)
-// 				redir->quoted = token_squote;
-// 			else
-// 				redir->quoted = 0;
-// 			redir->next = NULL;
-			
-// 			// Add to redirection list
-// 			if (!head)
-// 				head = redir;
-// 			else
-// 				current->next = redir;
-			
-// 			current = redir;
-			
-// 			// Remove these tokens from command tokens
-// 			t_token_node *to_remove = tmp;
-// 			t_token_node *file_to_remove = tmp->next;
-			
-// 			// Update links
-// 			if (prev)
-// 				prev->next = file_to_remove->next;
-// 			else
-// 				new_head = file_to_remove->next;
-			
-// 			// Move to next token after redirection file
-// 			tmp = file_to_remove->next;
-			
-// 			// Free removed tokens (in real code, you'd want to handle this differently)
-// 			// For now, just unlink them
-// 			to_remove->next = NULL;
-// 			file_to_remove->next = NULL;
-// 		}
-// 		else
-// 		{
-// 			prev = tmp;
-// 			tmp = tmp->next;
-// 		}
-// 	}
-	
-// 	*tokens = new_head;
-// 	return head;
-// }
-
-
 t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 {
     t_redirect *head = NULL;

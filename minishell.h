@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/11 16:39:23 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 12:20:42 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,5 +191,7 @@ void	ft_handle_sigint(int sig);
 
 int	count_pipe_cmd(t_ast_node *ast);
 
+
+void	expand_ast_wildcards(t_ast_node *ast);
 
 #endif
