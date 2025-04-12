@@ -81,6 +81,4 @@ export FILE=test.txt
 echo content > "$FILE" && cat "$FILE" | grep content && echo ok
 
 
-ls *an*le*
-cat < *.g
-cat << Make*
+cat << EOF | grep hello > output.txt && echo ok

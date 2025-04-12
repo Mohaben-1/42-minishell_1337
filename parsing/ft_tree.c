@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/12 15:43:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:24:11 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ t_ast_node *create_ast_node(int type)
 	if (!node)
 		return NULL;
 	
-	node->type = type;
+	node->e_type = type;
 	node->args = NULL;
 	node->arg_count = 0;
 	node->arg_quote_types = NULL;
@@ -633,7 +633,7 @@ void print_ast(t_ast_node *ast, int indent_level)
 	
 	// Print node type
 	printf("%s", indent);
-	switch (ast->type)
+	switch (ast->e_type)
 	{
 		case AST_COMMAND:
 			printf("COMMAND: ");
@@ -689,7 +689,7 @@ void print_ast(t_ast_node *ast, int indent_level)
 			break;
 			
 		default:
-			printf("UNKNOWN NODE TYPE: %d\n", ast->type);
+			printf("UNKNOWN NODE TYPE: %d\n", ast->e_type);
 	}
 	
 	// Recursively print children

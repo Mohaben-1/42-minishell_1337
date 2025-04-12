@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 14:00:21 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:27:45 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,17 @@ void	execute_builtin(t_ast_node *ast, t_exec *exec)
 		ft_env(exec);
 }
 
-void	execute_command(t_ast_node *ast, t_exec *exec)
+void	handle_cmd_exit(t_exec *exec, int status)
+{
+	if (WIFEXITED(status))
+		exec->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		exec->exit_status = 128 + WTERMSIG(status);
+	else
+		exec->exit_status = 1;
+}
+
+void	ft_execute_command(t_ast_node *ast, t_exec *exec)
 {
 	int			pid;
 	int			status;
@@ -55,19 +65,13 @@ void	execute_command(t_ast_node *ast, t_exec *exec)
 	{
 		pid = fork();
 		if (pid == -1)
-		{
-			ft_putstr_fd("minishell: fork: Resource temporarily unavailable", 2);
-			return ;
-		}
+			return (ft_putstr_fd(FORK_ERROR, 2));
 		if (pid == 0)
 		{
 			ft_exec_ve(ast, exec);
 			exit(exec->exit_status);
 		}
 		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			exec->exit_status = WEXITSTATUS(status);
-		else
-			exec->exit_status = 1;
+		handle_cmd_exit(exec, status);
 	}
 }

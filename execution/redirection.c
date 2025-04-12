@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 16:06:40 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:10:36 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	ft_restore_std_fd(t_exec *exec)
 	}
 }
 
-
 int	check_hrdc_priority(t_redirect *redirect)
 {
 	while (redirect)
@@ -44,7 +43,7 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 {
 	t_redirect	*redr;
 	int			fd;
-	
+
 	exec->std_fd[0] = dup(0);
 	exec->std_fd[1] = dup(1);
 	redr = ast->redirects;
@@ -55,7 +54,7 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 			if (redr->heredoc_fd == -1)
 				redr->heredoc_fd = ft_handle_heredoc(redr, exec);
 			if (redr->heredoc_fd == -1)
-				return 0;
+				return (0);
 		}
 		redr = redr->next;
 	}
@@ -104,40 +103,4 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 		redr = redr->next;
 	}
 	return 1;
-}
-
-
-int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
-{
-	char	*line_expaned;
-	char	*line;
-	int		pipe_fd[2];
-
-	if (pipe(pipe_fd) == -1)
-	{
-		ft_putstr_fd("minishell: pipe: Resource temporarily unavailable\n", 2);
-		exec->exit_status = 1;
-		return (-1);
-	}
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-			break ;
-		if (!ft_strcmp(line, redr->file))
-		{
-			free(line);
-			break ;
-		}
-		if (!redr->quoted)
-			line_expaned = ft_expand(line, exec);
-		else
-			line_expaned = ft_strdup(line);
-		ft_putstr_fd(line_expaned, pipe_fd[1]);
-		ft_putchar_fd('\n', pipe_fd[1]);
-		free(line);
-		free(line_expaned);
-	}
-	close(pipe_fd[1]);
-	return (pipe_fd[0]);
 }

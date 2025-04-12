@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 15:22:14 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:13:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,19 @@ int	count_pipe_cmd(t_ast_node *ast)
 
 	if (!ast)
 		return (0);
-	if (ast->type != AST_PIPE)
+	if (ast->e_type != AST_PIPE)
 		return (1);
 	count = 0;
 	if (ast->left)
 	{
-		if (ast->left->type == AST_PIPE)
+		if (ast->left->e_type == AST_PIPE)
 			count += count_pipe_cmd(ast->left);
 		else
 			count += 1;
 	}
 	if (ast->right)
 	{
-		if (ast->right->type == AST_PIPE)
+		if (ast->right->e_type == AST_PIPE)
 			count += count_pipe_cmd(ast->right);
 		else
 			count += 1;
@@ -42,7 +42,7 @@ void	collect_pipe_cmd(t_ast_node *ast, t_ast_node **ast_pipes, int *index)
 {
 	if (!ast)
 		return ;
-	if (ast->type != AST_PIPE)
+	if (ast->e_type != AST_PIPE)
 	{
 		ast_pipes[*index] = ast;
 		(*index)++;
@@ -78,14 +78,16 @@ void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
 	{
 		if (redirect->type == token_hrdc && redirect->heredoc_fd == -1)
 			redirect->heredoc_fd = ft_handle_heredoc(redirect, exec);
+		if (exec->exit_status == 1)
+			return ;
 		redirect = redirect->next;
 	}
-	if (ast->type == AST_PIPE || ast->type == AST_AND_AND || ast->type == AST_OR_OR)
+	if (ast->e_type == AST_PIPE || ast->e_type == AST_AND_AND || ast->e_type == AST_OR_OR)
 	{
 		process_all_heredocs(ast->left, exec);
 		process_all_heredocs(ast->right, exec);
 	}
-	else if (ast->type == AST_SUBSHELL && ast->child)
+	else if (ast->e_type == AST_SUBSHELL && ast->child)
 		process_all_heredocs(ast->child, exec);
 }
 
@@ -94,7 +96,7 @@ void	exec_pipe_cmd(t_ast_node *ast, t_exec *exec)
 	if (!ast)
 		exit(1);
 	ft_expand_wildcard(ast);
-	if (ast->type == AST_SUBSHELL && ast->child)
+	if (ast->e_type == AST_SUBSHELL && ast->child)
 	{
 		if (ft_apply_redirect(ast, exec))
 			execute_ast(ast->child, exec);
@@ -130,8 +132,10 @@ void	handle_wait_status(t_exec *exec, int *pids, int count)
 			waitpid(pids[i], NULL, 0);
 		i++;
 	}
-	if (WIFEXITED(status))
+	 if (WIFEXITED(status))
 		exec->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		exec->exit_status = 128 + WTERMSIG(status);
 	else
 		exec->exit_status = 1;
 }
@@ -150,13 +154,18 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 	collect_pipe_cmd(ast, ast_pipes, &index);
 	i = 0;
 	while (i < cmd_count)
-		process_all_heredocs(ast_pipes[i++], exec);
+	{
+		process_all_heredocs(ast_pipes[i], exec);
+		if (exec->exit_status == 1)
+			return ;
+		i++;
+	}
 	i = 0;
 	while (i < cmd_count - 1)
 	{
 		if (pipe(pipes_fd[i]) < 0)
 		{
-			ft_putstr_fd("minishell: pipe: Resource unavailable\n", 2);
+			ft_putstr_fd(PIPE_ERROR, 2);
 			exec->exit_status = 1;
 			return ;
 		}
@@ -168,7 +177,7 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 		pids[i] = fork();
 		if (pids[i] == -1)
 		{
-			ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
+			ft_putstr_fd(FORK_ERROR, 2);
 			exec->exit_status = 1;
 			return ;
 		}

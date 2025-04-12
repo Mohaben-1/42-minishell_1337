@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 15:44:08 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 19:44:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 	pid = fork();
 	if (pid == -1)
 	{
-		ft_putstr_fd("minishell: fork: Resource temporarily unavailable\n", 2);
+		ft_putstr_fd(FORK_ERROR, 2);
 		return ;
 	}
 	if (pid == 0)
@@ -41,16 +41,16 @@ void	execute_subshell(t_ast_node *ast, t_exec *exec)
 
 void	ft_execute_or_and(t_ast_node *ast, t_exec *exec)
 {
-	if (ast->type == AST_AND_AND)
+	if (ast->e_type == AST_AND_AND)
 	{
 		execute_ast(ast->left, exec);
 		if (exec->exit_status == 0)
 			execute_ast(ast->right, exec);
 	}
-	else if (ast->type == AST_OR_OR)
+	else if (ast->e_type == AST_OR_OR)
 	{
 		execute_ast(ast->left, exec);
-		if (exec->exit_status != 0)
+		if (exec->exit_status != 0 && exec->exit_status != 130)
 			execute_ast(ast->right, exec);
 	}
 }
@@ -260,18 +260,18 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 	ft_expand_wildcard(ast);
 	if (!ft_expand_redr_wild(ast, exec))
 		return ;
-	if (ast->type == AST_COMMAND)
-		execute_command(ast, exec);
-	else if (ast->type == AST_PIPE)
+	if (ast->e_type == AST_COMMAND)
+		ft_execute_command(ast, exec);
+	else if (ast->e_type == AST_PIPE)
 	{
 		cmd_count = count_pipe_cmd(ast);
 		prepare_ast_args(ast->left, exec);
 		prepare_ast_args(ast->right, exec);
 		ft_execute_pipe(ast, exec, cmd_count);
 	}
-	else if (ast->type == AST_AND_AND || ast->type == AST_OR_OR)
+	else if (ast->e_type == AST_AND_AND || ast->e_type == AST_OR_OR)
 		ft_execute_or_and(ast, exec);
-	else if (ast->type == AST_SUBSHELL)
+	else if (ast->e_type == AST_SUBSHELL)
 		execute_subshell(ast, exec);
 	ft_restore_std_fd(exec);
 }

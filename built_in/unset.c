@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 14:15:39 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:46:01 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,21 @@ int	ft_check_var_exist(t_env *env, char *var)
 		env = env->next;
 	}
 	return (0);
+}
+
+int	ft_check_var_name_unset(char *var)
+{
+	if (!var || !*var)
+		return (0);
+	if (!ft_isalpha(var[0]) && var[0] != '_')
+		return (0);
+	while (*var)
+	{
+		if (!ft_isalnum(*var) && *var != '_')
+			return (0);
+		var++;
+	}
+	return (1);
 }
 
 void	ft_del_var(t_env *env, char *var)
@@ -57,17 +72,25 @@ void	ft_del_var(t_env *env, char *var)
 void	ft_unset(char **args, t_exec *exec)
 {
 	int		i;
+	int		err_flag;
 
 	if (!exec->env)
 		return ;
 	i = 1;
+	err_flag = 0;
 	while (args[i])
 	{
-		if (!ft_check_var_name(args[i]))
+		if (!ft_check_var_name_unset(args[i]))
+		{
 			ft_err_unset(args[i]);
+			err_flag = 1;
+		}
 		else if (ft_check_var_exist(*(exec->env), args[i]))
 			ft_del_var(*(exec->env), args[i]);
 		i++;
 	}
-	exec->exit_status = 0;
+	if (!err_flag)
+		exec->exit_status = 0;
+	else
+		exec->exit_status = 1;
 }

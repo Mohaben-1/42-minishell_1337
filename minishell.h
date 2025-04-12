@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 15:21:34 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/12 18:27:28 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,16 @@
 # include <signal.h>
 # include <limits.h>
 # include <dirent.h>
+# include <sys/stat.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+
+# define FORK_ERROR "minishell: fork: Resource temporarily unavailable\n"
+# define PIPE_ERROR "minishell: pipe: Resource unavailable\n"
+
+
+static int	g_heredoc_signal;
 
 typedef enum e_token_type
 {
@@ -64,8 +71,7 @@ typedef struct s_redirect
 	int					quoted;
 	int					is_spaced;
 	struct s_redirect	*next;
-} t_redirect;
-
+}	t_redirect;
 
 typedef struct s_ast_node
 {
@@ -78,7 +84,7 @@ typedef struct s_ast_node
 		AST_SUBSHELL,
 		AST_DQUOTES,
 		AST_SQUOTES
-	}	type;
+	}	e_type;
 	char				**args;
 	int					arg_count;
 	t_redirect			*redirects;
@@ -97,57 +103,61 @@ typedef struct s_exec
 	int			exit_status;
 }	t_exec;
 
-size_t	ft_strlen(char *s);
-int		ft_isdigit(char c);
-int		ft_isalpha(int c);
-int		ft_isalnum(int c);
-long	ft_atoi(char *str);
-char	*ft_itoa(int n);
-char	*ft_strdup(char *s1);
-char	*ft_substr(char *s, unsigned int start, size_t len);
-char	*ft_strjoin(char *s1, char *s2);
-char	*ft_strjoin_free(char *s1, char *s2);
-int		ft_get_index(char *s, char c);
-char	*ft_strchr(char *s, int c);
-int		ft_strncmp(char *s1, char *s2, size_t n);
-int		ft_strcmp(char *s1, char *s2);
-char	*ft_strtrim(char *s1, char *set);
-char	**ft_split(char *s, char c);
-void	free_double_ptr(char **s);
+//Utils
+size_t			ft_strlen(char *s);
+int				ft_isdigit(char c);
+int				ft_isalpha(int c);
+int				ft_isalnum(int c);
+long			ft_atoi(char *str);
+char			*ft_itoa(int n);
+char			*ft_strdup(char *s1);
+char			*ft_substr(char *s, unsigned int start, size_t len);
+char			*ft_strjoin(char *s1, char *s2);
+char			*ft_strjoin_free(char *s1, char *s2);
+int				ft_get_index(char *s, char c);
+char			*ft_strchr(char *s, int c);
+int				ft_strncmp(char *s1, char *s2, size_t n);
+int				ft_strcmp(char *s1, char *s2);
+char			*ft_strtrim(char *s1, char *set);
+char			**ft_split(char *s, char c);
+void			free_double_ptr(char **s);
 
-void	ft_error(char *err, int exit_status);
-void	ft_error_cmd(t_env *env, char *cmd, char **paths, int exit_status);
-void	ft_error_file(char *file, t_exec *exec);
-void	ft_error_file_expand(char *file, t_exec *exec);
+//Errors
+void			ft_error(char *err, int exit_status);
+void			ft_error_cmd(t_env *env, char *cmd, char **paths, 
+					int exit_status);
+void			ft_error_file(char *file, t_exec *exec);
+void			ft_error_file_expand(char *file, t_exec *exec);
 
+//Buil_in
+char			*ft_get_path(char **envp);
+void			ft_exec_ve(t_ast_node *node, t_exec *exec);
+void			ft_putchar_fd(char c, int fd);
+void			ft_putstr_fd(char *s, int fd);
+void			ft_putnbr_fd(int n, int fd);
+void			ft_cd(char **args, t_exec *exec);
+void			ft_export(t_ast_node *ast, t_exec *exec);
+t_env			*ft_init_env(char **envp);
+void			ft_env(t_exec *exec);
+void			ft_env_add_back(t_env **lst, t_env *new);
+t_env			*ft_env_new(char *var, char *value);
+void			ft_unset(char **args, t_exec *exec);
+int				ft_check_var_name(char *var);
+void			ft_exit(t_ast_node *ast, t_exec *exec);
+char			*ft_get_env(t_env *env, char *var);
+void			ft_set_env(t_env *env, char *var, char *new_val);
+void			ft_pwd(t_exec *exec);
+void			ft_echo(char **args, t_exec *exec);
 
-char	*ft_get_path(char **envp);
-void	ft_exec_ve(t_ast_node *node, t_exec *exec);
-void	ft_putchar_fd(char c, int fd);
-void	ft_putstr_fd(char *s, int fd);
-void	ft_putnbr_fd(int n, int fd);
-void	ft_cd(char **args, t_exec *exec);
-void	ft_export(t_ast_node *ast, t_exec *exec);
-t_env	*ft_init_env(char **envp);
-void	ft_env(t_exec *exec);
-void	ft_env_add_back(t_env **lst, t_env *new);
-t_env	*ft_env_new(char *var, char *value);
-void	ft_unset(char **args, t_exec *exec);
-int		ft_check_var_name(char *var);
-void	ft_exit(t_ast_node *ast, t_exec *exec);
-char	*ft_get_env(t_env *env, char *var);
-void	ft_set_env(t_env *env, char *var, char *new_val);
-void	ft_pwd(t_exec *exec);
-void	ft_echo(char **args, t_exec *exec);
-
-
+//Parsing
 t_token_node	*ft_tokenize(char *input, t_exec *exec);
 t_ast_node		*build_ast(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_logical_ops(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_pipes(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_command(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_subshell(t_token_node *tokens, t_exec *exec);
-t_token_node	*find_op_at_level(t_token_node *tokens, t_token_type type1, t_token_type type2);
+t_token_node	*find_op_at_level(t_token_node *tokens, t_token_type type1, 
+					t_token_type type2);
 t_token_node	*find_token_at_level(t_token_node *tokens, t_token_type type);
 t_token_node	*extract_tokens(t_token_node *start, t_token_node *end);
 t_ast_node		*create_ast_node(int type);
@@ -155,45 +165,26 @@ t_redirect		*parse_redirections(t_token_node **tokens, t_exec *exec);
 void			free_ast(t_ast_node *ast);
 int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
-char			**collect_args(t_token_node *tokens, int count, int **quote_types, int **arg_is_spaced, t_exec *exec);
+char			**collect_args(t_token_node *tokens, int count, 
+					int **quote_types, int **arg_is_spaced, t_exec *exec);
 void			print_ast(t_ast_node *ast, int indent_level);
 
-
-
-
+//Execution
 void			execute_ast(t_ast_node *ast, t_exec *exec);
-void			execute_command(t_ast_node *node, t_exec *exec);
+void			ft_execute_command(t_ast_node *node, t_exec *exec);
 void			ft_execute_pipe(t_ast_node *node, t_exec *exec, int cmd_count);
 void			execute_subshell(t_ast_node *ast, t_exec *exec);
-
-
 void			ft_restore_std_fd(t_exec *exec);
 int				ft_apply_redirect(t_ast_node *node, t_exec *exec);
-
-
-
 char			*ft_expand(char *arg, t_exec *exec);
+void			execute_builtin(t_ast_node *node, t_exec *exec);
+int				ft_is_builtin(char *cmd);
+int				ft_handle_heredoc(t_redirect *redr, t_exec *exec);
+int				count_pipe_cmd(t_ast_node *ast);
+void			ft_expand_wildcard(t_ast_node *ast);
+int				ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
 
-
-
-
-void	execute_builtin(t_ast_node *node, t_exec *exec);
-int		ft_is_builtin(char *cmd);
-
-
-int		ft_handle_heredoc(t_redirect *redr, t_exec *exec);
-
-
-
-void	ft_handle_sigint(int sig);
-
-
-
-
-int	count_pipe_cmd(t_ast_node *ast);
-
-
-void	ft_expand_wildcard(t_ast_node *ast);
-int		ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
+//Signals
+void			ft_handle_sigint(int sig);
 
 #endif
