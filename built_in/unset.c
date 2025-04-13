@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 18:46:01 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 16:53:15 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,23 +49,25 @@ void	ft_del_var(t_env *env, char *var)
 {
 	t_env	*current;
 	t_env	*previous;
+	t_env	*next;
 
 	current = env;
 	previous = NULL;
 	while (current)
 	{
+		next = current->next;
 		if (!ft_strcmp(current->var, var))
 		{
 			if (!previous)
-				env = current->next;
+				env = next;
 			else
-				previous->next = current->next;
+				previous->next = next;
 			free(current->var);
 			free(current->value);
 			free(current);
 		}
 		previous = current;
-		current = current->next;
+		current = next;
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 13:52:20 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 15:14:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,7 @@ char			**ft_split(char *s, char c);
 
 //Errors
 void			ft_error(char *err, int exit_status);
-void			ft_error_cmd(t_env *env, char *cmd, char **paths, 
-					int exit_status);
+void			ft_error_cmd(t_env *env, t_ast_node *ast, char **paths, int exit_status);
 void			ft_error_file(char *file, t_exec *exec);
 void			ft_error_file_expand(char *file, t_exec *exec);
 

@@ -98,7 +98,6 @@ int main(int ac, char **av, char **envp)
 		if (!input)
 		{
 			ft_putstr_fd("exit\n", 1);
-			free_env(env);
 			exit(0);
 		}
 		if (!input[0])

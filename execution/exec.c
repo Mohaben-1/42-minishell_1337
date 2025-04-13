@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:10:22 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 19:44:52 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 16:39:18 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,32 +215,28 @@ void	prepare_ast_args(t_ast_node *ast, t_exec *exec)
 	new_arg_is_spaced = malloc(j * sizeof(int));
 	if (!new_args || !new_arg_is_spaced)
 		return ;
-	new_args[0] = ft_strdup(ast->args[0]);
-	new_arg_is_spaced[0] = ast->arg_is_spaced[0];
-	i = 1;
-	j = 1;
-	if (i < ast->arg_count)
+	if (ast->arg_count > 0)
 	{
-		new_args[j] = ft_strdup(ast->args[i]);
-		new_arg_is_spaced[i] = ast->arg_is_spaced[i];
-		i++;
+		new_args[0] = ft_strdup(ast->args[0]);
+		new_arg_is_spaced[0] = ast->arg_is_spaced[0];
+		i = 1;
+		j = 1;
 		while (i < ast->arg_count)
 		{
 			if (ast->arg_is_spaced[i])
 			{
-				j++;
 				new_args[j] = ft_strdup(ast->args[i]);
-				new_arg_is_spaced[i] = ast->arg_is_spaced[i];
+				new_arg_is_spaced[j] = ast->arg_is_spaced[i];
+				j++;
 			}
 			else
 			{
-				tmp = new_args[j];
-				new_args[j] = ft_strjoin(tmp, ast->args[i]);
+				tmp = new_args[j - 1];
+				new_args[j - 1] = ft_strjoin(tmp, ast->args[i]);
 				free(tmp);
 			}
 			i++;
 		}
-		j++;
 	}
 	new_args[j] = NULL;
 	free_double_ptr(ast->args);

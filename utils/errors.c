@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:21:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 14:37:38 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 15:13:28 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,19 @@ void	ft_error(char *err, int exit_status)
 	exit(exit_status);
 }
 
-void	ft_error_cmd(t_env *env, char *cmd, char **paths, int exit_status)
+void	ft_error_cmd(t_env *env, t_ast_node *ast, char **paths, int exit_status)
 {
 	ft_putstr_fd("minishell: ", 2);
 	if (exit_status == 127 || ft_get_env(env, "PATH"))
 	{
-		if (cmd)
-			ft_putstr_fd(cmd, 2);
+		if (ast->args[0])
+			ft_putstr_fd(ast->args[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
 	}
 	else
-		perror(cmd);
+		perror(ast->args[0]);
 	free_double_ptr(paths);
+	free_ast_node(ast);
 	exit(exit_status);
 }
 

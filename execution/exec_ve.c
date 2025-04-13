@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 12:21:20 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 16:55:21 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static char	*ft_strjoin_env(char *s1, char *s2)
 		return (NULL);
 	if (!s2)
 		s2 = "";
-	join = malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
+	join = malloc((ft_strlen(s1) + ft_strlen(s2) + 2) * sizeof(char));
 	if (!join)
 		return (NULL);
 	i = 0;
@@ -122,6 +122,8 @@ void ft_exec_ve(t_ast_node *ast, t_exec *exec)
 				ft_putstr_fd("minishell: ", 2);
 				ft_putstr_fd(cmd, 2);
 				ft_putstr_fd(": is a directory\n", 2);
+				free_double_ptr(envp);
+				free_ast_node(ast);
 				exit(126);
 			}
 			else if (access(cmd, X_OK) != 0)
@@ -129,6 +131,8 @@ void ft_exec_ve(t_ast_node *ast, t_exec *exec)
 				ft_putstr_fd("minishell: ", 2);
 				ft_putstr_fd(cmd, 2);
 				ft_putstr_fd(": Permission denied\n", 2);
+				free_double_ptr(envp);
+				free_ast_node(ast);
 				exit(126);
 			}
 			execve(cmd, ast->args, envp);
@@ -140,6 +144,8 @@ void ft_exec_ve(t_ast_node *ast, t_exec *exec)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(ast->args[0], 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
+		free_double_ptr(envp);
+		free_ast_node(ast);
 		exit(127);
 	}
 	paths = ft_split(path, ':');
@@ -161,5 +167,6 @@ void ft_exec_ve(t_ast_node *ast, t_exec *exec)
 		}
 		free(cmd);
 	}
-	ft_error_cmd(*(exec->env), ast->args[0], paths, 127);
+	free_double_ptr(envp);
+	ft_error_cmd(*(exec->env), ast, paths, 127);
 }

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/13 13:51:36 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 16:33:58 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ t_ast_node *parse_pipes(t_token_node *tokens, t_exec *exec)
 		// Recursively parse both sides
 		node->left = parse_pipes(left_tokens, exec);
 		node->right = parse_pipes(right_tokens, exec);
-		
+		free_token_list(left_tokens);
 		return node;
 	}
 	
@@ -572,19 +572,14 @@ void print_ast(t_ast_node *ast, int indent_level)
 		print_ast(ast->child, indent_level + 1);
 }
 
-void free_ast_node(t_ast_node *node)
+void	free_ast_node(t_ast_node *node)
 {
     if (!node)
-        return;
-    
-    // Free left and right subtrees
+        return ;
     free_ast_node(node->left);
     free_ast_node(node->right);
-    
-    // Free child subtree (for subshells)
     free_ast_node(node->child);
     
-    // Free command arguments
     if (node->args)
     {
 		int i = 0;
@@ -595,12 +590,9 @@ void free_ast_node(t_ast_node *node)
 		}
         free(node->args);
     }
-    
-    // Free quote types and spacing info arrays
     free(node->arg_quote_types);
     free(node->arg_is_spaced);
     
-    // Free redirections
     t_redirect *redir = node->redirects;
     while (redir)
     {
@@ -609,7 +601,5 @@ void free_ast_node(t_ast_node *node)
         free(redir);
         redir = next;
     }
-    
-    // Finally free the node itself
     free(node);
 }
