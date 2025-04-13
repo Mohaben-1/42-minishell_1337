@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -fsanitize=address
 LIB_RL = -L/goinfre/mohaben-/homebrew/opt/readline/lib -lreadline
 INCLUDE_RL = -I/goinfre/mohaben-/homebrew/opt/readline/include
 

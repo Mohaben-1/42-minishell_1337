@@ -93,12 +93,12 @@ int main(int ac, char **av, char **envp)
 	while (1)
 	{
 		input = readline("minishell> ");
-		// printf("%s\n", input);
 		if (input && *input)
 			add_history(input);
 		if (!input)
 		{
 			ft_putstr_fd("exit\n", 1);
+			free_env(env);
 			exit(0);
 		}
 		if (!input[0])
@@ -107,13 +107,14 @@ int main(int ac, char **av, char **envp)
 			continue;
 		}
 		tokens = ft_tokenize(input, &exec);
+		free(input);
 		ft_init_exec(&exec, &env, envp);
 		ast = build_ast(tokens, &exec);
+		free_token_list(tokens);
 		if (ast)
 			execute_ast(ast, &exec);
-		free(input);
-		free_ast(ast);
-		// free_tokens(tokens);
+		free_ast_node(ast);
 	}
+	free_env(env);
 	return (0);
 }

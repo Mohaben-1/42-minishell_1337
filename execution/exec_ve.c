@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 18:26:42 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 12:21:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,13 @@ char	**ft_set_envp(t_env *env)
 	return (envp);
 }
 
-void handle_sig_exec_ve(int sig)
+void	handle_sig_exec_ve(int sig)
 {
-    if (sig == SIGINT)
-        exit(130);
+	if (sig == SIGINT)
+	{
+		ft_putchar_fd('\n', 1);
+		exit(130);
+	}
 }
 
 void ft_exec_ve(t_ast_node *ast, t_exec *exec)
@@ -105,7 +108,7 @@ void ft_exec_ve(t_ast_node *ast, t_exec *exec)
 	int i;
 
 	signal(SIGINT, handle_sig_exec_ve);
-    signal(SIGQUIT, SIG_DFL); 
+	signal(SIGQUIT, SIG_DFL); 
 	if ((!ast->args[0] || !ast->args[0][0]) && !ast->arg_quote_types[0])
 		exit(0);
 	envp = ft_set_envp(*(exec->env));

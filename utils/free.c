@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:02:06 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 15:36:30 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 12:44:04 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,4 +25,15 @@ void	free_double_ptr(char **s)
 		i++;
 	}
 	free(s);
+}
+
+void	free_env(t_env *env)
+{
+	while (env)
+	{
+		free(env->var);
+		free(env->value);
+		free(env);
+		env = env->next;
+	}
 }

@@ -82,3 +82,8 @@ echo content > "$FILE" && cat "$FILE" | grep content && echo ok
 
 
 cat << EOF | grep hello > output.txt && echo ok
+
+
+cat << f | cat 
+CTRL + C
+

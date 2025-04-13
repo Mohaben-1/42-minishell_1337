@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 12:24:51 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 22:33:41 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 11:24:36 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 void	heredoc_child_handler(int sig)
 {
 	(void)sig;
+	ft_putchar_fd('\n', 1);
 	exit(1);
 }
 
@@ -42,6 +43,7 @@ void	heredoc_child_process(t_redirect *redr, int pipe_fd[2], t_exec *exec)
 
 int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 {
+	void			(*original_sigint)(int);
 	struct termios	original_term;
 	int				pipe_fd[2];
 	pid_t			pid;
@@ -50,15 +52,16 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 	tcgetattr(STDIN_FILENO, &original_term);
 	if (pipe(pipe_fd) == -1)
 		return (-1);
+	original_sigint = signal(SIGINT, SIG_IGN);
 	pid = fork();
 	if (pid == 0)
 		heredoc_child_process(redr, pipe_fd, exec);
 	else
 	{
-		signal(SIGINT, ft_handle_sigint);
 		close(pipe_fd[1]);
 		waitpid(pid, &status, 0);
 		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
+		signal(SIGINT, original_sigint);
 		if (WEXITSTATUS(status) == 1)
 		{
 			close(pipe_fd[0]);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 22:33:56 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 13:52:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,6 @@ int				ft_strncmp(char *s1, char *s2, size_t n);
 int				ft_strcmp(char *s1, char *s2);
 char			*ft_strtrim(char *s1, char *set);
 char			**ft_split(char *s, char c);
-void			free_double_ptr(char **s);
 
 //Errors
 void			ft_error(char *err, int exit_status);
@@ -163,7 +162,6 @@ t_token_node	*find_token_at_level(t_token_node *tokens, t_token_type type);
 t_token_node	*extract_tokens(t_token_node *start, t_token_node *end);
 t_ast_node		*create_ast_node(int type);
 t_redirect		*parse_redirections(t_token_node **tokens, t_exec *exec);
-void			free_ast(t_ast_node *ast);
 int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
 char			**collect_args(t_token_node *tokens, int count, 
@@ -187,5 +185,12 @@ int				ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
 
 //Signals
 void			ft_handle_sigint(int sig);
+
+
+//Free
+void			free_double_ptr(char **s);
+void			free_ast_node(t_ast_node *ast);
+void			free_env(t_env *env);
+void			free_token_list(t_token_node *tokens);
 
 #endif

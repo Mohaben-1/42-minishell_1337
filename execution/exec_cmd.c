@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 18:27:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 12:14:53 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,19 @@ void	handle_cmd_exit(t_exec *exec, int status)
 
 void	ft_execute_command(t_ast_node *ast, t_exec *exec)
 {
-	int			pid;
-	int			status;
+	void	(*original_sigint)(int);
+	int		pid;
+	int		status;
 
 	if (!ast)
 		return ;
 	if (!ft_apply_redirect(ast, exec))
 		return ;
 	if (ast->args && ft_is_builtin(ast->args[0]))
-			execute_builtin(ast, exec);
+		execute_builtin(ast, exec);
 	else
 	{
+		original_sigint = signal(SIGINT, SIG_IGN);
 		pid = fork();
 		if (pid == -1)
 			return (ft_putstr_fd(FORK_ERROR, 2));
@@ -72,6 +74,7 @@ void	ft_execute_command(t_ast_node *ast, t_exec *exec)
 			exit(exec->exit_status);
 		}
 		waitpid(pid, &status, 0);
+		signal(SIGINT, original_sigint);
 		handle_cmd_exit(exec, status);
 	}
 }

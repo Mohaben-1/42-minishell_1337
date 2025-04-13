@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/12 18:24:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/13 13:51:36 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ t_ast_node *parse_logical_ops(t_token_node *tokens, t_exec *exec)
 		// Recursively parse both sides
 		node->left = parse_logical_ops(left_tokens, exec);
 		node->right = parse_logical_ops(right_tokens, exec);
+
+		// Free the extracted tokens
+        free_token_list(left_tokens);
 		
 		return node;
 	}
@@ -106,6 +109,8 @@ t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
 	
 	// Parse content recursively
 	node->child = parse_logical_ops(inner_tokens, exec);
+
+	free_token_list(inner_tokens);  // Add this
 	
 	// If there are tokens after closing parenthesis, handle them
 	if (closing->next)
@@ -113,16 +118,10 @@ t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
 		// Check for redirections first
 		if (is_redirection(closing->next->type) && closing->next->next)
 		{
-			// Create a new command node to hold the redirection
-			// t_ast_node *redir_node = create_ast_node(AST_COMMAND);
 			
 			// Temporarily modify tokens to parse redirections
 			t_token_node *redir_tokens = closing->next;
 			node->redirects = parse_redirections(&redir_tokens, exec);
-			
-			// Connect the subshell to the redirect command
-			// redir_node->child = node;
-			// node = redir_node;
 			
 			// Update closing->next to be after the redirection
 			tmp = closing->next->next;
@@ -328,7 +327,7 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
             
             // For normal redirections like "> t1 > t2", each file should have is_spaced=1
             // because there's a space between redirection operator and file
-            redir->is_spaced = (file_token->spaced) ? 1 : 0;
+            redir->is_spaced = 1;
             
             redir->next = NULL;
             
@@ -492,134 +491,6 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, int **is
 	return args;
 }
 
-/* Collect arguments into a string array */
-// char **collect_args(t_token_node *tokens, int count, int **quote_types, t_exec *exec)
-// {
-// 	// Allocate memory for arguments array
-// 	char **args = malloc(sizeof(char *) * (count + 1));
-// 	if (!args)
-// 		return NULL;
-	
-// 	*quote_types = malloc(sizeof(int) * count);
-// 	if (!(*quote_types))
-// 	{
-// 		free(args);
-// 		return NULL;
-// 	}
-	
-// 	// Initialize variables
-// 	int i = 0;
-// 	t_token_node *tmp = tokens;
-// 	char *current_arg = NULL;
-// 	int current_quote_type = 0;
-// 	int prev_was_arg = 0;
-
-// 	while (tmp && i < count)
-// 	{
-// 		if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
-// 		{
-// 			char *expanded_token;
-
-// 			(void)exec;
-// 			// if (ft_strchr(tmp->data, '$') && tmp->type != token_squote)
-// 			// 	expanded_token = ft_expand(tmp->data, exec);
-// 			// else
-// 				expanded_token = ft_strdup(tmp->data);
-			
-// 			// Check if we should start a new argument or merge with previous
-// 			if (!prev_was_arg || tmp->spaced)
-// 			{
-// 				// If we have a previous argument in progress, store it
-// 				if (current_arg)
-// 				{
-// 					args[i] = current_arg;
-// 					(*quote_types)[i] = current_quote_type;
-// 					i++;
-// 				}
-				
-// 				// Start a new argument
-// 				current_arg = expanded_token;
-				
-// 				// Store the quote type of the first part
-// 				if (tmp->type == token_dquote)
-// 					current_quote_type = AST_DQUOTES;
-// 				else if (tmp->type == token_squote)
-// 					current_quote_type = AST_SQUOTES;
-// 				else
-// 					current_quote_type = 0;
-// 			}
-// 			else
-// 			{
-// 				char *merged = ft_strjoin(current_arg, expanded_token);
-// 				free(current_arg);
-// 				free(expanded_token);
-// 				current_arg = merged;
-// 			}
-			
-// 			prev_was_arg = 1;
-// 		}
-// 		else
-// 		{
-// 			// Non-argument token encountered, store current argument if any
-// 			if (current_arg)
-// 			{
-// 				args[i] = current_arg;
-// 				(*quote_types)[i] = current_quote_type;
-// 				i++;
-// 				current_arg = NULL;
-// 			}
-			
-// 			prev_was_arg = 0;
-// 		}
-		
-// 		tmp = tmp->next;
-// 	}
-// 	// Store the last argument if any
-// 	if (current_arg)
-// 	{
-// 		args[i] = current_arg;
-// 		(*quote_types)[i] = current_quote_type;
-// 		i++;
-// 	}
-	
-// 	// NULL-terminate the array
-// 	args[i] = NULL;
-	
-// 	return args;
-// }
-
-/* Free the AST recursively */
-void free_ast(t_ast_node *ast)
-{
-	if (!ast)
-		return;
-	// Free child nodes
-	free_ast(ast->left);
-	free_ast(ast->right);
-	free_ast(ast->child);
-	// Free arguments
-	if (ast->args)
-	{
-		for (int i = 0; i < ast->arg_count; i++)
-			free(ast->args[i]);
-		free(ast->args);
-	}
-	// Free quote types array
-	if (ast->arg_quote_types)
-		free(ast->arg_quote_types);
-	// Free redirections
-	t_redirect *redir = ast->redirects;
-	while (redir)
-	{
-		t_redirect *next = redir->next;
-		free(redir->file);
-		free(redir);
-		redir = next;
-	}
-	// Free the node itself
-	free(ast);
-}
-
 // /* Print the AST with indentation for visualization */
 void print_ast(t_ast_node *ast, int indent_level)
 {
@@ -701,119 +572,44 @@ void print_ast(t_ast_node *ast, int indent_level)
 		print_ast(ast->child, indent_level + 1);
 }
 
-
-
-
-
-
-
-
-
-
-// void print_ast(t_ast_node *node, int depth)
-// {
-//     if (!node)
-//         return;
-	
-//     // Create indentation string
-//     char indent[256] = {0};
-//     for (int i = 0; i < depth; i++)
-//         strcat(indent, "  ");
-	
-//     // Print node type
-//     switch (node->type)
-//     {
-//         case AST_AND_AND:
-//             printf("%s&&\n", indent);
-//             break;
-//         case AST_OR_OR:
-//             printf("%s||\n", indent);
-//             break;
-//         case AST_PIPE:
-//             printf("%s|\n", indent);
-//             break;
-//         case AST_SUBSHELL:
-//             printf("%s(Subshell)\n", indent);
-//             break;
-//         case AST_COMMAND:
-//             printf("%sCommand:\n", indent);
-//             break;
-//         default:
-//             printf("%sUnknown Node Type\n", indent);
-//     }
-	
-//     // Print arguments for command nodes
-//     if (node->type == AST_COMMAND)
-//     {
-//         for (int i = 0; i < node->arg_count; i++)
-//         {
-//             char quote_prefix[4] = "";
-//             if (node->arg_quote_types && node->arg_quote_types[i] == AST_DQUOTES)
-//                 strcpy(quote_prefix, "\"");
-//             else if (node->arg_quote_types && node->arg_quote_types[i] == AST_SQUOTES)
-//                 strcpy(quote_prefix, "'");
-			
-//             printf("%s  Arg %d: %s%s%s\n", indent, i, quote_prefix, 
-//                    node->args[i] ? node->args[i] : "(null)", quote_prefix);
-//         }
-		
-//         // Print redirections
-//         t_redirect *redir = node->redirects;
-//         while (redir)
-//         {
-//             const char *redir_type = "Unknown";
-//             switch (redir->type)
-//             {
-//                 case token_in: redir_type = "<"; break;
-//                 case token_out: redir_type = ">"; break;
-//                 case token_hrdc: redir_type = "<<"; break;
-//                 case token_appnd: redir_type = ">>"; break;
-//             }
-//             printf("%s  Redirect: %s %s%s%s\n", indent, redir_type, 
-//                    redir->quoted ? "\"" : "", 
-//                    redir->file ? redir->file : "(null)", 
-//                    redir->quoted ? "\"" : "");
-//             redir = redir->next;
-//         }
-//     }
-	
-//     // Recursively print child/left/right nodes based on node type
-//     if (node->type == AST_SUBSHELL)
-//     {
-//         printf("%s  Subshell Content:\n", indent);
-//         print_ast(node->child, depth + 2);
-//     }
-//     else if (node->type == AST_COMMAND)
-//     {
-//         // No further recursion for command nodes
-//         return;
-//     }
-//     else 
-//     {
-//         // For logical operators, pipes, etc.
-//         if (node->left)
-//         {
-//             printf("%s  Left:\n", indent);
-//             print_ast(node->left, depth + 2);
-//         }
-		
-//         if (node->right)
-//         {
-//             printf("%s  Right:\n", indent);
-//             print_ast(node->right, depth + 2);
-//         }
-//     }
-// }
-
-// /* Wrapper function to print AST with initial depth of 0 */
-// void print_abstract_syntax_tree(t_ast_node *root)
-// {
-//     if (!root)
-//     {
-//         printf("Empty Abstract Syntax Tree\n");
-//         return;
-//     }
-	
-//     printf("Abstract Syntax Tree:\n");
-//     print_ast(root, 0);
-// }
+void free_ast_node(t_ast_node *node)
+{
+    if (!node)
+        return;
+    
+    // Free left and right subtrees
+    free_ast_node(node->left);
+    free_ast_node(node->right);
+    
+    // Free child subtree (for subshells)
+    free_ast_node(node->child);
+    
+    // Free command arguments
+    if (node->args)
+    {
+		int i = 0;
+		while (node->args[i])
+		{
+            free(node->args[i]);
+			i++;
+		}
+        free(node->args);
+    }
+    
+    // Free quote types and spacing info arrays
+    free(node->arg_quote_types);
+    free(node->arg_is_spaced);
+    
+    // Free redirections
+    t_redirect *redir = node->redirects;
+    while (redir)
+    {
+        t_redirect *next = redir->next;
+        free(redir->file);
+        free(redir);
+        redir = next;
+    }
+    
+    // Finally free the node itself
+    free(node);
+}
