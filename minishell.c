@@ -97,7 +97,9 @@ int main(int ac, char **av, char **envp)
 			add_history(input);
 		if (!input)
 		{
-			ft_putstr_fd("exit\n", 1);
+			rl_clear_history();
+			if (isatty(0))
+				ft_putstr_fd("exit\n", 1);
 			exit(0);
 		}
 		if (!input[0])
