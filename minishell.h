@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 20:10:13 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/14 16:31:47 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,5 @@ void			free_double_ptr(char **s);
 void			free_ast_node(t_ast_node *ast);
 void			free_env(t_env *env);
 void			free_token_list(t_token_node *tokens);
-
-char	*get_next_line(int fd);
 
 #endif

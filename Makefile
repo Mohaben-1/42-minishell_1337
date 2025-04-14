@@ -10,7 +10,7 @@ SRC = minishell.c \
 		str_utils/str_utils1.c str_utils/str_utils2.c str_utils/str_utils3.c str_utils/ft_print.c \
 		utils/utils.c utils/free.c utils/errors.c utils/ft_split.c utils/ft_itoa.c \
 		execution/exec.c  execution/exec_cmd.c execution/exec_ve.c execution/pipe.c execution/expand.c  execution/redirection.c execution/here_doc.c execution/wild_card.c \
-		parsing/tokenizer.c parsing/ft_tree.c get_next_line.c
+		parsing/tokenizer.c parsing/ft_tree.c
 
 OBJ = $(SRC:.c=.o)
 
