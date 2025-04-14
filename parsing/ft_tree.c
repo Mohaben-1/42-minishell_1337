@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/13 16:33:58 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/14 16:29:04 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,6 +288,15 @@ t_ast_node *create_ast_node(int type)
 	return node;
 }
 
+void free_token_node(t_token_node *token)
+{
+	if (!token)
+		return;
+	free(token->data);
+	free(token);
+}
+
+
 /* Parse redirections from token list */
 t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 {
@@ -391,9 +400,14 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
             // Move to next token after all joined tokens
             tmp = last_joined->next;
             
-            // Unlink removed tokens
-            to_remove->next = NULL;
-            // No need to free tokens here as they are part of the original list
+			t_token_node *node = to_remove;
+			t_token_node *next;
+			while (node && node != last_joined->next)
+			{
+				next = node->next;
+				free_token_node(node);
+				node = next;
+			}
         }
         else
         {

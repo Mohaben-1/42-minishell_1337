@@ -87,3 +87,7 @@ cat << EOF | grep hello > output.txt && echo ok
 cat << f | cat 
 CTRL + C
 
+
+cat << 'f'
+
+cat << "f"

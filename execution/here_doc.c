@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 12:24:51 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 19:12:43 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/14 15:38:49 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,16 @@ void	heredoc_child_process(t_redirect *redr, int pipe_fd[2], t_exec *exec)
 	{
 		line = readline("> ");
 		if (!line || !ft_strcmp(line, redr->file))
+		{
+			free(line);
 			break ;
+		}
 		if (!redr->quoted)
 			line = ft_expand(line, exec);
 		ft_putstr_fd(line, pipe_fd[1]);
 		ft_putchar_fd('\n', pipe_fd[1]);
 		free(line);
 	}
-	free(line);
 	close(pipe_fd[1]);
 	exit(0);
 }
@@ -63,10 +65,7 @@ int	ft_handle_heredoc(t_redirect *redr, t_exec *exec)
 		tcsetattr(STDIN_FILENO, TCSANOW, &original_term);
 		signal(SIGINT, original_sigint);
 		if (WEXITSTATUS(status) == 1)
-		{
-			close(pipe_fd[0]);
-			return (exec->exit_status = 1, -1);
-		}
+			return (close(pipe_fd[0]), exec->exit_status = 1, -1);
 	}
 	return (pipe_fd[0]);
 }
