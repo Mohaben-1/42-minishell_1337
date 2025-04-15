@@ -100,7 +100,7 @@ int main(int ac, char **av, char **envp)
 			rl_clear_history();
 			if (isatty(0))
 				ft_putstr_fd("exit\n", 1);
-			exit(0);
+			break ;
 		}
 		if (!input[0])
 		{
