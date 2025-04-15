@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/15 11:15:26 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:59:53 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -481,8 +481,13 @@ void free_token_list(t_token_node *tokens)
     while (current)
     {
         next = current->next;
-        free(current->data);
+		if (current->data)
+		{
+        	free(current->data);
+			current->data = NULL;
+		}
         free(current);
+		current = NULL;
         current = next;
     }
 }

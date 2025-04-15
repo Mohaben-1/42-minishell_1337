@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:53:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/08 11:28:19 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:10:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,10 @@ void	ft_expand_helper(char **expand, char *arg, t_exec *exec, int *i)
 		(*i)++;
 	var = ft_substr(arg, start, *i - start);
 	value = ft_get_env(*(exec->env), var);
-	*expand = ft_strjoin_free(*expand, ft_strdup(value));
+	if (value)
+		*expand = ft_strjoin_free(*expand, ft_strdup(value));
+	else
+		*expand = ft_strjoin_free(*expand, ft_strdup(""));
 	if (var)
 		free(var);
 }

@@ -111,7 +111,8 @@ int main(int ac, char **av, char **envp)
 		free(input);
 		ft_init_exec(&exec, &env, envp);
 		ast = build_ast(tokens, &exec);
-		free_token_list(tokens);
+		if (tokens)
+			free_token_list(tokens);
 		if (ast)
 			execute_ast(ast, &exec);
 		free_ast_node(ast);

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/15 18:15:22 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:57:33 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,7 +358,9 @@ void free_token_node(t_token_node *token)
 	if (!token)
 		return;
 	free(token->data);
+	token->data = NULL;
 	free(token);
+	token = NULL;
 }
 
 
@@ -482,7 +484,6 @@ t_redirect *head = NULL;
                 
                 // Completely detach the node before freeing
                 free_token_node(node_to_free);
-                
                 node_to_free = next_to_free;
             }
             
