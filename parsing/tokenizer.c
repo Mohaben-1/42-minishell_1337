@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 13:55:08 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/15 11:15:26 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,7 +282,7 @@ void	ft_valid_redirections(t_token_node *list, int *error)
 
 void	ft_check_last_token(t_token_node *list, int *error)
 {
-	if (*ft_token_last(list)->data == '(')
+	if (*ft_token_last(list)->data == '(' && is_node_operator(ft_token_last(list)))
 	{
 		ft_putstr_fd("minishell: syntax error near unexpected token `newline'\n", 2);
 		*error = 1;

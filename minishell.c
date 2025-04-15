@@ -115,6 +115,7 @@ int main(int ac, char **av, char **envp)
 		if (ast)
 			execute_ast(ast, &exec);
 		free_ast_node(ast);
+		// system("leaks -q minishell");
 	}
 	free_env(env);
 	return (0);

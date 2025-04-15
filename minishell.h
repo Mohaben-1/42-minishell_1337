@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/14 16:31:47 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/15 18:09:25 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,7 @@ t_token_node	*find_token_at_level(t_token_node *tokens, t_token_type type);
 t_token_node	*extract_tokens(t_token_node *start, t_token_node *end);
 t_ast_node		*create_ast_node(int type);
 t_redirect		*parse_redirections(t_token_node **tokens, t_exec *exec);
+t_redirect		*parse_redirections_subshell(t_token_node **tokens, t_exec *exec);
 int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
 char			**collect_args(t_token_node *tokens, int count, 

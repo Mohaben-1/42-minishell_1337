@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/14 16:29:04 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/15 18:15:22 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 
 t_ast_node *build_ast(t_token_node *tokens, t_exec *exec)
 {
+	t_ast_node	*ast;
 	if (!tokens)
 		return (NULL);
-	return (parse_logical_ops(tokens, exec));
+	ast = parse_logical_ops(tokens, exec);
+	return (ast);
 }
 
 /* Parse logical operators (&&, ||) */
@@ -75,83 +77,145 @@ t_ast_node *parse_pipes(t_token_node *tokens, t_exec *exec)
 }
 
 /* Parse a subshell (commands in parentheses) */
+// t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
+// {
+// 	if (tokens->type != token_paren_open)
+// 		return NULL;
+	
+// 	// Find matching closing parenthesis
+// 	t_token_node *tmp = tokens->next;
+// 	int paren_count = 1;
+// 	t_token_node *closing = NULL;
+	
+// 	while (tmp && paren_count > 0)
+// 	{
+// 		if (tmp->type == token_paren_open)
+// 			paren_count++;
+// 		else if (tmp->type == token_paren_close)
+// 		{
+// 			paren_count--;
+// 			if (paren_count == 0)
+// 				closing = tmp;
+// 		}
+// 		tmp = tmp->next;
+// 	}
+	
+// 	if (!closing)
+// 		return NULL; // Unbalanced parentheses
+	
+// 	// Create subshell node
+// 	t_ast_node *node = create_ast_node(AST_SUBSHELL);
+	
+// 	// Extract commands inside parentheses
+// 	t_token_node *inner_tokens = extract_tokens(tokens->next, closing);
+	
+// 	// Parse content recursively
+// 	node->child = parse_logical_ops(inner_tokens, exec);
+
+// 	free_token_list(inner_tokens);  // Add this
+	
+// 	// If there are tokens after closing parenthesis, handle them
+// 	if (closing->next)
+// 	{
+// 		// Check for redirections first
+// 		if (is_redirection(closing->next->type) && closing->next->next)
+// 		{
+			
+// 			// Temporarily modify tokens to parse redirections
+// 			t_token_node *redir_tokens = closing->next;
+// 			node->redirects = parse_redirections(&redir_tokens, exec);
+			
+// 			// Update closing->next to be after the redirection
+// 			tmp = closing->next->next;
+// 		}
+// 		else
+// 		{
+// 			tmp = closing->next;
+// 		}
+		
+// 		// Check for further operators after potential redirections
+// 		if (tmp)
+// 		{
+// 			if (tmp->type == token_pipe)
+// 			{
+// 				t_ast_node *pipe_node = create_ast_node(AST_PIPE);
+// 				pipe_node->left = node;
+// 				pipe_node->right = parse_pipes(tmp->next, exec);
+// 				return pipe_node;
+// 			}
+// 			else if (tmp->type == token_and_and || tmp->type == token_or)
+// 			{
+// 				t_ast_node *log_node = create_ast_node(tmp->type == token_and_and ? AST_AND_AND : AST_OR_OR);
+// 				log_node->left = node;
+// 				log_node->right = parse_logical_ops(tmp->next, exec);
+// 				return log_node;
+// 			}
+// 		}
+// 	}
+	
+// 	return node;
+// }
 t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
 {
-	if (tokens->type != token_paren_open)
-		return NULL;
+    if (tokens->type != token_paren_open)
+        return NULL;
+    
+    // Find matching closing parenthesis
+    t_token_node *tmp = tokens->next;
+    int paren_count = 1;
+    t_token_node *closing = NULL;
+    
+    while (tmp && paren_count > 0)
+    {
+        if (tmp->type == token_paren_open)
+            paren_count++;
+        else if (tmp->type == token_paren_close)
+        {
+            paren_count--;
+            if (paren_count == 0)
+                closing = tmp;
+        }
+        tmp = tmp->next;
+    }
+    
+    if (!closing)
+        return NULL; // Unbalanced parentheses
+    
+    // Create subshell node
+    t_ast_node *node = create_ast_node(AST_SUBSHELL);
+    
+    // Extract commands inside parentheses
+    t_token_node *inner_tokens = extract_tokens(tokens->next, closing);
+    node->child = parse_logical_ops(inner_tokens, exec);
+    free_token_list(inner_tokens);
+    
+    // Process tokens after closing parenthesis
+    t_token_node *remaining_tokens = closing->next;
+    
+    // Handle redirections first
+    if (remaining_tokens && is_redirection(remaining_tokens->type))
+    {
+        node->redirects = parse_redirections_subshell(&remaining_tokens, exec);
+    }
 	
-	// Find matching closing parenthesis
-	t_token_node *tmp = tokens->next;
-	int paren_count = 1;
-	t_token_node *closing = NULL;
-	
-	while (tmp && paren_count > 0)
-	{
-		if (tmp->type == token_paren_open)
-			paren_count++;
-		else if (tmp->type == token_paren_close)
-		{
-			paren_count--;
-			if (paren_count == 0)
-				closing = tmp;
-		}
-		tmp = tmp->next;
-	}
-	
-	if (!closing)
-		return NULL; // Unbalanced parentheses
-	
-	// Create subshell node
-	t_ast_node *node = create_ast_node(AST_SUBSHELL);
-	
-	// Extract commands inside parentheses
-	t_token_node *inner_tokens = extract_tokens(tokens->next, closing);
-	
-	// Parse content recursively
-	node->child = parse_logical_ops(inner_tokens, exec);
-
-	free_token_list(inner_tokens);  // Add this
-	
-	// If there are tokens after closing parenthesis, handle them
-	if (closing->next)
-	{
-		// Check for redirections first
-		if (is_redirection(closing->next->type) && closing->next->next)
-		{
-			
-			// Temporarily modify tokens to parse redirections
-			t_token_node *redir_tokens = closing->next;
-			node->redirects = parse_redirections(&redir_tokens, exec);
-			
-			// Update closing->next to be after the redirection
-			tmp = closing->next->next;
-		}
-		else
-		{
-			tmp = closing->next;
-		}
-		
-		// Check for further operators after potential redirections
-		if (tmp)
-		{
-			if (tmp->type == token_pipe)
-			{
-				t_ast_node *pipe_node = create_ast_node(AST_PIPE);
-				pipe_node->left = node;
-				pipe_node->right = parse_pipes(tmp->next, exec);
-				return pipe_node;
-			}
-			else if (tmp->type == token_and_and || tmp->type == token_or)
-			{
-				t_ast_node *log_node = create_ast_node(tmp->type == token_and_and ? AST_AND_AND : AST_OR_OR);
-				log_node->left = node;
-				log_node->right = parse_logical_ops(tmp->next, exec);
-				return log_node;
-			}
-		}
-	}
-	
-	return node;
+    // Then handle logical operators if any remain
+    if (remaining_tokens)
+    {
+        t_token_node *op = find_op_at_level(remaining_tokens, token_and_and, token_or);
+        if (op)
+        {
+            t_ast_node *logical_node = create_ast_node(op->type == token_and_and ? AST_AND_AND : AST_OR_OR);
+            logical_node->left = node;
+            
+            // Get tokens after the operator
+            t_token_node *right_tokens = op->next;
+            logical_node->right = parse_logical_ops(right_tokens, exec);
+            
+            return logical_node;
+        }
+    }
+    
+    return node;
 }
 
 /* Parse a simple command with its arguments and redirections */
@@ -162,6 +226,8 @@ t_ast_node *parse_command(t_token_node *tokens, t_exec *exec)
 	
 	t_ast_node *node = create_ast_node(AST_COMMAND);
 	t_token_node *cmd_tokens = tokens;
+	
+
 	
 	// Parse redirections first
 	node->redirects = parse_redirections(&cmd_tokens, exec);
@@ -182,7 +248,6 @@ t_ast_node *parse_command(t_token_node *tokens, t_exec *exec)
 		node->arg_count = 0;
 		node->arg_quote_types = NULL;
 	}
-	
 	return node;
 }
 
@@ -300,6 +365,143 @@ void free_token_node(t_token_node *token)
 /* Parse redirections from token list */
 t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 {
+t_redirect *head = NULL;
+    t_redirect *current = NULL;
+    t_token_node *tmp = *tokens;
+    t_token_node *prev = NULL;
+    t_token_node *new_head = *tokens;
+    (void)exec;
+    
+    while (tmp)
+    {
+        if (is_redirection(tmp->type) && tmp->next)
+        {
+            // Create a new redirection node
+            t_redirect *redir = malloc(sizeof(t_redirect));
+            if (!redir)
+                return head;
+            
+            redir->type = tmp->type;
+            if (redir->type == token_hrdc)
+                redir->heredoc_fd = -1;
+
+            // Get initial file name token
+            t_token_node *file_token = tmp->next;
+            
+            // Set quoted status
+            if (file_token->type == token_dquote)
+                redir->quoted = token_dquote;
+            else if (file_token->type == token_squote)
+                redir->quoted = token_squote;
+            else
+                redir->quoted = 0;
+                
+            // Safely store the filename before we free anything
+            redir->file = strdup(file_token->data);
+            if (!redir->file) {
+                free(redir);
+                return head;
+            }
+            
+            // For normal redirections like "> t1 > t2", each file should have is_spaced=1
+            // because there's a space between redirection operator and file
+            redir->is_spaced = 1;
+            
+            redir->next = NULL;
+            
+            // Add to redirection list
+            if (!head)
+                head = redir;
+            else
+                current->next = redir;
+            
+            current = redir;
+            
+            // Track the tokens we've processed
+            t_token_node *last_joined = file_token;
+            
+            // Store the next token before potentially freeing anything
+            t_token_node *next_token = file_token->next;
+            
+            // Process additional non-spaced tokens
+            while (next_token && 
+                   !next_token->spaced && 
+                   (next_token->type == token_cmd || 
+                    next_token->type == token_dquote || 
+                    next_token->type == token_squote))
+            {
+                // Create a new redirection node for this token
+                t_redirect *additional = malloc(sizeof(t_redirect));
+                if (!additional)
+                    return head;
+                
+                additional->type = tmp->type;  // Same redirection type
+                additional->heredoc_fd = -1;   // Initialize for consistency
+                
+                // Set quoted status for this token
+                if (next_token->type == token_dquote)
+                    additional->quoted = token_dquote;
+                else if (next_token->type == token_squote)
+                    additional->quoted = token_squote;
+                else
+                    additional->quoted = 0;
+                
+                // Safely copy data before any potential freeing
+                additional->file = strdup(next_token->data);
+                if (!additional->file) {
+                    free(additional);
+                    return head;
+                }
+                
+                additional->is_spaced = 0;  // No space between joined parts
+                additional->next = NULL;
+                
+                // Add to our redirection list
+                current->next = additional;
+                current = additional;
+                
+                // Remember this token was processed
+                last_joined = next_token;
+                next_token = next_token->next;
+            }
+            
+            // Store the token to continue with after freeing
+            t_token_node *continue_from = last_joined->next;
+            
+            // Update links - skip all joined tokens
+            if (prev)
+                prev->next = continue_from;
+            else
+                new_head = continue_from;
+            
+            // Create a separate temporary variable to iterate and free
+            t_token_node *node_to_free = tmp;
+            while (node_to_free && node_to_free != continue_from)
+            {
+                t_token_node *next_to_free = node_to_free->next;
+                
+                // Completely detach the node before freeing
+                free_token_node(node_to_free);
+                
+                node_to_free = next_to_free;
+            }
+            
+            tmp = continue_from;
+        }
+        else
+        {
+            prev = tmp;
+            tmp = tmp->next;
+        }
+    }
+    
+    *tokens = new_head;
+    return head;
+}
+
+
+t_redirect *parse_redirections_subshell(t_token_node **tokens, t_exec *exec)
+{
     t_redirect *head = NULL;
     t_redirect *current = NULL;
     t_token_node *tmp = *tokens;
@@ -331,8 +533,12 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
             else
                 redir->quoted = 0;
                 
-            // Initialize with the first file token's data
+            // Safely store the filename before we free anything
             redir->file = strdup(file_token->data);
+            if (!redir->file) {
+                free(redir);
+                return head;
+            }
             
             // For normal redirections like "> t1 > t2", each file should have is_spaced=1
             // because there's a space between redirection operator and file
@@ -350,6 +556,8 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
             
             // Track the tokens we've processed
             t_token_node *last_joined = file_token;
+            
+            // Store the next token before potentially freeing anything
             t_token_node *next_token = file_token->next;
             
             // Process additional non-spaced tokens
@@ -375,7 +583,13 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
                 else
                     additional->quoted = 0;
                 
+                // Safely copy data before any potential freeing
                 additional->file = strdup(next_token->data);
+                if (!additional->file) {
+                    free(additional);
+                    return head;
+                }
+                
                 additional->is_spaced = 0;  // No space between joined parts
                 additional->next = NULL;
                 
@@ -388,26 +602,29 @@ t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
                 next_token = next_token->next;
             }
             
-            // Remove these tokens from command tokens
-            t_token_node *to_remove = tmp;
+            // Store the token to continue with after freeing
+            t_token_node *continue_from = last_joined->next;
             
             // Update links - skip all joined tokens
             if (prev)
-                prev->next = last_joined->next;
+                prev->next = continue_from;
             else
-                new_head = last_joined->next;
+                new_head = continue_from;
             
-            // Move to next token after all joined tokens
-            tmp = last_joined->next;
+            // Create a separate temporary variable to iterate and free
+            // t_token_node *node_to_free = tmp;
+            // while (node_to_free && node_to_free != continue_from)
+            // {
+            //     t_token_node *next_to_free = node_to_free->next;
+                
+            //     // Completely detach the node before freeing
+            //     free_token_node(node_to_free);
+                
+            //     node_to_free = next_to_free;
+            // }
             
-			t_token_node *node = to_remove;
-			t_token_node *next;
-			while (node && node != last_joined->next)
-			{
-				next = node->next;
-				free_token_node(node);
-				node = next;
-			}
+            // Move to the next token after all freed tokens
+            tmp = continue_from;
         }
         else
         {
