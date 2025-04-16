@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:54:03 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 17:45:38 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/16 16:13:15 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,15 +148,13 @@ int	ft_expand_redr_wild(t_ast_node *ast, t_exec *exec)
 		{
 			expanded = wildcard_expand(redr->file);
 			if (!expanded || expanded[1])
-			{
-				rdr_wild_err(expanded, redr->file, exec);
-				return (0);
-			}
+				return (rdr_wild_err(expanded, redr->file, exec), 0);
 			else
 			{
 				tmp = redr->file;
 				redr->file = expanded[0];
 				free(tmp);
+				free(expanded);
 			}
 		}
 		redr = redr->next;
@@ -168,7 +166,7 @@ void ft_expand_wildcard(t_ast_node *ast)
 {
     char **expanded;
     char **new_args;
-    int  *new_quote_types; // NEW: Parallel array for quote types
+    int  *new_quote_types;
     int   i;
 
     if (!ast || ast->e_type != AST_COMMAND || !ast->args)
@@ -198,15 +196,14 @@ void ft_expand_wildcard(t_ast_node *ast)
                 for (int j = i + 1; ast->args[j]; j++)
                     new_quote_types[idx++] = ast->arg_quote_types[j];
 
-                // Replace old arrays with new ones
                 new_args = merge_args(ast->args, i, expanded);
-                free(ast->arg_quote_types); // Free old array
-                ast->arg_quote_types = new_quote_types; // Update pointer
+                free(ast->arg_quote_types);
+                ast->arg_quote_types = new_quote_types;
                 free_double_ptr(ast->args);
                 ast->args = new_args;
                 ast->arg_count = arg_count(new_args);
                 free_double_ptr(expanded);
-                i = -1; // Reset loop after modifying array
+                i = -1;
             }
         }
         i++;

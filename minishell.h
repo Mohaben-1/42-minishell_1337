@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/15 18:09:25 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/16 11:35:55 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct s_token_node
 	t_token_type		type;
 	char				*data;
 	int					spaced;
+	int					to_skip;
 	struct s_token_node	*next;
 }	t_token_node;
 

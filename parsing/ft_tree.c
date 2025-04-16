@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:58:14 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/15 20:57:33 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/16 12:47:30 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ t_ast_node *parse_logical_ops(t_token_node *tokens, t_exec *exec)
 		node->right = parse_logical_ops(right_tokens, exec);
 
 		// Free the extracted tokens
-        free_token_list(left_tokens);
+		free_token_list(left_tokens);
 		
 		return node;
 	}
@@ -77,84 +77,7 @@ t_ast_node *parse_pipes(t_token_node *tokens, t_exec *exec)
 }
 
 /* Parse a subshell (commands in parentheses) */
-// t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
-// {
-// 	if (tokens->type != token_paren_open)
-// 		return NULL;
-	
-// 	// Find matching closing parenthesis
-// 	t_token_node *tmp = tokens->next;
-// 	int paren_count = 1;
-// 	t_token_node *closing = NULL;
-	
-// 	while (tmp && paren_count > 0)
-// 	{
-// 		if (tmp->type == token_paren_open)
-// 			paren_count++;
-// 		else if (tmp->type == token_paren_close)
-// 		{
-// 			paren_count--;
-// 			if (paren_count == 0)
-// 				closing = tmp;
-// 		}
-// 		tmp = tmp->next;
-// 	}
-	
-// 	if (!closing)
-// 		return NULL; // Unbalanced parentheses
-	
-// 	// Create subshell node
-// 	t_ast_node *node = create_ast_node(AST_SUBSHELL);
-	
-// 	// Extract commands inside parentheses
-// 	t_token_node *inner_tokens = extract_tokens(tokens->next, closing);
-	
-// 	// Parse content recursively
-// 	node->child = parse_logical_ops(inner_tokens, exec);
 
-// 	free_token_list(inner_tokens);  // Add this
-	
-// 	// If there are tokens after closing parenthesis, handle them
-// 	if (closing->next)
-// 	{
-// 		// Check for redirections first
-// 		if (is_redirection(closing->next->type) && closing->next->next)
-// 		{
-			
-// 			// Temporarily modify tokens to parse redirections
-// 			t_token_node *redir_tokens = closing->next;
-// 			node->redirects = parse_redirections(&redir_tokens, exec);
-			
-// 			// Update closing->next to be after the redirection
-// 			tmp = closing->next->next;
-// 		}
-// 		else
-// 		{
-// 			tmp = closing->next;
-// 		}
-		
-// 		// Check for further operators after potential redirections
-// 		if (tmp)
-// 		{
-// 			if (tmp->type == token_pipe)
-// 			{
-// 				t_ast_node *pipe_node = create_ast_node(AST_PIPE);
-// 				pipe_node->left = node;
-// 				pipe_node->right = parse_pipes(tmp->next, exec);
-// 				return pipe_node;
-// 			}
-// 			else if (tmp->type == token_and_and || tmp->type == token_or)
-// 			{
-// 				t_ast_node *log_node = create_ast_node(tmp->type == token_and_and ? AST_AND_AND : AST_OR_OR);
-// 				log_node->left = node;
-// 				log_node->right = parse_logical_ops(tmp->next, exec);
-// 				return log_node;
-// 			}
-// 		}
-// 	}
-	
-// 	return node;
-// }
 t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
 {
     if (tokens->type != token_paren_open)
@@ -195,9 +118,9 @@ t_ast_node *parse_subshell(t_token_node *tokens, t_exec *exec)
     // Handle redirections first
     if (remaining_tokens && is_redirection(remaining_tokens->type))
     {
-        node->redirects = parse_redirections_subshell(&remaining_tokens, exec);
+        node->redirects = parse_redirections(&remaining_tokens, exec);
     }
-	
+    
     // Then handle logical operators if any remain
     if (remaining_tokens)
     {
@@ -317,6 +240,7 @@ t_token_node *extract_tokens(t_token_node *start, t_token_node *end)
 			return NULL;
 		
 		new_node->type = tmp->type;
+		new_node->to_skip = 0;
 		new_node->data = ft_strdup(tmp->data);
 		new_node->spaced = tmp->spaced;
 		new_node->next = NULL;
@@ -367,276 +291,119 @@ void free_token_node(t_token_node *token)
 /* Parse redirections from token list */
 t_redirect *parse_redirections(t_token_node **tokens, t_exec *exec)
 {
-t_redirect *head = NULL;
-    t_redirect *current = NULL;
-    t_token_node *tmp = *tokens;
-    t_token_node *prev = NULL;
-    t_token_node *new_head = *tokens;
-    (void)exec;
-    
-    while (tmp)
-    {
-        if (is_redirection(tmp->type) && tmp->next)
-        {
-            // Create a new redirection node
-            t_redirect *redir = malloc(sizeof(t_redirect));
-            if (!redir)
-                return head;
-            
-            redir->type = tmp->type;
-            if (redir->type == token_hrdc)
-                redir->heredoc_fd = -1;
+	t_redirect *head = NULL;
+	t_redirect *current = NULL;
+	t_token_node *tmp = *tokens;
+	(void)exec;
+	
+	while (tmp)
+	{
+		if (is_redirection(tmp->type) && tmp->next)
+		{
+			// Create a new redirection node
+			t_redirect *redir = malloc(sizeof(t_redirect));
+			if (!redir)
+				return head;
+			
+			redir->type = tmp->type;
+			if (redir->type == token_hrdc)
+				redir->heredoc_fd = -1;
 
-            // Get initial file name token
-            t_token_node *file_token = tmp->next;
-            
-            // Set quoted status
-            if (file_token->type == token_dquote)
-                redir->quoted = token_dquote;
-            else if (file_token->type == token_squote)
-                redir->quoted = token_squote;
-            else
-                redir->quoted = 0;
-                
-            // Safely store the filename before we free anything
-            redir->file = strdup(file_token->data);
-            if (!redir->file) {
-                free(redir);
-                return head;
-            }
-            
-            // For normal redirections like "> t1 > t2", each file should have is_spaced=1
-            // because there's a space between redirection operator and file
-            redir->is_spaced = 1;
-            
-            redir->next = NULL;
-            
-            // Add to redirection list
-            if (!head)
-                head = redir;
-            else
-                current->next = redir;
-            
-            current = redir;
-            
-            // Track the tokens we've processed
-            t_token_node *last_joined = file_token;
-            
-            // Store the next token before potentially freeing anything
-            t_token_node *next_token = file_token->next;
-            
-            // Process additional non-spaced tokens
-            while (next_token && 
-                   !next_token->spaced && 
-                   (next_token->type == token_cmd || 
-                    next_token->type == token_dquote || 
-                    next_token->type == token_squote))
-            {
-                // Create a new redirection node for this token
-                t_redirect *additional = malloc(sizeof(t_redirect));
-                if (!additional)
-                    return head;
-                
-                additional->type = tmp->type;  // Same redirection type
-                additional->heredoc_fd = -1;   // Initialize for consistency
-                
-                // Set quoted status for this token
-                if (next_token->type == token_dquote)
-                    additional->quoted = token_dquote;
-                else if (next_token->type == token_squote)
-                    additional->quoted = token_squote;
-                else
-                    additional->quoted = 0;
-                
-                // Safely copy data before any potential freeing
-                additional->file = strdup(next_token->data);
-                if (!additional->file) {
-                    free(additional);
-                    return head;
-                }
-                
-                additional->is_spaced = 0;  // No space between joined parts
-                additional->next = NULL;
-                
-                // Add to our redirection list
-                current->next = additional;
-                current = additional;
-                
-                // Remember this token was processed
-                last_joined = next_token;
-                next_token = next_token->next;
-            }
-            
-            // Store the token to continue with after freeing
-            t_token_node *continue_from = last_joined->next;
-            
-            // Update links - skip all joined tokens
-            if (prev)
-                prev->next = continue_from;
-            else
-                new_head = continue_from;
-            
-            // Create a separate temporary variable to iterate and free
-            t_token_node *node_to_free = tmp;
-            while (node_to_free && node_to_free != continue_from)
-            {
-                t_token_node *next_to_free = node_to_free->next;
-                
-                // Completely detach the node before freeing
-                free_token_node(node_to_free);
-                node_to_free = next_to_free;
-            }
-            
-            tmp = continue_from;
-        }
-        else
-        {
-            prev = tmp;
-            tmp = tmp->next;
-        }
-    }
-    
-    *tokens = new_head;
-    return head;
+			// Mark the redirection token to be skipped
+			tmp->to_skip = 1;
+
+			// Get initial file name token
+			t_token_node *file_token = tmp->next;
+			
+			// Set quoted status
+			if (file_token->type == token_dquote)
+				redir->quoted = token_dquote;
+			else if (file_token->type == token_squote)
+				redir->quoted = token_squote;
+			else
+				redir->quoted = 0;
+				
+			// Store the filename
+			redir->file = strdup(file_token->data);
+			if (!redir->file) {
+				free(redir);
+				return head;
+			}
+			
+			redir->is_spaced = 1;
+			redir->next = NULL;
+			
+			// Add to redirection list
+			if (!head)
+				head = redir;
+			else
+				current->next = redir;
+			
+			current = redir;
+			
+			// Mark the file token to be skipped
+			file_token->to_skip = 1;
+			
+			// Track the tokens we've processed
+			t_token_node *last_joined = file_token;
+			t_token_node *next_token = file_token->next;
+			
+			// Process additional non-spaced tokens
+			while (next_token && 
+				   !next_token->spaced && 
+				   (next_token->type == token_cmd || 
+					next_token->type == token_dquote || 
+					next_token->type == token_squote))
+			{
+				// Create a new redirection node for this token
+				t_redirect *additional = malloc(sizeof(t_redirect));
+				if (!additional)
+					return head;
+				
+				additional->type = tmp->type;
+				additional->heredoc_fd = -1;
+				
+				// Set quoted status for this token
+				if (next_token->type == token_dquote)
+					additional->quoted = token_dquote;
+				else if (next_token->type == token_squote)
+					additional->quoted = token_squote;
+				else
+					additional->quoted = 0;
+				
+				additional->file = strdup(next_token->data);
+				if (!additional->file) {
+					free(additional);
+					return head;
+				}
+				
+				additional->is_spaced = 0;
+				additional->next = NULL;
+				
+				// Add to our redirection list
+				current->next = additional;
+				current = additional;
+				
+				// Mark this token to be skipped too
+				next_token->to_skip = 1;
+				
+				// Remember this token was processed
+				last_joined = next_token;
+				next_token = next_token->next;
+			}
+			
+			// Move to next token after all marked ones
+			tmp = last_joined->next;
+		}
+		else
+		{
+			tmp = tmp->next;
+		}
+	}
+	
+	return head;
 }
 
-
-t_redirect *parse_redirections_subshell(t_token_node **tokens, t_exec *exec)
-{
-    t_redirect *head = NULL;
-    t_redirect *current = NULL;
-    t_token_node *tmp = *tokens;
-    t_token_node *prev = NULL;
-    t_token_node *new_head = *tokens;
-    (void)exec;
-    
-    while (tmp)
-    {
-        if (is_redirection(tmp->type) && tmp->next)
-        {
-            // Create a new redirection node
-            t_redirect *redir = malloc(sizeof(t_redirect));
-            if (!redir)
-                return head;
-            
-            redir->type = tmp->type;
-            if (redir->type == token_hrdc)
-                redir->heredoc_fd = -1;
-
-            // Get initial file name token
-            t_token_node *file_token = tmp->next;
-            
-            // Set quoted status
-            if (file_token->type == token_dquote)
-                redir->quoted = token_dquote;
-            else if (file_token->type == token_squote)
-                redir->quoted = token_squote;
-            else
-                redir->quoted = 0;
-                
-            // Safely store the filename before we free anything
-            redir->file = strdup(file_token->data);
-            if (!redir->file) {
-                free(redir);
-                return head;
-            }
-            
-            // For normal redirections like "> t1 > t2", each file should have is_spaced=1
-            // because there's a space between redirection operator and file
-            redir->is_spaced = 1;
-            
-            redir->next = NULL;
-            
-            // Add to redirection list
-            if (!head)
-                head = redir;
-            else
-                current->next = redir;
-            
-            current = redir;
-            
-            // Track the tokens we've processed
-            t_token_node *last_joined = file_token;
-            
-            // Store the next token before potentially freeing anything
-            t_token_node *next_token = file_token->next;
-            
-            // Process additional non-spaced tokens
-            while (next_token && 
-                   !next_token->spaced && 
-                   (next_token->type == token_cmd || 
-                    next_token->type == token_dquote || 
-                    next_token->type == token_squote))
-            {
-                // Create a new redirection node for this token
-                t_redirect *additional = malloc(sizeof(t_redirect));
-                if (!additional)
-                    return head;
-                
-                additional->type = tmp->type;  // Same redirection type
-                additional->heredoc_fd = -1;   // Initialize for consistency
-                
-                // Set quoted status for this token
-                if (next_token->type == token_dquote)
-                    additional->quoted = token_dquote;
-                else if (next_token->type == token_squote)
-                    additional->quoted = token_squote;
-                else
-                    additional->quoted = 0;
-                
-                // Safely copy data before any potential freeing
-                additional->file = strdup(next_token->data);
-                if (!additional->file) {
-                    free(additional);
-                    return head;
-                }
-                
-                additional->is_spaced = 0;  // No space between joined parts
-                additional->next = NULL;
-                
-                // Add to our redirection list
-                current->next = additional;
-                current = additional;
-                
-                // Remember this token was processed
-                last_joined = next_token;
-                next_token = next_token->next;
-            }
-            
-            // Store the token to continue with after freeing
-            t_token_node *continue_from = last_joined->next;
-            
-            // Update links - skip all joined tokens
-            if (prev)
-                prev->next = continue_from;
-            else
-                new_head = continue_from;
-            
-            // Create a separate temporary variable to iterate and free
-            // t_token_node *node_to_free = tmp;
-            // while (node_to_free && node_to_free != continue_from)
-            // {
-            //     t_token_node *next_to_free = node_to_free->next;
-                
-            //     // Completely detach the node before freeing
-            //     free_token_node(node_to_free);
-                
-            //     node_to_free = next_to_free;
-            // }
-            
-            // Move to the next token after all freed tokens
-            tmp = continue_from;
-        }
-        else
-        {
-            prev = tmp;
-            tmp = tmp->next;
-        }
-    }
-    
-    *tokens = new_head;
-    return head;
-}
 
 /* Check if token type is a redirection */
 int is_redirection(t_token_type type)
@@ -648,17 +415,18 @@ int is_redirection(t_token_type type)
 /* Count number of argument tokens */
 int count_args(t_token_node *tokens)
 {
-	int count = 0;
-	t_token_node *tmp = tokens;
-	
+	int				count;
+	t_token_node	*tmp;
+
+	count = 0;
+	tmp = tokens;
 	while (tmp)
 	{
-		if (tmp->type == token_cmd || tmp->type == token_dquote || 
-			tmp->type == token_squote)
+		if ((tmp->type == token_cmd || tmp->type == token_dquote || 
+			tmp->type == token_squote) && !tmp->to_skip)
 			count++;
 		tmp = tmp->next;
 	}
-	
 	return count;
 }
 
@@ -690,7 +458,7 @@ char **collect_args(t_token_node *tokens, int count, int **quote_types, int **is
 
 	while (tmp && i < count)
 	{
-		if (tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote)
+		if ((tmp->type == token_cmd || tmp->type == token_dquote || tmp->type == token_squote) && !tmp->to_skip)
 		{
 			char *expanded_token;
 
@@ -806,32 +574,32 @@ void print_ast(t_ast_node *ast, int indent_level)
 
 void	free_ast_node(t_ast_node *node)
 {
-    if (!node)
-        return ;
-    free_ast_node(node->left);
-    free_ast_node(node->right);
-    free_ast_node(node->child);
-    
-    if (node->args)
-    {
+	if (!node)
+		return ;
+	free_ast_node(node->left);
+	free_ast_node(node->right);
+	free_ast_node(node->child);
+	
+	if (node->args)
+	{
 		int i = 0;
 		while (node->args[i])
 		{
-            free(node->args[i]);
+			free(node->args[i]);
 			i++;
 		}
-        free(node->args);
-    }
-    free(node->arg_quote_types);
-    free(node->arg_is_spaced);
-    
-    t_redirect *redir = node->redirects;
-    while (redir)
-    {
-        t_redirect *next = redir->next;
-        free(redir->file);
-        free(redir);
-        redir = next;
-    }
-    free(node);
+		free(node->args);
+	}
+	free(node->arg_quote_types);
+	free(node->arg_is_spaced);
+	
+	t_redirect *redir = node->redirects;
+	while (redir)
+	{
+		t_redirect *next = redir->next;
+		free(redir->file);
+		free(redir);
+		redir = next;
+	}
+	free(node);
 }

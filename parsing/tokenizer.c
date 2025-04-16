@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:40:09 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/15 20:59:53 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/16 11:39:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	ft_add_token(t_token_node **head, t_token_node **current, t_token_type type
 		new_token->spaced = 0;
 	new_token->type = type;
 	new_token->data = ft_strdup(data);
+	new_token->to_skip = 0;
 	new_token->next = NULL;
 	if (!*head)
 		*head = new_token;
@@ -473,21 +474,19 @@ t_token_node	*ft_tokenize(char *input, t_exec *exec)
 	return (head);
 }
 
-void free_token_list(t_token_node *tokens)
+void	free_token_list(t_token_node *tokens)
 {
-    t_token_node *current = tokens;
-    t_token_node *next;
+	t_token_node	*current;
+	t_token_node	*next;
 
-    while (current)
-    {
-        next = current->next;
-		if (current->data)
-		{
-        	free(current->data);
-			current->data = NULL;
-		}
-        free(current);
-		current = NULL;
-        current = next;
-    }
+	if (!tokens)
+		return ;
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		free(current->data);
+		free(current);
+		current = next;
+	}
 }
