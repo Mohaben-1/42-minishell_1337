@@ -58,8 +58,6 @@ $
 
  
 
- grep hi "<infile" <         ./test_files/infile
-
  unset HOME
  cd
 
@@ -86,8 +84,39 @@ cat << EOF | grep hello > output.txt && echo ok
 
 cat << f | cat 
 CTRL + C
+CTRL + D
 
 
 cat << 'f'
 
 cat << "f"
+
+
+true && echo yes
+false && echo no
+false || echo fallback
+true || echo ignored
+
+true && false || echo test
+(true && false) || echo ok
+false && (echo nope || echo never)
+
+
+
+touch a.c b.c c.txt
+echo *.c
+echo *
+echo "not*wild"
+
+ls * * *
+
+ls minishe*.c
+ls minishel*l.c
+
+export A=42
+echo $A
+echo "$A"
+echo '$A'
+unset A
+echo $A
+
