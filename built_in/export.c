@@ -6,18 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/10 19:47:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:42:35 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-static void	ft_err_exprt(char *cmd)
-{
-	ft_putstr_fd("minishell: export: `", 2);
-	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd("': not a valid identifier\n", 2);
-}
 
 int	ft_check_append(char *cmd)
 {
@@ -52,74 +45,6 @@ int	ft_check_var_name(char *var)
 	return (1);
 }
 
-static void	ft_print_export(t_env *env)
-{
-	if (!env)
-		return ;
-	while (env)
-	{
-		ft_putstr_fd("declare -x ", 1);
-		ft_putstr_fd(env->var, 1);
-		ft_putstr_fd("=\"", 1);
-		ft_putstr_fd(env->value, 1);
-		ft_putstr_fd("\"\n", 1);
-		env = env->next;
-	}
-}
-
-void	ft_append_env(char *var, char *value, t_env **env)
-{
-	t_env	*current;
-	char	*new_var;
-	char	*new_value;
-
-	current = *env;
-	new_var = ft_strtrim(var, "+");
-	while (current)
-	{
-		if (!ft_strcmp(current->var, new_var))
-		{
-			new_value = ft_strjoin(current->value, value);
-			free(current->value);
-			free(new_var);
-			current->value = new_value;
-			return ;
-		}
-		if (!current->next)
-			break ;
-		current = current->next;
-	}
-	ft_env_add_back(env, ft_env_new(var, value));
-	free(new_var);
-}
-
-static void	ft_update_env(char *var, char *value, t_env **env)
-{
-	t_env	*current;
-
-	if (!*env)
-	{
-		*env = ft_env_new(var, value);
-		return ;
-	}
-	if (ft_strchr(var, '+'))
-		return (ft_append_env(var, value, env));
-	current = *env;
-	while (current)
-	{
-		if (!ft_strcmp(current->var, var))
-		{
-			free(current->value);
-			current->value = ft_strdup(value);
-			return ;
-		}
-		if (!current->next)
-			break ;
-		current = current->next;
-	}
-	ft_env_add_back(env, ft_env_new(var, value));
-}
-
 static void	ft_set_var_val(char *arg, char **var, char **value)
 {
 	int	j;
@@ -129,12 +54,12 @@ static void	ft_set_var_val(char *arg, char **var, char **value)
 	*value = ft_substr(arg, j, ft_strlen(arg) - j);
 }
 
-static void	ft_free_export(char *var, char *value)
+void	ft_export_helper(char	*arg, char **var, char **value, t_exec *exec)
 {
-	free(var);
-	free(value);
+	ft_set_var_val(arg, var, value);
+	ft_update_env(*var, *value, exec->env);
+	ft_free_export(*var, *value);
 }
-
 
 void	ft_export(t_ast_node *ast, t_exec *exec)
 {
@@ -149,29 +74,16 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 	else
 	{
 		i = 0;
-		if (ft_strcmp(ast->args[0], "export"))
-		{
-			ft_err_exprt(ft_strtrim(ast->args[0], "export"));
-			err_flag = 1;
-		}
 		while (ast->args[++i])
 		{
 			if (!ft_check_var_name(ast->args[i]))
 			{
-				ft_err_exprt(ast->args[i]);
-				err_flag = 1;
+				ft_err_exprt(ast->args[i], &err_flag);
 				continue ;
 			}
 			if (ft_strchr(ast->args[i], '='))
-			{
-				ft_set_var_val(ast->args[i], &var, &value);
-				ft_update_env(var, value, exec->env);
-				ft_free_export(var, value);
-			}
+				ft_export_helper(ast->args[i], &var, &value, exec);
 		}
 	}
-	if (!err_flag)
-		exec->exit_status = 0;
-	else
-		exec->exit_status = 1;
+	export_exit_status(exec, err_flag);
 }

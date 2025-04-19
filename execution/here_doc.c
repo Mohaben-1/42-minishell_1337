@@ -6,24 +6,17 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 12:24:51 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/14 15:38:49 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 12:21:45 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	heredoc_child_handler(int sig)
-{
-	(void)sig;
-	ft_putchar_fd('\n', 1);
-	exit(1);
-}
-
 void	heredoc_child_process(t_redirect *redr, int pipe_fd[2], t_exec *exec)
 {
 	char	*line;
 
-	signal(SIGINT, heredoc_child_handler);
+	signal(SIGINT, heredoc_child_signal);
 	close(pipe_fd[0]);
 	while (1)
 	{

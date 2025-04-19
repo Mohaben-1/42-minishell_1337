@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/23 14:12:18 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:43:06 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	ft_echo(char **args, t_exec *exec)
 	char	*err_msg;
 	int		flag;
 	int		i;
-	
+
 	err_msg = "minishell: echo: write error: Bad file descriptor\n";
 	if (write(1, NULL, 0) == -1)
 		return (exec->exit_status = 1, ft_putstr_fd(err_msg, 2));

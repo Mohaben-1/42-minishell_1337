@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 13:21:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/13 15:13:28 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:40:08 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,12 @@ void	ft_error_file_expand(char *file, t_exec *exec)
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(file, 2);
 	ft_putstr_fd(": ambiguous redirect\n", 2);
+}
+
+void	ft_err_exprt(char *cmd, int *err_flag)
+{
+	*err_flag = 1;
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
 }

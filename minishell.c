@@ -1,14 +1,5 @@
 #include "minishell.h"
 
-void	ft_handle_sigint(int sig)
-{
- 	(void)sig;
-	ft_putchar_fd('\n', 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
 void print_token_type(t_token_type type)
 {
     switch (type)

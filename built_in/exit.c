@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:02:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/16 16:27:20 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 10:55:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	ft_err_exit(t_ast_node *ast)
 
 int	ft_is_numeric_argument(char *str)
 {
-	int i;
+	int	i;
 
 	if (!str || !*str)
 		return (0);
@@ -34,6 +34,23 @@ int	ft_is_numeric_argument(char *str)
 		if (!ft_isdigit(str[i]))
 			return (0);
 		i++;
+	}
+	return (1);
+}
+
+static int	is_valid_overflow(long long nb, char current, int sign)
+{
+	if (sign == 1)
+	{
+		if (nb > LONG_MAX / 10
+			|| (nb == LONG_MAX / 10 && current - '0' > LONG_MAX % 10))
+			return (0);
+	}
+	else
+	{
+		if (nb > -(LONG_MIN / 10)
+			|| (nb == -(LONG_MIN / 10) && current - '0' > -(LONG_MIN % 10)))
+			return (0);
 	}
 	return (1);
 }
@@ -55,10 +72,7 @@ static int	check_numeric_overflow(char *str)
 	}
 	while (str[i] && str[i] >= '0' && str[i] <= '9')
 	{
-		if ((sign == 1 && (nb > LONG_MAX / 10 || 
-			(nb == LONG_MAX / 10 && str[i] - '0' > LONG_MAX % 10))) ||
-			(sign == -1 && (nb > -(LONG_MIN / 10) || 
-			(nb == -(LONG_MIN / 10) && str[i] - '0' > -(LONG_MIN % 10)))))
+		if (!is_valid_overflow(nb, str[i], sign))
 			return (0);
 		nb = nb * 10 + (str[i] - '0');
 		i++;
@@ -80,7 +94,8 @@ void	ft_exit(t_ast_node *ast, t_exec *exec)
 	ft_putstr_fd("exit\n", 1);
 	if (!ast->args[1])
 		exit(0);
-	if (!ft_is_numeric_argument(ast->args[1]) || !check_numeric_overflow(ast->args[1]))
+	if (!ft_is_numeric_argument(ast->args[1])
+		|| !check_numeric_overflow(ast->args[1]))
 		ft_err_exit(ast);
 	exit((unsigned char)ft_atoi(ast->args[1]));
 }

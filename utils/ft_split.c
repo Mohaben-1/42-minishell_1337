@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 14:09:25 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/17 14:33:54 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 11:43:42 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	ft_set_start_end(char *s, char c, int *start, int *end)
 		quote_char = s[*end];
 		(*start) = ++(*end);
 		while (s[*end] && s[*end] != quote_char)
-				(*end)++;
+			(*end)++;
 		if (s[*end])
 			(*end)++;
 	}

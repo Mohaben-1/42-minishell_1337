@@ -6,68 +6,13 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/12 20:13:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 13:45:43 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	count_pipe_cmd(t_ast_node *ast)
-{
-	int	count;
-
-	if (!ast)
-		return (0);
-	if (ast->e_type != AST_PIPE)
-		return (1);
-	count = 0;
-	if (ast->left)
-	{
-		if (ast->left->e_type == AST_PIPE)
-			count += count_pipe_cmd(ast->left);
-		else
-			count += 1;
-	}
-	if (ast->right)
-	{
-		if (ast->right->e_type == AST_PIPE)
-			count += count_pipe_cmd(ast->right);
-		else
-			count += 1;
-	}
-	return (count);
-}
-
-void	collect_pipe_cmd(t_ast_node *ast, t_ast_node **ast_pipes, int *index)
-{
-	if (!ast)
-		return ;
-	if (ast->e_type != AST_PIPE)
-	{
-		ast_pipes[*index] = ast;
-		(*index)++;
-		return ;
-	}
-	if (ast->left)
-		collect_pipe_cmd(ast->left, ast_pipes, index);
-	if (ast->right)
-		collect_pipe_cmd(ast->right, ast_pipes, index);
-}
-
-void	close_pipes_fd(int pipes_fd[][2], int count)
-{
-	int	i;
-
-	i = 0;
-	while (i < count - 1)
-	{
-		close(pipes_fd[i][0]);
-		close(pipes_fd[i][1]);
-		i++;
-	}
-}
-
-void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
+static void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
 {
 	t_redirect *redirect;
 
@@ -91,34 +36,7 @@ void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
 		process_all_heredocs(ast->child, exec);
 }
 
-void	exec_pipe_cmd(t_ast_node *ast, t_exec *exec)
-{
-	if (!ast)
-		exit(1);
-	ft_expand_wildcard(ast);
-	if (ast->e_type == AST_SUBSHELL && ast->child)
-	{
-		if (ft_apply_redirect(ast, exec))
-			execute_ast(ast->child, exec);
-		exit(exec->exit_status);
-	}
-	if (!ast->args)
-		exit(1);
-	if (ft_is_builtin(ast->args[0]))
-	{
-		if (ft_apply_redirect(ast, exec))
-			execute_builtin(ast, exec);
-		exit(exec->exit_status);
-	}
-	else
-	{
-		if (ft_apply_redirect(ast, exec))
-			ft_exec_ve(ast, exec);
-		exit(exec->exit_status);
-	}
-}
-
-void	handle_wait_status(t_exec *exec, int *pids, int count)
+static void	handle_wait_status(t_exec *exec, int *pids, int count)
 {
 	int	status;
 	int	i;
@@ -140,59 +58,54 @@ void	handle_wait_status(t_exec *exec, int *pids, int count)
 		exec->exit_status = 1;
 }
 
-void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
+void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes, t_exec *exec)
 {
-	t_ast_node	*ast_pipes[cmd_count];
-	int			pipes_fd[cmd_count - 1][2];
-	int			pids[cmd_count];
-	int			index;
-	int			i;
+	int	i;
 
-	if (!ast)
-		return ;
-	index = 0;
-	collect_pipe_cmd(ast, ast_pipes, &index);
 	i = 0;
-	while (i < cmd_count)
+	while (i < pipe_data->cmd_count)
 	{
-		process_all_heredocs(ast_pipes[i], exec);
-		if (exec->exit_status == 1)
-			return ;
-		i++;
-	}
-	i = 0;
-	while (i < cmd_count - 1)
-	{
-		if (pipe(pipes_fd[i]) < 0)
-		{
-			ft_putstr_fd(PIPE_ERROR, 2);
-			exec->exit_status = 1;
-			return ;
-		}
-		i++;
-	}
-	i = 0;
-	while (i < cmd_count)
-	{
-		pids[i] = fork();
-		if (pids[i] == -1)
+		pipe_data->pids[i] = fork();
+		if (pipe_data->pids[i] == -1)
 		{
 			ft_putstr_fd(FORK_ERROR, 2);
 			exec->exit_status = 1;
 			return ;
 		}
-		if (pids[i] == 0)
+		if (pipe_data->pids[i] == 0)
 		{
 			if (i > 0)
-				dup2(pipes_fd[i - 1][0], 0);
-			if (i < cmd_count - 1)
-				dup2(pipes_fd[i][1], 1);
-			close_pipes_fd(pipes_fd, cmd_count);
+				dup2(pipe_data->pipes_fd[i - 1][0], 0);
+			if (i < pipe_data->cmd_count - 1)
+				dup2(pipe_data->pipes_fd[i][1], 1);
+			close_pipes_fd(pipe_data->pipes_fd, pipe_data->cmd_count);
 			exec_pipe_cmd(ast_pipes[i], exec);
 			exit(exec->exit_status);
 		}
 		i++;
 	}
-	close_pipes_fd(pipes_fd, cmd_count);
+	close_pipes_fd(pipe_data->pipes_fd, pipe_data->cmd_count);
+}
+
+
+
+void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
+{
+	t_ast_node	*ast_pipes[cmd_count];
+	int			pipes_fd[cmd_count - 1][2];
+	int			pids[cmd_count];
+	t_pipe_data	pipe_data;
+	int			index;
+
+	if (!ast)
+		return ;
+	index = 0;
+	collect_pipe_cmd(ast, ast_pipes, &index);
+	process_hrdc_pipes(ast_pipes, cmd_count, exec);
+	process_pipes(pipes_fd, cmd_count, exec);
+	if (exec->exit_status == 1)
+		return ;
+	init_pipe_data(&pipe_data, cmd_count, pipes_fd, pids);
+	ft_handle_pipes(&pipe_data, ast_pipes, exec);
 	handle_wait_status(exec, pids, cmd_count);
 }

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/16 11:35:55 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/19 14:04:26 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,13 @@ typedef struct s_exec
 	int			exit_status;
 }	t_exec;
 
+typedef struct s_pipe_data
+{
+	int	cmd_count;
+	int	(*pipes_fd)[2];
+	int	*pids;
+}	t_pipe_data;
+
 //Utils
 size_t			ft_strlen(char *s);
 int				ft_isdigit(char c);
@@ -128,9 +135,9 @@ void			ft_error(char *err, int exit_status);
 void			ft_error_cmd(t_env *env, t_ast_node *ast, char **paths, int exit_status);
 void			ft_error_file(char *file, t_exec *exec);
 void			ft_error_file_expand(char *file, t_exec *exec);
+void			ft_err_exprt(char *cmd, int *err_flag);
 
 //Buil_in
-char			*ft_get_path(char **envp);
 void			ft_exec_ve(t_ast_node *node, t_exec *exec);
 void			ft_putchar_fd(char c, int fd);
 void			ft_putstr_fd(char *s, int fd);
@@ -148,6 +155,7 @@ char			*ft_get_env(t_env *env, char *var);
 void			ft_set_env(t_env *env, char *var, char *new_val);
 void			ft_pwd(t_exec *exec);
 void			ft_echo(char **args, t_exec *exec);
+
 
 //Parsing
 t_token_node	*ft_tokenize(char *input, t_exec *exec);
@@ -186,12 +194,38 @@ int				ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
 
 //Signals
 void			ft_handle_sigint(int sig);
-
+void			handle_sig_exec_ve(int sig);
+void			heredoc_child_signal(int sig);
 
 //Free
 void			free_double_ptr(char **s);
 void			free_ast_node(t_ast_node *ast);
 void			free_env(t_env *env);
 void			free_token_list(t_token_node *tokens);
+
+//Helpers
+void			exec_path_err(t_ast_node *ast, char **envp);
+char			**ft_set_envp(t_env *env);
+char			*ft_strjoin_env(char *s1, char *s2);
+int				ft_env_size(t_env *env);
+void			exec_pipe_cmd(t_ast_node *ast, t_exec *exec);
+void			init_pipe_data(t_pipe_data *pipe_data, int cmd_count,
+	int pipes_fd[][2], int *pids);
+void			close_pipes_fd(int pipes_fd[][2], int count);
+void			collect_pipe_cmd(t_ast_node *ast, t_ast_node **ast_pipes, int *index);
+int				count_pipe_cmd(t_ast_node *ast);
+void			process_hrdc_pipes(t_ast_node **ast_pipes, int cmd_count, t_exec *exec);
+void			process_pipes(int pipes_fd[][2], int cmd_count, t_exec *exec);
+void			ft_free_export(char *var, char *value);
+void			export_exit_status(t_exec *exec, int err_flag);
+void			ft_print_export(t_env *env);
+void			ft_append_env(char *var, char *value, t_env **env);
+void			ft_update_env(char *var, char *value, t_env **env);
+void			ft_restore_std_fd(t_exec *exec);
+void			proccess_redr_in(t_redirect *redr, int fd, t_exec *exec);
+void			proccess_redr_out(t_redirect *redr, int fd, t_exec *exec);
+void			proccess_redr_append(t_redirect *redr, int fd, t_exec *exec);
+void			proccess_heredoc(t_redirect *redr);
+
 
 #endif
