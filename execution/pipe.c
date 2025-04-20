@@ -12,30 +12,6 @@
 
 #include "../minishell.h"
 
-static void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
-{
-	t_redirect *redirect;
-
-	if (!ast)
-		return ;
-	redirect = ast->redirects;
-	while (redirect)
-	{
-		if (redirect->type == token_hrdc && redirect->heredoc_fd == -1)
-			redirect->heredoc_fd = ft_handle_heredoc(redirect, exec);
-		if (exec->exit_status == 1)
-			return ;
-		redirect = redirect->next;
-	}
-	if (ast->e_type == AST_PIPE || ast->e_type == AST_AND_AND || ast->e_type == AST_OR_OR)
-	{
-		process_all_heredocs(ast->left, exec);
-		process_all_heredocs(ast->right, exec);
-	}
-	else if (ast->e_type == AST_SUBSHELL && ast->child)
-		process_all_heredocs(ast->child, exec);
-}
-
 static void	handle_wait_status(t_exec *exec, int *pids, int count)
 {
 	int	status;
@@ -50,7 +26,7 @@ static void	handle_wait_status(t_exec *exec, int *pids, int count)
 			waitpid(pids[i], NULL, 0);
 		i++;
 	}
-	 if (WIFEXITED(status))
+	if (WIFEXITED(status))
 		exec->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
 		exec->exit_status = 128 + WTERMSIG(status);
@@ -87,8 +63,6 @@ void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes, t_exec *exe
 	close_pipes_fd(pipe_data->pipes_fd, pipe_data->cmd_count);
 }
 
-
-
 void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 {
 	t_ast_node	*ast_pipes[cmd_count];
@@ -107,5 +81,6 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 		return ;
 	init_pipe_data(&pipe_data, cmd_count, pipes_fd, pids);
 	ft_handle_pipes(&pipe_data, ast_pipes, exec);
+	ft_restore_std_fd(exec);
 	handle_wait_status(exec, pids, cmd_count);
 }

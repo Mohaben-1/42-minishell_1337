@@ -76,7 +76,7 @@ char	*ft_expand(char *arg, t_exec *exec)
 	expand = ft_strdup("");
 	while (arg[i])
 	{
-		if (arg[i] == '$' && arg[i + 1] && (ft_isalnum(arg[i + 1]) || arg[i + 1] == '_' || arg[i + 1] == '?'))
+		if (arg[i] == '$' && arg[i + 1] && (ft_isalnum(arg[i + 1])|| arg[i + 1] == '_' || arg[i + 1] == '?'))
 			ft_expand_helper(&expand, arg, exec, &i);
 		else
 		{

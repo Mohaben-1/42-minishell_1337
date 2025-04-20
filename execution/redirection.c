@@ -12,7 +12,7 @@
 
 #include "../minishell.h"
 
-static void	proccess_all_heredocs(t_ast_node *ast, t_exec *exec)
+static int	proccess_all_heredocs(t_ast_node *ast, t_exec *exec)
 {
 	t_redirect	*redr;
 
@@ -28,6 +28,7 @@ static void	proccess_all_heredocs(t_ast_node *ast, t_exec *exec)
 		}
 		redr = redr->next;
 	}
+	return (1);
 }
 
 int	check_hrdc_priority(t_redirect *redirect)
@@ -41,6 +42,44 @@ int	check_hrdc_priority(t_redirect *redirect)
 	return (0);
 }
 
+static int	proccess_redirect_helper(t_redirect *redr, t_exec *exec, int fd)
+{
+	if (redr->type != token_hrdc && !redr->file)
+		return (ft_putstr_fd("minishell: $: ambiguous redirec\n", 2), 0);
+	if (redr->type == token_hrdc)
+	{
+		if (!proccess_heredoc(redr))
+			return (0);
+	}
+	else if (redr->type == token_in)
+	{
+		if (!proccess_redr_in(redr, fd, exec))
+			return (0);
+	}
+	else if (redr->type == token_out)
+	{
+		if (!proccess_redr_out(redr, fd, exec))
+			return (0);
+	}
+	else if (redr->type == token_appnd)
+	{
+		if (!proccess_redr_in(redr, fd, exec))
+			return (0);
+	}
+	return (1);
+}
+
+static int	proccess_redirect(t_redirect *redr, t_exec *exec, int fd)
+{
+	while (redr)
+	{
+		if (!proccess_redirect_helper(redr, exec, fd))
+			return (0);
+		redr = redr->next;
+	}
+	return (1);
+}
+
 int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 {
 	t_redirect	*redr;
@@ -48,21 +87,10 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 
 	exec->std_fd[0] = dup(0);
 	exec->std_fd[1] = dup(1);
-	proccess_all_heredocs(ast, exec);
+	if (!proccess_all_heredocs(ast, exec))
+		return (0);
 	redr = ast->redirects;
-	while (redr)
-	{
-		if (redr->type != token_hrdc && !redr->file)
-			return (ft_putstr_fd("minishell: $: ambiguous redirec\n", 2), 0);
-		if (redr->type == token_hrdc)
-			proccess_heredoc(redr);
-		else if (redr->type == token_in)
-			proccess_redr_in(redr, fd, exec);
-		else if (redr->type == token_out)
-			proccess_redr_out(redr, fd, exec);
-		else if (redr->type == token_appnd)
-			proccess_redr_in(redr, fd, exec);
-		redr = redr->next;
-	}
-	return 1;
+	if (!proccess_redirect(redr, exec, fd))
+		return (0);
+	return (1);
 }

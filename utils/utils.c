@@ -78,3 +78,13 @@ int	ft_get_index(char *s, char c)
 		i++;
 	return (i);
 }
+
+int	arg_count(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args && args[i])
+		i++;
+	return (i);
+}

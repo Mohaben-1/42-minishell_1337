@@ -129,6 +129,7 @@ int				ft_strncmp(char *s1, char *s2, size_t n);
 int				ft_strcmp(char *s1, char *s2);
 char			*ft_strtrim(char *s1, char *set);
 char			**ft_split(char *s, char c);
+int				arg_count(char **args);
 
 //Errors
 void			ft_error(char *err, int exit_status);
@@ -136,6 +137,7 @@ void			ft_error_cmd(t_env *env, t_ast_node *ast, char **paths, int exit_status);
 void			ft_error_file(char *file, t_exec *exec);
 void			ft_error_file_expand(char *file, t_exec *exec);
 void			ft_err_exprt(char *cmd, int *err_flag);
+void			rdr_wild_err(char **expanded, char *file, t_exec *exec);
 
 //Buil_in
 void			ft_exec_ve(t_ast_node *node, t_exec *exec);
@@ -222,10 +224,17 @@ void			ft_print_export(t_env *env);
 void			ft_append_env(char *var, char *value, t_env **env);
 void			ft_update_env(char *var, char *value, t_env **env);
 void			ft_restore_std_fd(t_exec *exec);
-void			proccess_redr_in(t_redirect *redr, int fd, t_exec *exec);
-void			proccess_redr_out(t_redirect *redr, int fd, t_exec *exec);
-void			proccess_redr_append(t_redirect *redr, int fd, t_exec *exec);
-void			proccess_heredoc(t_redirect *redr);
-
+int				proccess_redr_in(t_redirect *redr, int fd, t_exec *exec);
+int				proccess_redr_out(t_redirect *redr, int fd, t_exec *exec);
+int				proccess_redr_append(t_redirect *redr, int fd, t_exec *exec);
+int				proccess_heredoc(t_redirect *redr);
+int				check_hrdc_priority(t_redirect *redirect);
+int				is_wild_card(char *s);
+char			**allocate_wild_res(char *file_name, int *count);
+char			**wildcard_expand(char *file_name);
+int				ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
+char			**handle_wildcard_expansion(t_ast_node *ast, int i);
+int				match_wild_card(char *file_name, char *d_name);
+int				count_wild_matches(char *file_name);
 
 #endif

@@ -12,104 +12,15 @@
 
 #include "../minishell.h"
 
-static int	is_wild_card(char *s)
-{
-	while (*s)
-	{
-		if (*s == '*')
-			return (1);
-		s++;
-	}
-	return (0);
-}
-
-static int	match(char *file_name, char *d_name)
-{
-	if (*file_name == '\0' && *d_name == '\0')
-		return (1);
-	if (*file_name == '*')
-	{
-		if (match(file_name + 1, d_name))
-			return (1);
-		if (*d_name && match(file_name, d_name + 1))
-			return (1);
-	}
-	else if (*file_name == *d_name)
-		return (match(file_name + 1, d_name + 1));
-	return (0);
-}
-
-static int	count_matches(char *file_name)
-{
-	DIR				*d;
-	struct dirent	*dir;
-	int				count;
-
-	d = opendir(".");
-	if (!d)
-		return (0);
-	count = 0;
-	while (1)
-	{
-		dir = readdir(d);
-		if (!dir)
-			return (closedir(d), count);
-		if (dir->d_name[0] == '.' && file_name[0] != '.')
-			continue ;
-		if (match(file_name, dir->d_name))
-			count++;
-	}
-	closedir(d);
-	return (count);
-}
-
-static char	**wildcard_expand(char *file_name)
-{
-	DIR				*d;
-	struct dirent	*dir;
-	char			**result;
-	int				count;
-	int				i;
-
-	count = count_matches(file_name);
-	if (count == 0)
-		return (NULL);
-	result = malloc(sizeof(char *) * (count + 1));
-	if (!result)
-		return (NULL);
-	d = opendir(".");
-	if (!d)
-		return (free(result), NULL);
-	i = 0;
-	while ((dir = readdir(d)) && i < count)
-	{
-		if (dir->d_name[0] == '.' && file_name[0] != '.')
-			continue ;
-		if (match(file_name, dir->d_name))
-			result[i++] = strdup(dir->d_name);
-	}
-	result[i] = NULL;
-	return (closedir(d), result);
-}
-
-static int	arg_count(char **args)
-{
-	int	i;
-
-	i = 0;
-	while (args && args[i])
-		i++;
-	return (i);
-}
-
-static char **merge_args(char **old_args, int i, char **expand)
+static char	**merge_args(char **old_args, int i, char **expand)
 {
 	char	**new_args;
 	int		idx;
 	int		j;
 	int		k;
 
-	new_args = malloc(sizeof(char *) * (arg_count(old_args) + arg_count(expand) + 1));
+	new_args = malloc(sizeof(char *) * (arg_count(old_args)
+				+ arg_count(expand) + 1));
 	if (!new_args)
 		return (NULL);
 	j = 0;
@@ -126,86 +37,74 @@ static char **merge_args(char **old_args, int i, char **expand)
 	return (new_args);
 }
 
-void	rdr_wild_err(char **expanded, char *file, t_exec *exec)
+static void	copy_quote_types(int *new_types, t_ast_node *ast, int pos
+			, int exp_count)
 {
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(file, 2);
-	ft_putstr_fd(": ambiguous redirect\n", 2);
-	exec->exit_status = 1;
-	free_double_ptr(expanded);
+	int	idx;
+	int	j;
+
+	idx = 0;
+	j = 0;
+	while (j < pos)
+		new_types[idx++] = ast->arg_quote_types[j++];
+	j = 0;
+	while (j++ < exp_count)
+		new_types[idx++] = 0;
+	j = pos + 1;
+	while (ast->args[j])
+		new_types[idx++] = ast->arg_quote_types[j++];
 }
 
-int	ft_expand_redr_wild(t_ast_node *ast, t_exec *exec)
+char	**handle_wildcard_expansion(t_ast_node *ast, int i)
 {
-	char		**expanded;
-	t_redirect	*redr;
-	char		*tmp;
+	char	**expanded;
+	char	**new_args;
+	int		*new_quote_types;
+	int		expanded_count;
+	int		args_count;
 
-	redr = ast->redirects;
-	while (redr)
+	expanded = wildcard_expand(ast->args[i]);
+	if (!expanded)
+		return (NULL);
+	args_count = arg_count(ast->args);
+	expanded_count = arg_count(expanded);
+	new_quote_types = malloc(sizeof(int) * (args_count + expanded_count));
+	if (!new_quote_types)
+		return (free_double_ptr(expanded), NULL);
+	copy_quote_types(new_quote_types, ast, i, expanded_count);
+	new_args = merge_args(ast->args, i, expanded);
+	if (!new_args)
 	{
-		if (redr->file && redr->type != token_hrdc && is_wild_card(redr->file))
+		free(new_quote_types);
+		return (free_double_ptr(expanded), NULL);
+	}
+	free(ast->arg_quote_types);
+	ast->arg_quote_types = new_quote_types;
+	free_double_ptr(expanded);
+	return (new_args);
+}
+
+void	ft_expand_wildcard(t_ast_node *ast)
+{
+	char	**new_args;
+	int		i;
+
+	if (!ast || ast->e_type != AST_COMMAND || !ast->args)
+		return ;
+	i = 0;
+	while (ast->args[i])
+	{
+		if (ast->arg_quote_types[i] == 0 && is_wild_card(ast->args[i]))
 		{
-			expanded = wildcard_expand(redr->file);
-			if (!expanded || expanded[1])
-				return (rdr_wild_err(expanded, redr->file, exec), 0);
-			else
+			new_args = handle_wildcard_expansion(ast, i);
+			if (new_args)
 			{
-				tmp = redr->file;
-				redr->file = expanded[0];
-				free(tmp);
-				free(expanded);
+				free_double_ptr(ast->args);
+				ast->args = new_args;
+				ast->arg_count = arg_count(new_args);
+				i = -1;
 			}
 		}
-		redr = redr->next;
+		i++;
 	}
-	return (1);
-}
-
-void ft_expand_wildcard(t_ast_node *ast)
-{
-    char **expanded;
-    char **new_args;
-    int  *new_quote_types;
-    int   i;
-
-    if (!ast || ast->e_type != AST_COMMAND || !ast->args)
-        return ;
-    
-    i = 0;
-    while (ast->args[i])
-    {
-        if (ast->arg_quote_types[i] == 0 && is_wild_card(ast->args[i]))
-        {
-            expanded = wildcard_expand(ast->args[i]);
-            if (expanded)
-            {
-                // Create new parallel quote type array
-                new_quote_types = malloc(sizeof(int) * (arg_count(ast->args) + arg_count(expanded) + 1));
-                
-                // Copy existing quote types
-                int idx = 0;
-                for (int j = 0; j < i; j++)
-                    new_quote_types[idx++] = ast->arg_quote_types[j];
-                
-                // Add new entries (wildcard expansions are unquoted)
-                for (int k = 0; expanded[k]; k++)
-                    new_quote_types[idx++] = 0;
-                
-                // Copy remaining original entries
-                for (int j = i + 1; ast->args[j]; j++)
-                    new_quote_types[idx++] = ast->arg_quote_types[j];
-
-                new_args = merge_args(ast->args, i, expanded);
-                free(ast->arg_quote_types);
-                ast->arg_quote_types = new_quote_types;
-                free_double_ptr(ast->args);
-                ast->args = new_args;
-                ast->arg_count = arg_count(new_args);
-                free_double_ptr(expanded);
-                i = -1;
-            }
-        }
-        i++;
-    }
 }
