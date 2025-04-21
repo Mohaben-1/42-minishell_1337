@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:53:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/15 20:10:14 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:32:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ char	*ft_expand(char *arg, t_exec *exec)
 	expand = ft_strdup("");
 	while (arg[i])
 	{
-		if (arg[i] == '$' && arg[i + 1] && (ft_isalnum(arg[i + 1])|| arg[i + 1] == '_' || arg[i + 1] == '?'))
+		if (arg[i] == '$' && arg[i + 1] && (ft_isalnum(arg[i + 1])
+				|| arg[i + 1] == '_' || arg[i + 1] == '?'))
 			ft_expand_helper(&expand, arg, exec, &i);
 		else
 		{

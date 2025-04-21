@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:31:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 14:03:50 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 13:49:36 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,9 @@ int	check_hrdc_priority(t_redirect *redirect)
 
 static int	proccess_redirect_helper(t_redirect *redr, t_exec *exec, int fd)
 {
-	if (redr->type != token_hrdc && !redr->file)
+	if (redr->type != token_hrdc && (!redr->file || !*(redr->file)))
 		return (ft_putstr_fd("minishell: $: ambiguous redirec\n", 2), 0);
-	if (redr->type == token_hrdc)
+	else if (redr->type == token_hrdc)
 	{
 		if (!proccess_heredoc(redr))
 			return (0);
@@ -63,7 +63,7 @@ static int	proccess_redirect_helper(t_redirect *redr, t_exec *exec, int fd)
 	}
 	else if (redr->type == token_appnd)
 	{
-		if (!proccess_redr_in(redr, fd, exec))
+		if (!proccess_redr_append(redr, fd, exec))
 			return (0);
 	}
 	return (1);
@@ -90,6 +90,7 @@ int	ft_apply_redirect(t_ast_node *ast, t_exec *exec)
 	if (!proccess_all_heredocs(ast, exec))
 		return (0);
 	redr = ast->redirects;
+	fd = 0;
 	if (!proccess_redirect(redr, exec, fd))
 		return (0);
 	return (1);

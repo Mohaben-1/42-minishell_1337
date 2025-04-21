@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:01:24 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/03/15 11:00:37 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 11:24:36 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,19 @@ char	*ft_strtrim(char *s1, char *set)
 	while (check_set(s1[end], set) == 1)
 		end--;
 	return (ft_substr(s1, start, end - start + 1));
+}
+
+int	is_whitespace(char c)
+{
+	return (c == ' ' || c == '\t' || c == '\n');
+}
+
+int	is_quotes(char c)
+{
+	return (c == '"' || c == '\'');
+}
+
+int	is_parentesis(char c)
+{
+	return (c == '(' || c == ')');
 }

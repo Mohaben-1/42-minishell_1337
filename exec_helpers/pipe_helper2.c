@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:45:00 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 13:48:09 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:29:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
 {
-	t_redirect *redirect;
+	t_redirect	*redirect;
 
 	if (!ast)
 		return ;
@@ -27,7 +27,8 @@ static void	process_all_heredocs(t_ast_node *ast, t_exec *exec)
 			return ;
 		redirect = redirect->next;
 	}
-	if (ast->e_type == AST_PIPE || ast->e_type == AST_AND_AND || ast->e_type == AST_OR_OR)
+	if (ast->e_type == AST_PIPE || ast->e_type == AST_AND_AND
+		|| ast->e_type == AST_OR_OR)
 	{
 		process_all_heredocs(ast->left, exec);
 		process_all_heredocs(ast->right, exec);

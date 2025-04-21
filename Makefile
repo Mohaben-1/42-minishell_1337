@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -g -fsanitize=address,undefined
+CFLAGS = -Wall -Werror -Wextra #-g -fsanitize=address,undefined
 LIB_RL = -L/goinfre/mohaben-/homebrew/opt/readline/lib -lreadline
 INCLUDE_RL = -I/goinfre/mohaben-/homebrew/opt/readline/include
 
@@ -11,7 +11,9 @@ SRC = minishell.c \
 		utils/utils.c utils/free.c utils/errors.c utils/errors2.c utils/ft_split.c utils/ft_itoa.c utils/signals.c \
 		execution/exec_ast.c  execution/exec_cmd.c execution/exec_ve.c execution/pipe.c execution/expand.c  execution/redirection.c execution/here_doc.c execution/wild_card.c \
 		parsing/tokenizer.c parsing/ft_tree.c \
-		helpers/export_helper.c helpers/exec_ve_helper.c helpers/pipe_helper.c  helpers/pipe_helper2.c helpers/redirection_helper.c helpers/wild_card_helper.c helpers/wild_card_helper2.c
+		exec_helpers/export_helper.c exec_helpers/exec_ve_helper.c exec_helpers/pipe_helper.c exec_helpers/pipe_helper2.c exec_helpers/expand_ast.c exec_helpers/filter_ast.c \
+		exec_helpers/prepare_ast_args.c exec_helpers/redirection_helper.c exec_helpers/wild_card_helper.c exec_helpers/wild_card_helper2.c exec_helpers/env_helper.c \
+		parse_helpers/tokenize_consecutive.c parse_helpers/tokenize_ops.c parse_helpers/tokenizer_errors.c parse_helpers/tokenizer_helper.c parse_helpers/tokenizer_helper2.c
 
 OBJ = $(SRC:.c=.o)
 

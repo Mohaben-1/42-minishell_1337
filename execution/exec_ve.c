@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:29:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 12:20:26 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:32:20 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	exec_ve_sigs(void)
 
 void	exec_stat_absolute(t_ast_node *ast, char *cmd, char **envp)
 {
-	struct stat st;
+	struct stat	st;
 
 	if (stat(cmd, &st) == 0)
 	{
@@ -56,10 +56,10 @@ static void	check_ast_args(t_ast_node *ast)
 
 void	exec_stat_relative(t_ast_node *ast, char **paths, char **envp)
 {
-	struct stat st;
-	char	*cmd;
-	char	*path;
-	int		i;
+	struct stat	st;
+	char		*cmd;
+	char		*path;
+	int			i;
 
 	i = -1;
 	while (paths[++i] && ast->args[0][0] != '.')
@@ -72,7 +72,7 @@ void	exec_stat_relative(t_ast_node *ast, char **paths, char **envp)
 			if (S_ISDIR(st.st_mode))
 			{
 				free(cmd);
-				continue;
+				continue ;
 			}
 			else if (access(cmd, X_OK) == 0)
 				execve(cmd, ast->args, envp);
@@ -81,12 +81,12 @@ void	exec_stat_relative(t_ast_node *ast, char **paths, char **envp)
 	}
 }
 
-void ft_exec_ve(t_ast_node *ast, t_exec *exec)
+void	ft_exec_ve(t_ast_node *ast, t_exec *exec)
 {
-	char **paths;
-	char *path;
-	char *cmd;
-	char **envp;
+	char	**paths;
+	char	*path;
+	char	*cmd;
+	char	**envp;
 
 	check_ast_args(ast);
 	envp = ft_set_envp(*(exec->env));

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 14:04:26 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:28:45 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,11 @@ typedef struct s_ast_node
 	struct s_ast_node	*child;
 }	t_ast_node;
 
-typedef struct s_exec
+typedef struct s_arg_meta
 {
-	t_env		**env;
-	char		**envp;
-	int			std_fd[2];
-	int			exit_status;
-}	t_exec;
+	int	*quote_types;
+	int	*is_spaced;
+}	t_arg_meta;
 
 typedef struct s_pipe_data
 {
@@ -111,6 +109,14 @@ typedef struct s_pipe_data
 	int	(*pipes_fd)[2];
 	int	*pids;
 }	t_pipe_data;
+
+typedef struct s_exec
+{
+	t_env		**env;
+	char		**envp;
+	int			std_fd[2];
+	int			exit_status;
+}	t_exec;
 
 //Utils
 size_t			ft_strlen(char *s);
@@ -130,6 +136,10 @@ int				ft_strcmp(char *s1, char *s2);
 char			*ft_strtrim(char *s1, char *set);
 char			**ft_split(char *s, char c);
 int				arg_count(char **args);
+int				is_whitespace(char c);
+int				is_quotes(char c);
+int				is_parentesis(char c);
+int				is_operator(char c);
 
 //Errors
 void			ft_error(char *err, int exit_status);
@@ -164,20 +174,17 @@ t_token_node	*ft_tokenize(char *input, t_exec *exec);
 t_ast_node		*build_ast(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_logical_ops(t_token_node *tokens, t_exec *exec);
 t_ast_node		*parse_pipes(t_token_node *tokens, t_exec *exec);
-t_ast_node		*parse_command(t_token_node *tokens, t_exec *exec);
+t_ast_node		*parse_command(t_token_node *tokens);
 t_ast_node		*parse_subshell(t_token_node *tokens, t_exec *exec);
 t_token_node	*find_op_at_level(t_token_node *tokens, t_token_type type1, 
 					t_token_type type2);
 t_token_node	*find_token_at_level(t_token_node *tokens, t_token_type type);
 t_token_node	*extract_tokens(t_token_node *start, t_token_node *end);
 t_ast_node		*create_ast_node(int type);
-t_redirect		*parse_redirections(t_token_node **tokens, t_exec *exec);
-t_redirect		*parse_redirections_subshell(t_token_node **tokens, t_exec *exec);
+t_redirect		*parse_redirections(t_token_node **tokens);
 int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
-char			**collect_args(t_token_node *tokens, int count, 
-					int **quote_types, int **arg_is_spaced, t_exec *exec);
-void			print_ast(t_ast_node *ast, int indent_level);
+char	**collect_args(t_token_node *tokens, int count, int **quote_types, int **is_spaced);
 
 //Execution
 void			execute_ast(t_ast_node *ast, t_exec *exec);
@@ -204,8 +211,10 @@ void			free_double_ptr(char **s);
 void			free_ast_node(t_ast_node *ast);
 void			free_env(t_env *env);
 void			free_token_list(t_token_node *tokens);
+void			ft_token_node_free(t_token_node **head);
+void			free_redirects(t_redirect *redirect);
 
-//Helpers
+//exec helpers
 void			exec_path_err(t_ast_node *ast, char **envp);
 char			**ft_set_envp(t_env *env);
 char			*ft_strjoin_env(char *s1, char *s2);
@@ -236,5 +245,51 @@ int				ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
 char			**handle_wildcard_expansion(t_ast_node *ast, int i);
 int				match_wild_card(char *file_name, char *d_name);
 int				count_wild_matches(char *file_name);
+void			expand_args(t_ast_node *ast, t_exec *exec);
+void			expand_ast_args(t_ast_node *ast, t_exec *exec);
+void			filter_unquoted_empty_args(t_ast_node *ast, t_exec *exec);
+void			prepare_ast_args(t_ast_node *ast, t_exec *exec);
+
+//Parsing helpers
+t_token_node	*ft_token_last(t_token_node *list);
+void			ft_token_syntax_error(t_token_node *list, int *error);
+void			ft_quotes_error(char quote_type);
+void			ft_add_token(t_token_node **head, t_token_type type, char *data, 
+	int spaced);
+void			ft_print_paren_error(t_token_node *head, t_token_node *list,
+	int *error);
+t_token_node	*ft_handle_tokenize_error(t_token_node **head, t_exec *exec,
+int error);
+void			ft_handle_quotes(char *input, int *i, t_token_node **head, 
+	int *error);
+void			ft_handle_str(char *input, int *i, t_token_node **head);
+void			ft_handle_special_tokens(char *input, int *i, t_token_node **head);
+void			ft_handle_redirections(char *input, int *i, t_token_node **head);
+void			ft_handle_parenthesis(char *input, int *i, t_token_node **head);
+void			ft_handle_pipe(char *input, int *i, t_token_node **head);
+void			ft_valid_parentesis(t_token_node *list, int *error);
+int				ft_check_complex_case(t_token_node *list, t_token_node *head);
+void			ft_check_last_token(t_token_node *list, int *error);
+void			ft_check_consecutive_paren(t_token_node *list, t_token_node *head,
+	int *error);
+void			ft_check_consecutive_operators(t_token_node *list, int *error);
+void			ft_consecutive_operators(t_token_node *list, int *error);
+int				is_node_operator(t_token_node *node);
+void			ft_is_quotes_spaced(char *input, int *i, int *is_spaced);
+void			ft_add_token_quotes(char quote_type, t_token_node **head, char *str, 
+	int is_spaced);
+t_token_node	*ft_before_this_token(t_token_node *list, t_token_node *token);
+void			ft_check_open_paren(t_token_node *head, t_token_node *list,
+	int *error);
+void			ft_put_token_error(t_token_node *list);
+void			ft_check_close_paren(t_token_node *list, int *paren_count,
+	int *error);
+t_token_node	*ft_before_this_token(t_token_node *list, t_token_node *token);
+void			ft_valid_redirections(t_token_node *list, int *error);
+
+
+
+
+
 
 #endif

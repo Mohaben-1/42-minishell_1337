@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:02:06 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/15 11:03:52 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 13:24:13 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,51 @@ void	free_env(t_env *env)
 		free(env->value);
 		free(env);
 		env = next;
+	}
+}
+
+void	free_token_list(t_token_node *tokens)
+{
+	t_token_node	*current;
+	t_token_node	*next;
+
+	if (!tokens)
+		return ;
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		free(current->data);
+		free(current);
+		current = next;
+	}
+}
+
+void	ft_token_node_free(t_token_node **head)
+{
+	t_token_node	*next;
+
+	if (!head || !*head)
+		return ;
+	next = NULL;
+	while (*head)
+	{
+		next = (*head)->next;
+		free((*head)->data);
+		free(*head);
+		*head = next;
+	}
+}
+
+void	free_redirects(t_redirect *redirect)
+{
+	t_redirect	*tmp;
+
+	while (redirect)
+	{
+		tmp = redirect;
+		redirect = redirect->next;
+		free(tmp->file);
+		free(tmp);
 	}
 }

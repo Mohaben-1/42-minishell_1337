@@ -6,11 +6,19 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 13:45:43 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:44:13 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static void free_resources(t_ast_node **ast_pipes, int (*pipes_fd)[2], int *pids)
+{
+	free(ast_pipes);
+	if (pipes_fd)
+		free(pipes_fd);
+	free(pids);
+}
 
 static void	handle_wait_status(t_exec *exec, int *pids, int count)
 {
@@ -34,7 +42,8 @@ static void	handle_wait_status(t_exec *exec, int *pids, int count)
 		exec->exit_status = 1;
 }
 
-void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes, t_exec *exec)
+void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes,
+	t_exec *exec)
 {
 	int	i;
 
@@ -65,14 +74,39 @@ void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes, t_exec *exe
 
 void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 {
-	t_ast_node	*ast_pipes[cmd_count];
-	int			pipes_fd[cmd_count - 1][2];
-	int			pids[cmd_count];
+	t_ast_node	**ast_pipes;
+	int			(*pipes_fd)[2];
+	int			*pids;
 	t_pipe_data	pipe_data;
 	int			index;
 
-	if (!ast)
+	if (!ast || cmd_count <= 0)
 		return ;
+	ast_pipes = malloc(cmd_count * sizeof(t_ast_node *));
+	if (!ast_pipes)
+	{
+		exec->exit_status = 1;
+		return;
+	}
+	if (cmd_count > 1)
+	{
+		pipes_fd = malloc((cmd_count - 1) * sizeof(int[2]));
+		if (!pipes_fd)
+		{
+			free(ast_pipes);
+			exec->exit_status = 1;
+			return;
+		}
+	}
+	pids = malloc(cmd_count * sizeof(int));
+	if (!pids)
+	{
+		free(ast_pipes);
+		if (pipes_fd)
+			free(pipes_fd);
+		exec->exit_status = 1;
+		return;
+	}
 	index = 0;
 	collect_pipe_cmd(ast, ast_pipes, &index);
 	process_hrdc_pipes(ast_pipes, cmd_count, exec);
@@ -83,4 +117,5 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 	ft_handle_pipes(&pipe_data, ast_pipes, exec);
 	ft_restore_std_fd(exec);
 	handle_wait_status(exec, pids, cmd_count);
+	free_resources(ast_pipes, pipes_fd, pids);
 }

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:40:49 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 13:48:03 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/21 16:43:59 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	close_pipes_fd(int pipes_fd[][2], int count)
 }
 
 void	init_pipe_data(t_pipe_data *pipe_data, int cmd_count,
-	int pipes_fd[][2], int *pids)
+	int (*pipes_fd)[2], int *pids)
 {
 	pipe_data->cmd_count = cmd_count;
 	pipe_data->pipes_fd = pipes_fd;
