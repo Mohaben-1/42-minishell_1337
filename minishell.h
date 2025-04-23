@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 13:58:42 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/23 15:58:42 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@
 
 # define FORK_ERROR "minishell: fork: Resource temporarily unavailable\n"
 # define PIPE_ERROR "minishell: pipe: Resource unavailable\n"
-
-static int	g_heredoc_signal;
 
 typedef enum e_token_type
 {
