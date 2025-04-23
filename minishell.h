@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 12:30:25 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/23 13:58:42 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,10 @@ void			expand_ast_args(t_ast_node *ast, t_exec *exec);
 void			filter_unquoted_empty_args(t_ast_node *ast, t_exec *exec);
 void			prepare_ast_args(t_ast_node *ast, t_exec *exec);
 void			close_heredoc_fds(t_ast_node **ast_pipes, int cmd_count);
+void			copy_first_args(t_new_ast_args *new, t_ast_node *ast, int i);
+void			copy_split_args(t_new_ast_args *new, char **splited, int i);
+void			copy_remaining_args(t_new_ast_args *new, t_ast_node *ast, 
+					int i, int split_count);
 
 //Parsing helpers
 t_token_node	*ft_token_last(t_token_node *list);

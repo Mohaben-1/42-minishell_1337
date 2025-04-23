@@ -6,30 +6,11 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:51:34 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 12:39:04 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/23 13:58:08 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-// void	expand_args(t_ast_node *ast, t_exec *exec)
-// {
-// 	char	*tmp;
-// 	int		i;
-
-// 	i = 0;
-// 	while (i < ast->arg_count)
-// 	{
-// 		if (ft_strchr(ast->args[i], '$')
-// 			&& ast->arg_quote_types[i] != AST_SQUOTES)
-// 		{
-// 			tmp = ast->args[i];
-// 			ast->args[i] = ft_expand(tmp, exec);
-// 			free(tmp);
-// 		}
-// 		i++;
-// 	}
-// }
 
 int	count_spaced_args(t_ast_node *ast)
 {

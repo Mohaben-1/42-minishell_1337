@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:54:03 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/22 12:35:32 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/23 15:07:14 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,12 +89,12 @@ void	ft_expand_wildcard(t_ast_node *ast)
 	char	**new_args;
 	int		i;
 
-	if (!ast || ast->e_type != AST_COMMAND || !ast->args[0])
+	if (!ast || !ast->args || ast->e_type != AST_COMMAND)
 		return ;
 	i = 0;
 	while (ast->args[i])
 	{
-		if (is_wild_card(ast->args[i]) && ast->arg_quote_types[i] == 0)
+		if (ast->arg_quote_types[i] == 0 && is_wild_card(ast->args[i]))
 		{
 			new_args = handle_wildcard_expansion(ast, i);
 			if (new_args)
