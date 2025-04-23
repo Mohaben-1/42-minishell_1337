@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/21 16:28:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/22 16:55:19 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@
 
 # define FORK_ERROR "minishell: fork: Resource temporarily unavailable\n"
 # define PIPE_ERROR "minishell: pipe: Resource unavailable\n"
-
 
 static int	g_heredoc_signal;
 
@@ -118,6 +117,13 @@ typedef struct s_exec
 	int			exit_status;
 }	t_exec;
 
+typedef struct s_new_ast_args
+{
+	int		*new_arg_is_spaced;
+	int		*new_quote_types;
+	char	**new_args;
+}	t_new_ast_args;
+
 //Utils
 size_t			ft_strlen(char *s);
 int				ft_isdigit(char c);
@@ -143,7 +149,8 @@ int				is_operator(char c);
 
 //Errors
 void			ft_error(char *err, int exit_status);
-void			ft_error_cmd(t_env *env, t_ast_node *ast, char **paths, int exit_status);
+void			ft_error_cmd(t_env *env, t_ast_node *ast, char **paths,
+					int exit_status);
 void			ft_error_file(char *file, t_exec *exec);
 void			ft_error_file_expand(char *file, t_exec *exec);
 void			ft_err_exprt(char *cmd, int *err_flag);
@@ -168,7 +175,6 @@ void			ft_set_env(t_env *env, char *var, char *new_val);
 void			ft_pwd(t_exec *exec);
 void			ft_echo(char **args, t_exec *exec);
 
-
 //Parsing
 t_token_node	*ft_tokenize(char *input, t_exec *exec);
 t_ast_node		*build_ast(t_token_node *tokens, t_exec *exec);
@@ -184,7 +190,12 @@ t_ast_node		*create_ast_node(int type);
 t_redirect		*parse_redirections(t_token_node **tokens);
 int				is_redirection(t_token_type type);
 int				count_args(t_token_node *tokens);
-char	**collect_args(t_token_node *tokens, int count, int **quote_types, int **is_spaced);
+char			**collect_args(t_token_node *tokens, int count, 
+					int **quote_types, int **is_spaced);
+void			process_joined_tokens(t_token_node **last, int redir_type, 
+					t_redirect **current, t_redirect **head);
+t_redirect		*create_redirect_type(t_token_node *token, int redir_type);
+t_token_node	*create_token_node(t_token_node *src);
 
 //Execution
 void			execute_ast(t_ast_node *ast, t_exec *exec);
@@ -205,6 +216,7 @@ int				ft_expand_redr_wild(t_ast_node *ast, t_exec *exec);
 void			ft_handle_sigint(int sig);
 void			handle_sig_exec_ve(int sig);
 void			heredoc_child_signal(int sig);
+void			handle_main_sigs(int ac, char **av);
 
 //Free
 void			free_double_ptr(char **s);
@@ -221,11 +233,13 @@ char			*ft_strjoin_env(char *s1, char *s2);
 int				ft_env_size(t_env *env);
 void			exec_pipe_cmd(t_ast_node *ast, t_exec *exec);
 void			init_pipe_data(t_pipe_data *pipe_data, int cmd_count,
-	int pipes_fd[][2], int *pids);
+					int (*pipes_fd)[2], int *pids);
 void			close_pipes_fd(int pipes_fd[][2], int count);
-void			collect_pipe_cmd(t_ast_node *ast, t_ast_node **ast_pipes, int *index);
+void			collect_pipe_cmd(t_ast_node *ast, t_ast_node **ast_pipes, 
+					int *index);
 int				count_pipe_cmd(t_ast_node *ast);
-void			process_hrdc_pipes(t_ast_node **ast_pipes, int cmd_count, t_exec *exec);
+void			process_hrdc_pipes(t_ast_node **ast_pipes, int cmd_count, 
+					t_exec *exec);
 void			process_pipes(int pipes_fd[][2], int cmd_count, t_exec *exec);
 void			ft_free_export(char *var, char *value);
 void			export_exit_status(t_exec *exec, int err_flag);
@@ -249,47 +263,66 @@ void			expand_args(t_ast_node *ast, t_exec *exec);
 void			expand_ast_args(t_ast_node *ast, t_exec *exec);
 void			filter_unquoted_empty_args(t_ast_node *ast, t_exec *exec);
 void			prepare_ast_args(t_ast_node *ast, t_exec *exec);
+void			close_heredoc_fds(t_ast_node **ast_pipes, int cmd_count);
 
 //Parsing helpers
 t_token_node	*ft_token_last(t_token_node *list);
 void			ft_token_syntax_error(t_token_node *list, int *error);
 void			ft_quotes_error(char quote_type);
-void			ft_add_token(t_token_node **head, t_token_type type, char *data, 
-	int spaced);
+void			ft_add_token(t_token_node **head, t_token_type type, 
+					char *data, int spaced);
 void			ft_print_paren_error(t_token_node *head, t_token_node *list,
-	int *error);
+					int *error);
 t_token_node	*ft_handle_tokenize_error(t_token_node **head, t_exec *exec,
-int error);
+					int error);
 void			ft_handle_quotes(char *input, int *i, t_token_node **head, 
-	int *error);
+					int *error);
 void			ft_handle_str(char *input, int *i, t_token_node **head);
-void			ft_handle_special_tokens(char *input, int *i, t_token_node **head);
-void			ft_handle_redirections(char *input, int *i, t_token_node **head);
+void			ft_handle_special_tokens(char *input, int *i, 
+					t_token_node **head);
+void			ft_handle_redirections(char *input, int *i, 
+					t_token_node **head);
 void			ft_handle_parenthesis(char *input, int *i, t_token_node **head);
 void			ft_handle_pipe(char *input, int *i, t_token_node **head);
 void			ft_valid_parentesis(t_token_node *list, int *error);
 int				ft_check_complex_case(t_token_node *list, t_token_node *head);
 void			ft_check_last_token(t_token_node *list, int *error);
-void			ft_check_consecutive_paren(t_token_node *list, t_token_node *head,
-	int *error);
+void			ft_check_consecutive_paren(t_token_node *list, 
+					t_token_node *head, int *error);
 void			ft_check_consecutive_operators(t_token_node *list, int *error);
 void			ft_consecutive_operators(t_token_node *list, int *error);
 int				is_node_operator(t_token_node *node);
 void			ft_is_quotes_spaced(char *input, int *i, int *is_spaced);
-void			ft_add_token_quotes(char quote_type, t_token_node **head, char *str, 
-	int is_spaced);
+void			ft_add_token_quotes(char quote_type, t_token_node **head, 
+					char *str, int is_spaced);
 t_token_node	*ft_before_this_token(t_token_node *list, t_token_node *token);
 void			ft_check_open_paren(t_token_node *head, t_token_node *list,
-	int *error);
+					int *error);
 void			ft_put_token_error(t_token_node *list);
 void			ft_check_close_paren(t_token_node *list, int *paren_count,
-	int *error);
+					int *error);
 t_token_node	*ft_before_this_token(t_token_node *list, t_token_node *token);
 void			ft_valid_redirections(t_token_node *list, int *error);
-
-
-
-
-
+t_ast_node		*parse_logical_ops(t_token_node *tokens, t_exec *exec);
+t_ast_node		*handle_logical_operators(t_ast_node *node, 
+					t_token_node *tokens, t_exec *exec);
+t_token_node	*find_op_at_level(t_token_node *tokens, t_token_type type1, 
+					t_token_type type2);
+t_token_node	*find_token_at_level(t_token_node *tokens, t_token_type type);
+t_token_node	*extract_tokens(t_token_node *start, t_token_node *end);
+void			free_ast_args(t_ast_node *node);
+void			free_ast_node(t_ast_node *node);
+void			free_collected_args(char **args, int *quote_types, 
+					int *is_spaced);
+char			**free_collected_args_and_return(char **args, int *qt, 
+					int *spaced);
+t_token_node	*free_token_list_and_return_null(t_token_node *list);
+void			mark_redirection_tokens(t_token_node *redir, 
+					t_token_node **last);
+char			**allocate_args_memory(int count, int **quote_types, 
+					int **is_spaced);
+void			add_redirect_to_list(t_redirect **head, t_redirect **current, 
+					t_redirect *redir);
+int				get_quote_type(int token_type);
 
 #endif

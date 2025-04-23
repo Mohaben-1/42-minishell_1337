@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/08 16:53:44 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/21 16:32:52 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/22 13:21:59 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,10 @@ void	ft_expand_helper(char **expand, char *arg, t_exec *exec, int *i)
 	int		start;
 
 	(*i)++;
-	if (arg[*i] == '?')
+	if (arg[*i] == '?' || (arg[*i] >= '0' && arg[*i] <= '9'))
 	{
-		*expand = ft_strjoin_free(*expand, ft_itoa(exec->exit_status));
+		if (arg[*i] == '?')
+			*expand = ft_strjoin_free(*expand, ft_itoa(exec->exit_status));
 		(*i)++;
 		return ;
 	}

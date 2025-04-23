@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 13:12:17 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/21 15:44:36 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/22 20:55:51 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	ft_execute_command(t_ast_node *ast, t_exec *exec)
 		return ;
 	if (!ft_apply_redirect(ast, exec))
 		return ;
-	if (ast->args && ft_is_builtin(ast->args[0]))
+	if (ast->args && ast->args[0] && ft_is_builtin(ast->args[0]))
 		execute_builtin(ast, exec);
 	else
 	{

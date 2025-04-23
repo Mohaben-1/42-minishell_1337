@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/21 16:49:52 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/22 16:54:09 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,35 @@ void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes,
 	close_pipes_fd(pipe_data->pipes_fd, pipe_data->cmd_count);
 }
 
+int	alloce_for_pipe(t_ast_node ***ast_pipes, int (**pipes_fd)[2]
+	, int **pids, int cmd_count)
+{
+	*ast_pipes = NULL;
+	*pipes_fd = NULL;
+	*pids = NULL;
+	*ast_pipes = malloc(cmd_count * sizeof(t_ast_node *));
+	if (!*ast_pipes)
+		return (0);
+	if (cmd_count > 1)
+	{
+		*pipes_fd = malloc((cmd_count - 1) * sizeof(int [2]));
+		if (!*pipes_fd)
+		{
+			free(*ast_pipes);
+			return (0);
+		}
+	}
+	*pids = malloc(cmd_count * sizeof(int));
+	if (!*pids)
+	{
+		free(*ast_pipes);
+		if (*pipes_fd)
+			free(*pipes_fd);
+		return (0);
+	}
+	return (1);
+}
+
 void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 {
 	t_ast_node	**ast_pipes;
@@ -83,28 +112,8 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 
 	if (!ast || cmd_count <= 0)
 		return ;
-	ast_pipes = malloc(cmd_count * sizeof(t_ast_node *));
-	if (!ast_pipes)
+	if (!alloce_for_pipe(&ast_pipes, &pipes_fd, &pids, cmd_count))
 	{
-		exec->exit_status = 1;
-		return ;
-	}
-	if (cmd_count > 1)
-	{
-		pipes_fd = malloc((cmd_count - 1) * sizeof(int [2]));
-		if (!pipes_fd)
-		{
-			free(ast_pipes);
-			exec->exit_status = 1;
-			return ;
-		}
-	}
-	pids = malloc(cmd_count * sizeof(int));
-	if (!pids)
-	{
-		free(ast_pipes);
-		if (pipes_fd)
-			free(pipes_fd);
 		exec->exit_status = 1;
 		return ;
 	}
@@ -113,10 +122,11 @@ void	ft_execute_pipe(t_ast_node *ast, t_exec *exec, int cmd_count)
 	process_hrdc_pipes(ast_pipes, cmd_count, exec);
 	process_pipes(pipes_fd, cmd_count, exec);
 	if (exec->exit_status == 1)
-		return ;
+		return (free_resources(ast_pipes, pipes_fd, pids));
 	init_pipe_data(&pipe_data, cmd_count, pipes_fd, pids);
 	ft_handle_pipes(&pipe_data, ast_pipes, exec);
 	ft_restore_std_fd(exec);
 	handle_wait_status(exec, pids, cmd_count);
+	close_heredoc_fds(ast_pipes, cmd_count);
 	free_resources(ast_pipes, pipes_fd, pids);
 }

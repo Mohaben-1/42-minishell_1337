@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 13:45:00 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/21 16:29:29 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/22 16:54:57 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,31 @@ void	process_pipes(int pipes_fd[][2], int cmd_count, t_exec *exec)
 			ft_putstr_fd(PIPE_ERROR, 2);
 			exec->exit_status = 1;
 			return ;
+		}
+		i++;
+	}
+}
+
+void	close_heredoc_fds(t_ast_node **ast_pipes, int cmd_count)
+{
+	t_redirect	*redirect;
+	int			i;
+
+	i = 0;
+	while (i < cmd_count)
+	{
+		if (ast_pipes[i])
+		{
+			redirect = ast_pipes[i]->redirects;
+			while (redirect)
+			{
+				if (redirect->type == token_hrdc && redirect->heredoc_fd != -1)
+				{
+					close(redirect->heredoc_fd);
+					redirect->heredoc_fd = -1;
+				}
+				redirect = redirect->next;
+			}
 		}
 		i++;
 	}

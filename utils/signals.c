@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 12:18:05 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 13:11:16 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/22 15:30:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_handle_sigint(int sig)
 {
- 	(void)sig;
+	(void)sig;
 	ft_putchar_fd('\n', 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -35,4 +35,13 @@ void	heredoc_child_signal(int sig)
 	(void)sig;
 	ft_putchar_fd('\n', 1);
 	exit(1);
+}
+
+void	handle_main_sigs(int ac, char **av)
+{
+	(void)ac;
+	(void)av;
+	rl_catch_signals = 0;
+	signal(SIGINT, ft_handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
 }
