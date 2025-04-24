@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -g -fsanitize=address,undefined
+CFLAGS = -Wall -Werror -Wextra
 LIB_RL = -L/goinfre/mohaben-/homebrew/opt/readline/lib -lreadline
 INCLUDE_RL = -I/goinfre/mohaben-/homebrew/opt/readline/include
 
@@ -48,10 +48,11 @@ bonus: $(OBJ_BNS)
 	@touch bonus
 	@echo bonus compiled
 
-%.o: %.c minishell.h
+
+%_bonus.o: %_bonus.c  minishell_bonus.h
 	@$(CC) $(CFLAGS) $(INCLUDE_RL) -c $< -o $@
 
-%_bonus.o: %_bonus.c minishell_bonus.h
+%.o: %.c minishell.h
 	@$(CC) $(CFLAGS) $(INCLUDE_RL) -c $< -o $@
 
 clean:
