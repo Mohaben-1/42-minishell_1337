@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:55:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/24 13:52:36 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 19:28:52 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	copy_first_args(t_new_ast_args *new, t_ast_node *ast, int i)
 	}
 }
 
-void	copy_split_args(t_new_ast_args *new, t_ast_node *ast, char **splited, int i)
+void	copy_split_args(t_new_ast_args *new, t_ast_node *ast, char **splited
+, int i)
 {
 	int	j;
 	int	split_count;
