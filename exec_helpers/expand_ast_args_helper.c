@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:55:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/24 12:13:56 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 13:52:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,10 @@ void	copy_split_args(t_new_ast_args *new, t_ast_node *ast, char **splited, int i
 	while (j < split_count)
 	{
 		new->new_args[i + j] = ft_strdup(splited[j]);
-		new->new_arg_is_spaced[i + j] = ast->arg_is_spaced[i];
+		if (j == 0)
+			new->new_arg_is_spaced[i + j] = ast->arg_is_spaced[i];
+		else
+			new->new_arg_is_spaced[i + j] = 1;
 		new->new_quote_types[i + j] = AST_SQUOTES;
 		j++;
 	}

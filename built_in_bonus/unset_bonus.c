@@ -6,17 +6,17 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:59:56 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:45:58 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 13:31:13 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell_bonus.h"
 
-static void	ft_err_unset(char *var)
+void	free_env_entry(t_env *to_free)
 {
-	ft_putstr_fd("minishell: unset: `", 2);
-	ft_putstr_fd(var, 2);
-	ft_putstr_fd("': not a valid identifier\n", 2);
+	free(to_free->var);
+	free(to_free->value);
+	free(to_free);
 }
 
 int	ft_check_var_exist(t_env *env, char *var)
@@ -45,29 +45,31 @@ int	ft_check_var_name_unset(char *var)
 	return (1);
 }
 
-void	ft_del_var(t_env *env, char *var)
+void	ft_del_var(t_env **env, char *var)
 {
 	t_env	*current;
-	t_env	*previous;
-	t_env	*next;
+	t_env	*prev;
+	t_env	*to_free;
 
-	current = env;
-	previous = NULL;
+	current = *env;
+	prev = NULL;
 	while (current)
 	{
-		next = current->next;
-		if (!ft_strcmp(current->var, var))
+		if (ft_strcmp(current->var, var) == 0)
 		{
-			if (!previous)
-				env = next;
+			to_free = current;
+			if (prev)
+				prev->next = current->next;
 			else
-				previous->next = next;
-			free(current->var);
-			free(current->value);
-			free(current);
+				*env = current->next;
+			current = current->next;
+			free_env_entry(to_free);
 		}
-		previous = current;
-		current = next;
+		else
+		{
+			prev = current;
+			current = current->next;
+		}
 	}
 }
 
@@ -88,7 +90,7 @@ void	ft_unset(char **args, t_exec *exec)
 			err_flag = 1;
 		}
 		else if (ft_check_var_exist(*(exec->env), args[i]))
-			ft_del_var(*(exec->env), args[i]);
+			ft_del_var(exec->env, args[i]);
 		i++;
 	}
 	if (!err_flag)

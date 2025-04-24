@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 15:08:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:35:11 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 13:38:46 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	check_empty_input(char *input)
 	return (0);
 }
 
-int	main_loop(t_env *env, t_exec *exec, char **envp)
+int	main_loop(t_env **env, t_exec *exec, char **envp)
 {
 	char	*input;
 	int		check;
@@ -67,7 +67,7 @@ int	main_loop(t_env *env, t_exec *exec, char **envp)
 			return (exec->exit_status);
 		if (check == 2)
 			continue ;
-		process_input(input, exec, &env, envp);
+		process_input(input, exec, env, envp);
 	}
 	return (exec->exit_status);
 }
@@ -81,7 +81,7 @@ int	main(int ac, char **av, char **envp)
 	handle_main_sigs(ac, av);
 	env = ft_init_env(envp);
 	exec.exit_status = 0;
-	exit_status = main_loop(env, &exec, envp);
+	exit_status = main_loop(&env, &exec, envp);
 	free_env(env);
 	return (exit_status);
 }

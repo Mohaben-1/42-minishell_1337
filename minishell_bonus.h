@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 17:34:21 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/24 12:14:34 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 13:30:46 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,7 @@ void			ft_error_file(char *file, t_exec *exec);
 void			ft_error_file_expand(char *file, t_exec *exec);
 void			ft_err_exprt(char *cmd, int *err_flag);
 void			rdr_wild_err(char **expanded, char *file, t_exec *exec);
+void			ft_err_unset(char *var);
 
 //Buil_in
 void			ft_exec_ve(t_ast_node *node, t_exec *exec);
