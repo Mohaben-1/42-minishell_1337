@@ -120,3 +120,34 @@ echo '$A'
 unset A
 echo $A
 
+
+
+echo *".txt"
+echo txt."*" *."txt"
+
+unset USER
+unset PATH
+unset HOME
+
+export x="echo "$HOME""
+export x="echo ""$HOME"""
+export x="ls -la"
+
+echo $9HOME
+
+
+ls > t1 > t2 | ls | cat | cat -e | grep a | awk '{print $1}' > t1| sleep 3 | echo 44 > t2 | cat << f | cat << g
+
+
+< rxrx
+
+(ls | cat) > t1 > t2 > t3 && echo 44
+
+
+echo "("
+
+
+echo"sq"
+
+echo $USER'$USER'"$?"
+

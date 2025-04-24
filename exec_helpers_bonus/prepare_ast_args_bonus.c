@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:51:34 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:44:46 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 17:50:44 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	fill_new_args_spaced(t_ast_node *ast, t_new_ast_args *new, int *j)
 		{
 			tmp = new->new_args[*j - 1];
 			new->new_args[*j - 1] = ft_strjoin(tmp, ast->args[i]);
-			new->new_quote_types[*j - 1] = ast->arg_quote_types[i];
+			new->new_quote_types[*j - 1] = ast->arg_quote_types[i - 1];
 			free(tmp);
 		}
 	}
