@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 14:40:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:45:53 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:50:44 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,20 @@ static void	ft_set_var_val(char *arg, char **var, char **value)
 
 void	ft_export_helper(char	*arg, char **var, char **value, t_exec *exec)
 {
-	ft_set_var_val(arg, var, value);
-	ft_update_env(*var, *value, exec->env);
+	int	printed;
+
+	if (ft_strchr(arg, '='))
+	{
+		printed = 1;
+		ft_set_var_val(arg, var, value);
+	}
+	else
+	{
+		*var = ft_strdup(arg);
+		*value = ft_strdup("");
+		printed = 0;
+	}
+	ft_update_env(*var, *value, exec->env, printed);
 	ft_free_export(*var, *value);
 }
 
@@ -81,8 +93,7 @@ void	ft_export(t_ast_node *ast, t_exec *exec)
 				ft_err_exprt(ast->args[i], &err_flag);
 				continue ;
 			}
-			if (ft_strchr(ast->args[i], '='))
-				ft_export_helper(ast->args[i], &var, &value, exec);
+			ft_export_helper(ast->args[i], &var, &value, exec);
 		}
 	}
 	export_exit_status(exec, err_flag);

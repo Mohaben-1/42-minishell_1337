@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 11:19:20 by ahouass           #+#    #+#             */
-/*   Updated: 2025/04/21 11:49:33 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:44:06 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,14 @@ static int	ft_process_token(char *input, int *i, t_token_node **head)
 	int	error;
 
 	error = 0;
+	if (input[*i] == '|' ||  input[*i] == '&')
+	{
+		if (input[*i + 1] == ')' || ((input[*i + 1] == '|' ||  input[*i + 1] == '&') && input[*i + 2] == ')'))
+		{
+			ft_putstr_fd("minishell: syntax error near unexpected token `)'\n", 2);
+			return (1);
+		}
+	}
 	if (input[*i] == '"' || input[*i] == '\'')
 		ft_handle_quotes(input, i, head, &error);
 	else if (input[*i] == '|' && input[*i + 1] == '|')

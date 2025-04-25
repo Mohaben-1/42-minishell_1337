@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 11:37:18 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:44:21 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:53:59 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,16 @@ void	ft_print_export(t_env *env)
 	{
 		ft_putstr_fd("declare -x ", 1);
 		ft_putstr_fd(env->var, 1);
-		ft_putstr_fd("=\"", 1);
-		ft_putstr_fd(env->value, 1);
-		ft_putstr_fd("\"\n", 1);
+		if (env->printed)
+		{
+			ft_putstr_fd("=\"", 1);
+			ft_putstr_fd(env->value, 1);
+			ft_putstr_fd("\"\n", 1);
+		}
+		else
+		{
+			ft_putstr_fd("\n", 1);
+		}
 		env = env->next;
 	}
 }
@@ -63,17 +70,17 @@ void	ft_append_env(char *var, char *value, t_env **env)
 			break ;
 		current = current->next;
 	}
-	ft_env_add_back(env, ft_env_new(var, value));
+	ft_env_add_back(env, ft_env_new(var, value, 1));
 	free(new_var);
 }
 
-void	ft_update_env(char *var, char *value, t_env **env)
+void	ft_update_env(char *var, char *value, t_env **env, int printed)
 {
 	t_env	*current;
 
 	if (!*env)
 	{
-		*env = ft_env_new(var, value);
+		*env = ft_env_new(var, value, printed);
 		return ;
 	}
 	if (ft_strchr(var, '+'))
@@ -91,5 +98,5 @@ void	ft_update_env(char *var, char *value, t_env **env)
 			break ;
 		current = current->next;
 	}
-	ft_env_add_back(env, ft_env_new(var, value));
+	ft_env_add_back(env, ft_env_new(var, value, printed));
 }

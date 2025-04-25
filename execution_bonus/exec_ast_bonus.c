@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 11:46:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:42:36 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:49:00 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	execute_ast(t_ast_node *ast, t_exec *exec)
 	{
 		cmd_count = count_pipe_cmd(ast);
 		prepare_ast_args(ast->left, exec);
+		exec->exit_status = 0;
 		prepare_ast_args(ast->right, exec);
 		ft_execute_pipe(ast, exec, cmd_count);
 	}
