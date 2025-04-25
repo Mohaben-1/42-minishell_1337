@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 17:34:21 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/24 19:30:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:12:00 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ typedef enum e_token_type
 	token_dquote,
 	token_squote,
 	token_and_and,
-	token_wildcard,
 	token_paren_open,
 	token_paren_close,
 }	t_token_type;

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/06 12:38:54 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/22 16:54:09 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:45:13 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,19 @@ static void	handle_wait_status(t_exec *exec, int *pids, int count)
 		exec->exit_status = 1;
 }
 
+void	ft_handle_pipe_fail(t_pipe_data *pipe_data, int count)
+{
+	int	i;
+
+	i = 0;
+	while (i < count)
+	{
+		close(pipe_data->pipes_fd[i][0]);
+		close(pipe_data->pipes_fd[i][1]);
+		i++;
+	}
+}
+
 void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes,
 	t_exec *exec)
 {
@@ -55,6 +68,7 @@ void	ft_handle_pipes(t_pipe_data *pipe_data, t_ast_node **ast_pipes,
 		if (pipe_data->pids[i] == -1)
 		{
 			ft_putstr_fd(FORK_ERROR, 2);
+			close_pipes_fd(pipe_data->pipes_fd, pipe_data->cmd_count);
 			exec->exit_status = 1;
 			return ;
 		}

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 12:33:01 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/24 19:30:00 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:45:04 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ typedef enum e_token_type
 	token_dquote,
 	token_squote,
 	token_and_and,
-	token_wildcard,
 	token_paren_open,
 	token_paren_close,
 }	t_token_type;
@@ -60,6 +59,7 @@ typedef struct s_env
 	char			*var;
 	char			*value;
 	struct s_env	*next;
+	int				printed;
 }	t_env;
 
 typedef struct s_redirect
@@ -166,7 +166,7 @@ void			ft_export(t_ast_node *ast, t_exec *exec);
 t_env			*ft_init_env(char **envp);
 void			ft_env(t_exec *exec);
 void			ft_env_add_back(t_env **lst, t_env *new);
-t_env			*ft_env_new(char *var, char *value);
+t_env			*ft_env_new(char *var, char *value, int printed);
 void			ft_unset(char **args, t_exec *exec);
 int				ft_check_var_name(char *var);
 void			ft_exit(t_ast_node *ast, t_exec *exec);
@@ -245,7 +245,7 @@ void			ft_free_export(char *var, char *value);
 void			export_exit_status(t_exec *exec, int err_flag);
 void			ft_print_export(t_env *env);
 void			ft_append_env(char *var, char *value, t_env **env);
-void			ft_update_env(char *var, char *value, t_env **env);
+void			ft_update_env(char *var, char *value, t_env **env, int printed);
 void			ft_restore_std_fd(t_exec *exec);
 int				proccess_redr_in(t_redirect *redr, int fd, t_exec *exec);
 int				proccess_redr_out(t_redirect *redr, int fd, t_exec *exec);

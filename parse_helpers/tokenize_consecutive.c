@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 11:40:50 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/21 11:42:23 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:27:55 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ void	ft_check_consecutive_paren(t_token_node *list, t_token_node *head,
 		ft_putstr_fd("minishell: syntax error near unexpected token `)'\n", 2);
 		*error = 1;
 	}
+	else if (*(list->data) == '|' && is_node_operator(list->next) && *(list->next->data) == ')')
+			ft_putstr_fd("syntax error near unexpected token `)'\n", 2);
 	else if (*(list->data) == '(' && is_node_operator(list->next)
 		&& *list->next->data != '<' && *list->next->data != '>')
 	{

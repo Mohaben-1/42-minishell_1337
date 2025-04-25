@@ -151,3 +151,22 @@ echo"sq"
 
 echo $USER'$USER'"$?"
 
+ 
+ 	
+export HOLA="s -la" 
+	then test:
+		l$HOLA
+		l"$HOLA"
+		l'$HOLA'
+
+export HOLA="l" 
+	"$HOLA"s
+
+
+lsxs
+$? | $?
+
+export x
+export
+
+

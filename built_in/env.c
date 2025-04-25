@@ -6,13 +6,13 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:42:55 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 11:18:09 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:26:29 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_env	*ft_env_new(char *var, char *value)
+t_env	*ft_env_new(char *var, char *value, int printed)
 {
 	t_env	*new;
 
@@ -27,6 +27,7 @@ t_env	*ft_env_new(char *var, char *value)
 	}
 	else
 		new->value = ft_strdup("");
+	new->printed = printed;
 	new->next = NULL;
 	return (new);
 }
@@ -57,9 +58,9 @@ t_env	*ft_init_null_envp(void)
 	head = NULL;
 	pwd = getcwd(NULL, 0);
 	last_exec = ft_strjoin(pwd, "./minishell");
-	head = ft_env_new("PWD", pwd);
-	ft_env_add_back(&head, ft_env_new("SHLVL", "1"));
-	ft_env_add_back(&head, ft_env_new("_", last_exec));
+	head = ft_env_new("PWD", pwd, 1);
+	ft_env_add_back(&head, ft_env_new("SHLVL", "1", 1));
+	ft_env_add_back(&head, ft_env_new("_", last_exec, 1));
 	free(pwd);
 	free(last_exec);
 	return (head);
@@ -68,6 +69,7 @@ t_env	*ft_init_null_envp(void)
 t_env	*ft_init_env(char **envp)
 {
 	t_env	*head;
+
 	char	**envp_splited;
 
 	if (!envp)
@@ -78,7 +80,7 @@ t_env	*ft_init_env(char **envp)
 	while (*envp)
 	{
 		envp_splited = ft_split(*envp, '=');
-		ft_env_add_back(&head, ft_env_new(envp_splited[0], envp_splited[1]));
+		ft_env_add_back(&head, ft_env_new(envp_splited[0], envp_splited[1], 1));
 		free_double_ptr(envp_splited);
 		envp++;
 	}
@@ -100,10 +102,13 @@ void	ft_env(t_exec *exec)
 	}
 	while (current)
 	{
-		ft_putstr_fd(current->var, 1);
-		ft_putchar_fd('=', 1);
-		ft_putstr_fd(current->value, 1);
-		ft_putchar_fd('\n', 1);
+		if (current->printed)
+		{
+			ft_putstr_fd(current->var, 1);
+			ft_putchar_fd('=', 1);
+			ft_putstr_fd(current->value, 1);
+			ft_putchar_fd('\n', 1);
+		}
 		current = current->next;
 	}
 	exec->exit_status = 0;
