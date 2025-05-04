@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 15:02:10 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/19 10:55:57 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/05/04 11:51:53 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void	ft_exit(t_ast_node *ast, t_exec *exec)
 	}
 	ft_putstr_fd("exit\n", 1);
 	if (!ast->args[1])
-		exit(0);
+		exit(exec->exit_status);
 	if (!ft_is_numeric_argument(ast->args[1])
 		|| !check_numeric_overflow(ast->args[1]))
 		ft_err_exit(ast);
