@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 17:41:08 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:41:10 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/05/08 16:40:53 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_redirect	*create_redirect_type(t_token_node *token, int redir_type)
 	redir = malloc(sizeof(t_redirect));
 	if (!redir)
 		return (NULL);
-	redir->file = strdup(token->data);
+	redir->file = ft_strdup(token->data);
 	if (!redir->file)
 		return (free(redir), NULL);
 	redir->type = redir_type;

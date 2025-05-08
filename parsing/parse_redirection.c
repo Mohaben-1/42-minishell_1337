@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 14:54:14 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/22 15:01:45 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/05/08 16:13:16 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_redirect	*create_redirect(t_token_node *redir_token,
 	else
 		redir->heredoc_fd = 0;
 	set_quoted_type(redir, file_token);
-	redir->file = strdup(file_token->data);
+	redir->file = ft_strdup(file_token->data);
 	if (!redir->file)
 	{
 		free(redir);

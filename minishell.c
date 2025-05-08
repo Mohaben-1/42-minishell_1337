@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 15:08:07 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/25 18:29:18 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/05/08 16:12:35 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	check_empty_input(char *input)
 {
 	if (!input)
 	{
-		rl_clear_history();
+		// rl_clear_history();
 		ft_putstr_fd("exit\n", 1);
 		return (1);
 	}

@@ -6,7 +6,7 @@
 /*   By: mohaben- <mohaben-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 11:27:32 by mohaben-          #+#    #+#             */
-/*   Updated: 2025/04/23 17:44:59 by mohaben-         ###   ########.fr       */
+/*   Updated: 2025/05/08 16:40:49 by mohaben-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char	**wildcard_expand(char *file_name)
 		if (dir->d_name[0] != '.' || file_name[0] == '.')
 		{
 			if (match_wild_card(file_name, dir->d_name))
-				result[i++] = strdup(dir->d_name);
+				result[i++] = ft_strdup(dir->d_name);
 		}
 		dir = readdir(d);
 	}
